@@ -212,7 +212,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     font-size: 11px;
     font-weight: 600;
     font-family: 'DM Mono', monospace;
-    white-space: pre-wrap;   /* preserva quebras de linha */
+    white-space: pre-wrap;
     word-break: break-word;
     border: 1px solid var(--pc);
     color: var(--pc);
@@ -225,7 +225,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     border-radius: 50%;
     background: var(--pc);
     flex-shrink: 0;
-    margin-top: 4px; /* alinha o dot com a primeira linha */
+    margin-top: 4px;
 }
 
 .site-name { font-weight: 600; font-size: 14px; }
@@ -236,7 +236,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     color: var(--muted);
 }
 
-/* Células com possível quebra de linha da planilha */
 .cell-wrap {
     white-space: pre-wrap;
     word-break: break-word;
@@ -245,9 +244,20 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 .obs-cell {
     font-size: 12px;
     color: var(--muted);
-    white-space: pre-wrap;   /* preserva quebras de linha */
+    white-space: pre-wrap;
     word-break: break-word;
 }
+
+/* ─── PENDÊNCIA ─── */
+.pendencia-cell {
+    font-size: 12px;
+    color: var(--accent2);
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: 'DM Mono', monospace;
+}
+
+.pendencia-cell.vazio { color: var(--muted); }
 
 .resp-tag {
     display: inline-block;
@@ -464,7 +474,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 .btn-save:hover { background: var(--accent2); transform: translateY(-1px); }
 .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-/* spinner */
 .spinner {
     width: 14px; height: 14px;
     border: 2px solid rgba(255,255,255,0.3);
@@ -476,7 +485,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* toast */
 .toast {
     position: fixed;
     bottom: 28px;
@@ -506,7 +514,8 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     .modal-fields { grid-template-columns: 1fr; }
     th:nth-child(3), td:nth-child(3),
     th:nth-child(5), td:nth-child(5),
-    th:nth-child(6), td:nth-child(6) { display: none; }
+    th:nth-child(6), td:nth-child(6),
+    th:nth-child(7), td:nth-child(7) { display: none; }
 }
 </style>
 </head>
@@ -547,6 +556,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
                         <th>TSK</th>
                         <th>Responsável</th>
                         <th>Previsão</th>
+                        <th>Pendência</th>
                         <th>OBS</th>
                         <th></th>
                     </tr>
@@ -604,6 +614,10 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
                 <input type="text" id="fPrevisao" placeholder="Previsão de normalização">
             </div>
             <div class="field full">
+                <label>Pendência</label>
+                <textarea id="fPendencia" placeholder="Pendências..."></textarea>
+            </div>
+            <div class="field full">
                 <label>OBS</label>
                 <textarea id="fObs" placeholder="Observações..."></textarea>
             </div>
@@ -634,14 +648,12 @@ let dados = [];
 let chartsCreated = false;
 let editandoIndex = null;
 
-// ─── ESCAPE HTML + preserva quebras de linha ──────────────
 function escHtml(str) {
     return (str || '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
-    // Não escapamos \n aqui — o CSS white-space:pre-wrap cuida disso
 }
 
 // ─── CATEGORIAS ──────────────────────────────────────────
@@ -685,7 +697,7 @@ function carregarDados() {
         })
         .catch(() => {
             document.getElementById('tbody').innerHTML =
-                `<tr><td colspan="7" class="empty">⚠️ Aba "${paginaHoje}" não encontrada ou sem dados.</td></tr>`;
+                `<tr><td colspan="8" class="empty">⚠️ Aba "${paginaHoje}" não encontrada ou sem dados.</td></tr>`;
         });
 }
 
@@ -776,12 +788,12 @@ function renderTabela() {
 
         found = true;
 
-        // Escape seguro — preserva \n para o CSS white-space:pre-wrap
-        const prev    = escHtml(item["PREVISÃO"] || "—");
-        const obs     = escHtml(item["OBS"]      || "—");
-        const status  = escHtml(item["STATUS"]   || "—");
-        const tsk     = escHtml(item["TSK"]      || "—");
-        const respEsc = escHtml(resp);
+        const prev      = escHtml(item["PREVISÃO"]  || "—");
+        const obs       = escHtml(item["OBS"]        || "—");
+        const status    = escHtml(item["STATUS"]     || "—");
+        const tsk       = escHtml(item["TSK"]        || "—");
+        const respEsc   = escHtml(resp);
+        const pendencia = escHtml(item["PENDÊNCIA"]  || "");
 
         tbody.innerHTML += `
         <tr>
@@ -790,6 +802,7 @@ function renderTabela() {
             <td><span class="tsk-badge">${tsk}</span></td>
             <td>${resp ? `<span class="resp-tag">${respEsc}</span>` : "—"}</td>
             <td><span class="pill" style="--pc:${cat.color}" title="${prev}">${prev}</span></td>
+            <td><span class="pendencia-cell${pendencia ? '' : ' vazio'}">${pendencia || '—'}</span></td>
             <td><span class="obs-cell" title="${obs}">${obs}</span></td>
             <td>
                 <button class="btn-edit" onclick="abrirModal(${idx})">
@@ -804,7 +817,7 @@ function renderTabela() {
     });
 
     if (!found)
-        tbody.innerHTML = `<tr><td colspan="7" class="empty">Nenhum resultado encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="empty">Nenhum resultado encontrado.</td></tr>`;
 }
 
 document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', renderTabela));
@@ -814,12 +827,13 @@ function abrirModal(idx) {
     editandoIndex = idx;
     const item = dados[idx];
 
-    document.getElementById('modalSiteNome').textContent = item["SITE"] || "—";
-    document.getElementById('fStatus').value   = item["STATUS"]      || '';
-    document.getElementById('fTsk').value      = item["TSK"]         || '';
-    document.getElementById('fResp').value     = item["RESPONSÁVEL"] || '';
-    document.getElementById('fPrevisao').value = item["PREVISÃO"]    || '';
-    document.getElementById('fObs').value      = item["OBS"]         || '';
+    document.getElementById('modalSiteNome').textContent = item["SITE"]       || "—";
+    document.getElementById('fStatus').value             = item["STATUS"]     || '';
+    document.getElementById('fTsk').value                = item["TSK"]        || '';
+    document.getElementById('fResp').value               = item["RESPONSÁVEL"]|| '';
+    document.getElementById('fPrevisao').value           = item["PREVISÃO"]   || '';
+    document.getElementById('fPendencia').value          = item["PENDÊNCIA"]  || '';
+    document.getElementById('fObs').value                = item["OBS"]        || '';
 
     document.getElementById('modalOverlay').classList.add('open');
     document.getElementById('fStatus').focus();
@@ -851,6 +865,7 @@ async function salvar() {
     item["TSK"]         = document.getElementById('fTsk').value.trim();
     item["RESPONSÁVEL"] = document.getElementById('fResp').value.trim();
     item["PREVISÃO"]    = document.getElementById('fPrevisao').value.trim();
+    item["PENDÊNCIA"]   = document.getElementById('fPendencia').value.trim();
     item["OBS"]         = document.getElementById('fObs').value.trim();
 
     try {
