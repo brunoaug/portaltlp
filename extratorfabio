@@ -1,0 +1,1767 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSM FIXA — Extrator de Fila</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #f0f2f5;
+  --white: #ffffff;
+  --border: #e2e4e9;
+  --border2: #c8cbd4;
+  --accent: #0052cc;
+  --accent-h: #0747a6;
+  --accent-light: #deebff;
+  --green: #006644;
+  --green-light: #e3fcef;
+  --green-btn: #00875a;
+  --red: #bf2600;
+  --red-light: #ffebe6;
+  --orange: #ff8b00;
+  --orange-light: #fffae6;
+  --yellow: #ff991f;
+  --text: #172b4d;
+  --muted: #6b778c;
+  --subtle: #97a0af;
+  --tag: #dfe1e6;
+  --c-baixada: #0052cc;
+  --c-oeste: #00875a;
+  --c-grj: #6554c0;
+  --c-interior: #b85c00;
+  --c-es: #006b75;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; min-height: 100vh; }
+
+/* TOPBAR */
+.topbar {
+  background: #0747a6; padding: 0 24px; height: 52px;
+  display: flex; align-items: center; gap: 12px;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.topbar-logo { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; font-size: 15px; letter-spacing: 0.3px; }
+.dot { width: 8px; height: 8px; background: #4fc3f7; border-radius: 50%; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+.topbar-hint { font-size: 11px; color: rgba(255,255,255,0.55); font-family: 'IBM Plex Mono', monospace; }
+
+/* TAB NAV */
+.tab-nav { display: flex; gap: 2px; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 3px; }
+.tab-btn {
+  padding: 5px 14px; border-radius: 4px; border: none; cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,0.65); background: transparent; transition: all 0.15s;
+}
+.tab-btn.active { background: #fff; color: var(--accent); }
+.tab-btn:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.15); }
+
+/* LAYOUT */
+.layout { display: flex; min-height: calc(100vh - 52px); }
+
+/* SIDEBAR */
+.sidebar {
+  width: 310px; flex-shrink: 0; background: var(--white);
+  border-right: 1px solid var(--border); padding: 20px 16px;
+  display: flex; flex-direction: column; gap: 20px;
+  position: sticky; top: 52px; height: calc(100vh - 52px); overflow-y: auto;
+}
+.sec-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--subtle); margin-bottom: 10px;
+}
+
+/* UPLOAD SLOTS */
+.slots { display: flex; flex-direction: column; gap: 8px; }
+.slot {
+  border: 2px dashed var(--border2); border-radius: 8px;
+  padding: 10px 12px; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 10px; position: relative; user-select: none;
+}
+.slot:hover:not(.loaded) { border-color: var(--accent); background: var(--accent-light); }
+.slot.drag-over { border-color: var(--accent); background: var(--accent-light); transform: scale(1.01); }
+.slot.loaded { cursor: default; border-style: solid; }
+.slot.loaded.B { border-color: var(--c-baixada); background: #e8f0fe; }
+.slot.loaded.O { border-color: var(--c-oeste); background: var(--green-light); }
+.slot.loaded.G { border-color: var(--c-grj); background: #f0ecff; }
+.slot.loaded.I { border-color: var(--c-interior); background: #fff3e0; }
+.slot.loaded.E { border-color: var(--c-es); background: #e0f5f5; }
+.slot-ico { font-size: 18px; flex-shrink: 0; }
+.slot-body { flex: 1; min-width: 0; }
+.slot-title { font-size: 12px; font-weight: 700; }
+.slot-title.B { color: var(--c-baixada); }
+.slot-title.O { color: var(--c-oeste); }
+.slot-title.G { color: var(--c-grj); }
+.slot-title.I { color: var(--c-interior); }
+.slot-title.E { color: var(--c-es); }
+.slot-sub { font-size: 10px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slot-x {
+  flex-shrink: 0; background: none; border: none; color: var(--subtle);
+  cursor: pointer; font-size: 13px; padding: 3px 6px; border-radius: 4px;
+  transition: all 0.15s; line-height: 1;
+}
+.slot-x:hover { color: var(--red); background: rgba(191,38,0,0.08); }
+
+/* FILTROS */
+.filter-controls { display: flex; gap: 6px; margin-bottom: 8px; }
+.filter-ctrl-btn {
+  flex: 1; padding: 5px 8px; border-radius: 4px; border: 1px solid var(--border2);
+  background: var(--bg); font-size: 10px; font-weight: 600; cursor: pointer;
+  color: var(--muted); transition: all 0.15s; font-family: 'IBM Plex Sans', sans-serif;
+}
+.filter-ctrl-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+.filter-list { display: flex; flex-direction: column; gap: 4px; }
+.filter-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  border-radius: 6px; cursor: pointer; transition: background 0.15s; user-select: none;
+  border: 1px solid transparent;
+}
+.filter-item:hover { background: var(--bg); }
+.filter-item.on { background: var(--accent-light); border-color: #b3d0ff; }
+.filter-item input[type=checkbox] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
+.filter-name { font-size: 11px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; flex: 1; line-height: 1.4; }
+.filter-badge { font-size: 10px; background: var(--tag); color: var(--muted); border-radius: 10px; padding: 2px 8px; font-family: 'IBM Plex Mono', monospace; flex-shrink: 0; }
+.filter-item.on .filter-badge { background: var(--accent); color: #fff; }
+
+/* EXTRA FILTERS */
+.extra-filters { display: flex; flex-direction: column; gap: 8px; }
+.extra-filter-row { display: flex; flex-direction: column; gap: 4px; }
+.extra-filter-label { font-size: 10px; font-weight: 700; color: var(--subtle); text-transform: uppercase; letter-spacing: 0.5px; }
+.extra-filter-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip {
+  padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 600;
+  border: 1px solid var(--border2); background: var(--bg); color: var(--muted);
+  cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Mono', monospace;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* BTNS */
+.btn-row { display: flex; flex-direction: column; gap: 8px; }
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px 16px; border-radius: 5px; font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+  transition: all 0.15s; width: 100%;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-h); }
+.btn-primary:disabled { opacity: 0.38; cursor: not-allowed; }
+.btn-export { background: var(--green-btn); color: #fff; }
+.btn-export:hover:not(:disabled) { background: var(--green); }
+.btn-export:disabled { opacity: 0.38; cursor: not-allowed; }
+.btn-inverse { background: var(--orange); color: #fff; }
+.btn-inverse:hover:not(:disabled) { background: #e07b00; }
+.btn-inverse:disabled { opacity: 0.38; cursor: not-allowed; }
+
+/* MAIN */
+.main { flex: 1; padding: 20px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.tab-panel { display: none; flex-direction: column; gap: 16px; flex: 1; }
+.tab-panel.active { display: flex; }
+
+/* STATS */
+.stats { display: flex; gap: 12px; flex-wrap: wrap; }
+.stat {
+  background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 18px; min-width: 120px;
+}
+.stat-val { font-size: 24px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; color: var(--accent); line-height: 1; }
+.stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+.stat.g .stat-val { color: var(--green-btn); }
+.stat.o .stat-val { color: var(--orange); }
+.stat.r .stat-val { color: var(--red); }
+
+/* SEARCH BAR */
+.search-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--white); border: 1px solid var(--border); border-radius: 6px;
+  padding: 8px 12px;
+}
+.search-bar input {
+  flex: 1; border: none; outline: none; font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px; color: var(--text); background: transparent;
+}
+.search-bar input::placeholder { color: var(--subtle); }
+.search-icon { color: var(--subtle); font-size: 14px; }
+.search-clear {
+  background: none; border: none; color: var(--subtle); cursor: pointer;
+  font-size: 13px; padding: 2px 5px; border-radius: 3px; transition: all 0.15s;
+}
+.search-clear:hover { color: var(--red); }
+
+/* TABLE CARD */
+.tcard { background: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; flex: 1; display: flex; flex-direction: column; }
+.ttoolbar { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #fafbfc; }
+.ttitle { font-weight: 700; font-size: 13px; }
+.rows-badge { background: var(--accent-light); color: var(--accent); border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
+.inverse-badge { background: var(--orange-light); color: var(--orange); border-radius: 20px; padding: 2px 10px; font-size: 10px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; display: none; }
+.inverse-badge.show { display: inline-block; }
+.area-pill { padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+.area-pill.B { background: #e8f0fe; color: var(--c-baixada); }
+.area-pill.O { background: var(--green-light); color: var(--c-oeste); }
+.area-pill.G { background: #f0ecff; color: var(--c-grj); }
+.area-pill.I { background: #fff3e0; color: var(--c-interior); }
+.area-pill.E { background: #e0f5f5; color: var(--c-es); }
+
+.tscroll { overflow: auto; flex: 1; max-height: calc(100vh - 320px); }
+table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+thead { position: sticky; top: 0; z-index: 5; }
+th {
+  background: #f4f5f7; padding: 8px 12px; text-align: left; font-size: 10px;
+  font-weight: 700; letter-spacing: 0.5px; color: var(--muted); border-bottom: 2px solid var(--border);
+  text-transform: uppercase; cursor: pointer; user-select: none; white-space: nowrap;
+}
+th:hover { background: #eaecf0; color: var(--text); }
+th.key-col { color: var(--accent); background: var(--accent-light); }
+th .sort-arrow { margin-left: 4px; opacity: 0.4; }
+th.sort-asc .sort-arrow, th.sort-desc .sort-arrow { opacity: 1; color: var(--accent); }
+td { padding: 7px 12px; border-bottom: 1px solid var(--border); color: var(--text); max-width: 220px; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8f9fa; }
+tr.sla-vencido td { background: #fff0ed; }
+tr.sla-vencido:hover td { background: #ffe4de; }
+tr.sla-alerta td { background: #fffae6; }
+tr.sla-alerta:hover td { background: #fff3cc; }
+.area-cell { font-weight: 700; font-size: 10px; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 3px; display: inline-block; text-transform: uppercase; }
+.area-cell.B { background: #e8f0fe; color: var(--c-baixada); }
+.area-cell.O { background: var(--green-light); color: var(--c-oeste); }
+.area-cell.G { background: #f0ecff; color: var(--c-grj); }
+.area-cell.I { background: #fff3e0; color: var(--c-interior); }
+.area-cell.E { background: #e0f5f5; color: var(--c-es); }
+.regra-cell { font-family: 'IBM Plex Mono', monospace; font-size: 10px; background: var(--accent-light); color: var(--accent); padding: 2px 7px; border-radius: 3px; display: inline-block; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.num-cell { color: var(--subtle); font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+.sla-tag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; display: inline-block; }
+.sla-tag.vencido { background: var(--red-light); color: var(--red); }
+.sla-tag.alerta  { background: var(--orange-light); color: var(--orange); }
+.sla-tag.ok      { background: var(--green-light); color: var(--green); }
+
+/* EMPTY STATE */
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 70px 40px; text-align: center; flex: 1; }
+.empty-ico { font-size: 40px; margin-bottom: 16px; }
+.empty h3 { font-size: 16px; margin-bottom: 8px; }
+.empty p { font-size: 12px; color: var(--muted); line-height: 1.8; }
+.empty .hint-tags { display: flex; gap: 6px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+.hint-tag { background: var(--accent-light); color: var(--accent); border-radius: 4px; padding: 4px 10px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+
+/* PROGRESS */
+.progress-wrap { padding: 12px 16px; background: var(--orange-light); border-bottom: 1px solid #ffe0a0; display: none; align-items: center; gap: 10px; }
+.progress-wrap.show { display: flex; }
+.progress-bar-bg { flex: 1; height: 6px; background: #ffe0a0; border-radius: 3px; overflow: hidden; }
+.progress-bar { height: 100%; background: var(--orange); border-radius: 3px; transition: width 0.2s; }
+.progress-txt { font-size: 11px; color: var(--orange); font-weight: 600; white-space: nowrap; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; border-radius: 6px;
+  padding: 12px 20px; font-size: 13px; font-weight: 500;
+  transform: translateY(80px); opacity: 0; transition: all 0.25s; z-index: 9999;
+  max-width: 360px; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.ok  { background: var(--green-btn); color: #fff; }
+.toast.err { background: var(--red); color: #fff; }
+.toast.inf { background: var(--text); color: #fff; }
+
+/* SITES FORA */
+.sf-layout { display: flex; gap: 16px; flex: 1; min-height: 0; }
+.sf-left { width: 360px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; }
+.sf-right { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+
+.sf-paste-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+  padding: 14px; display: flex; flex-direction: column; gap: 10px;
+}
+.sf-paste-card textarea {
+  width: 100%; height: 160px; border: 2px dashed var(--border2); border-radius: 6px;
+  padding: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  color: var(--text); resize: vertical; outline: none; transition: border-color 0.2s;
+  background: var(--bg);
+}
+.sf-paste-card textarea:focus { border-color: var(--accent); background: var(--white); }
+.sf-paste-card textarea::placeholder { color: var(--subtle); }
+
+.sf-col-picker { display: flex; flex-direction: column; gap: 6px; }
+.sf-col-label { font-size: 10px; font-weight: 700; color: var(--subtle); text-transform: uppercase; letter-spacing: 0.5px; }
+.sf-col-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.sf-col-chip {
+  padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 600;
+  border: 1px solid var(--border2); background: var(--bg); color: var(--muted);
+  cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Mono', monospace;
+}
+.sf-col-chip:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
+.sf-col-chip.on { background: var(--red); border-color: var(--red); color: #fff; }
+
+.sf-xlsx-col-picker { display: flex; flex-direction: column; gap: 6px; }
+.sf-xlsx-select {
+  width: 100%; padding: 7px 10px; border: 1px solid var(--border2); border-radius: 5px;
+  font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; color: var(--text);
+  background: var(--white); outline: none; cursor: pointer;
+}
+.sf-xlsx-select:focus { border-color: var(--accent); }
+
+.sf-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+.sf-stat {
+  background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 16px; min-width: 100px; flex: 1;
+}
+.sf-stat-val { font-size: 22px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; line-height: 1; }
+.sf-stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+.sf-stat.fora .sf-stat-val { color: var(--red); }
+.sf-stat.dentro .sf-stat-val { color: var(--green-btn); }
+.sf-stat.total .sf-stat-val { color: var(--muted); }
+
+tr.site-fora td { background: #fff0ed !important; }
+tr.site-fora:hover td { background: #ffe4de !important; }
+.site-fora-tag { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; display: inline-block; background: var(--red-light); color: var(--red); }
+.site-dentro-tag { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; display: inline-block; background: var(--green-light); color: var(--green); }
+.site-ok-tag { font-size: 10px; color: var(--subtle); padding: 2px 4px; }
+
+.sf-preview-table { font-size: 11px; }
+.sf-preview-table th { font-size: 9px; }
+.sf-copy-btn {
+  background: none; border: 1px solid var(--border2); border-radius: 4px;
+  color: var(--muted); cursor: pointer; font-size: 12px; padding: 2px 7px;
+  transition: all 0.15s; line-height: 1; font-family: monospace;
+}
+.sf-copy-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+/* CHARTS */
+.charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+.chart-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.chart-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+.chart-wrap { position: relative; height: 220px; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+/* OBS DROPDOWN */
+.obs-btn {
+  padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border2);
+  background: var(--bg); color: var(--muted); font-size: 10px; font-weight: 600;
+  cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s;
+  white-space: nowrap;
+}
+.obs-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.obs-btn.has-obs { border-color: var(--green-btn); color: var(--green-btn); background: var(--green-light); }
+.obs-btn.obs-normalizado { border-color: var(--green); color: var(--green); background: #b7f5d4; font-weight: 700; }
+
+.obs-dropdown {
+  position: fixed; z-index: 9000;
+  background: #fff; border: 1px solid var(--border2); border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 6px; min-width: 200px;
+  display: none;
+}
+.obs-dropdown.open { display: block; }
+.obs-option {
+  padding: 7px 12px; border-radius: 5px; cursor: pointer; font-size: 12px;
+  font-weight: 500; transition: background 0.12s; white-space: nowrap;
+}
+.obs-option:hover { background: var(--accent-light); color: var(--accent); }
+.obs-option.selected { background: var(--accent-light); color: var(--accent); font-weight: 700; }
+.obs-option.opt-normalizado { color: var(--green); }
+.obs-option.opt-normalizado:hover { background: var(--green-light); }
+.obs-option.opt-normalizado.selected { background: #b7f5d4; color: var(--green); }
+.obs-option.opt-limpar { color: var(--subtle); font-style: italic; }
+.obs-option.opt-limpar:hover { background: var(--red-light); color: var(--red); }
+
+tr.row-normalizado td { background: #d4f8e8 !important; }
+tr.row-normalizado:hover td { background: #b7f5d4 !important; }
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="dot"></div>
+    CSM FIXA · Extrator de Fila
+  </div>
+  <div class="topbar-right">
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('tabela')">📋 Tabela</button>
+      <button class="tab-btn" onclick="switchTab('graficos')">📊 Gráficos</button>
+      <button class="tab-btn" id="tabSitesFora" onclick="switchTab('sitesfora')">🔴 Sites Fora</button>
+    </div>
+    <span class="topbar-hint">BAIXADA · OESTE · GRANDE RJ · INTERIOR · ES</span>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div>
+      <div class="sec-label">📂 Arquivos por área</div>
+      <div class="slots">
+        <div class="slot" id="slot-B" onclick="triggerUpload('B')"
+          ondragover="handleDragOver(event,'B')" ondragleave="handleDragLeave(event,'B')" ondrop="handleDrop(event,'B')">
+          <span class="slot-ico">📁</span>
+          <div class="slot-body">
+            <div class="slot-title B">BAIXADA</div>
+            <div class="slot-sub" id="sub-B">Clique ou arraste o arquivo</div>
+          </div>
+        </div>
+        <div class="slot" id="slot-O" onclick="triggerUpload('O')"
+          ondragover="handleDragOver(event,'O')" ondragleave="handleDragLeave(event,'O')" ondrop="handleDrop(event,'O')">
+          <span class="slot-ico">📁</span>
+          <div class="slot-body">
+            <div class="slot-title O">OESTE</div>
+            <div class="slot-sub" id="sub-O">Clique ou arraste o arquivo</div>
+          </div>
+        </div>
+        <div class="slot" id="slot-G" onclick="triggerUpload('G')"
+          ondragover="handleDragOver(event,'G')" ondragleave="handleDragLeave(event,'G')" ondrop="handleDrop(event,'G')">
+          <span class="slot-ico">📁</span>
+          <div class="slot-body">
+            <div class="slot-title G">GRANDE RJ</div>
+            <div class="slot-sub" id="sub-G">Clique ou arraste o arquivo</div>
+          </div>
+        </div>
+        <div class="slot" id="slot-I" onclick="triggerUpload('I')"
+          ondragover="handleDragOver(event,'I')" ondragleave="handleDragLeave(event,'I')" ondrop="handleDrop(event,'I')">
+          <span class="slot-ico">📁</span>
+          <div class="slot-body">
+            <div class="slot-title I">INTERIOR</div>
+            <div class="slot-sub" id="sub-I">Clique ou arraste o arquivo</div>
+          </div>
+        </div>
+        <div class="slot" id="slot-E" onclick="triggerUpload('E')"
+          ondragover="handleDragOver(event,'E')" ondragleave="handleDragLeave(event,'E')" ondrop="handleDrop(event,'E')">
+          <span class="slot-ico">📁</span>
+          <div class="slot-body">
+            <div class="slot-title E">ESPÍRITO SANTO</div>
+            <div class="slot-sub" id="sub-E">Clique ou arraste o arquivo</div>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="fi-B" accept=".xlsx,.xls" style="display:none" onchange="handleFile(event,'B')">
+      <input type="file" id="fi-O" accept=".xlsx,.xls" style="display:none" onchange="handleFile(event,'O')">
+      <input type="file" id="fi-G" accept=".xlsx,.xls" style="display:none" onchange="handleFile(event,'G')">
+      <input type="file" id="fi-I" accept=".xlsx,.xls" style="display:none" onchange="handleFile(event,'I')">
+      <input type="file" id="fi-E" accept=".xlsx,.xls" style="display:none" onchange="handleFile(event,'E')">
+    </div>
+
+    <div>
+      <div class="sec-label">✅ Filtros — REGRA USUÁRIO CRIADOR</div>
+      <div class="filter-controls">
+        <button class="filter-ctrl-btn" onclick="selectAllFilas()">Marcar tudo</button>
+        <button class="filter-ctrl-btn" onclick="clearAllFilas()">Desmarcar tudo</button>
+      </div>
+      <div class="filter-list" id="filterList">
+        <div style="color:var(--muted);font-size:11px;line-height:1.6;padding:4px">
+          Carregue um arquivo para ver os filtros disponíveis.
+        </div>
+      </div>
+    </div>
+
+    <div class="extra-filters" id="extraFilters" style="display:none">
+      <div class="extra-filter-row">
+        <div class="extra-filter-label">Estado</div>
+        <div class="extra-filter-chips" id="chipsEstado"></div>
+      </div>
+      <div class="extra-filter-row">
+        <div class="extra-filter-label">Prioridade</div>
+        <div class="extra-filter-chips" id="chipsPrioridade"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-export"   id="btnExport"   onclick="exportXlsx(false)" disabled>⬇ Exportar selecionados</button>
+      <button class="btn btn-inverse"  id="btnInverse"  onclick="exportXlsx(true)"  disabled>⬆ Exportar não selecionados</button>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="stats" id="statsRow" style="display:none">
+      <div class="stat">
+        <div class="stat-val" id="sTot">0</div>
+        <div class="stat-lbl">Total carregado</div>
+      </div>
+      <div class="stat g">
+        <div class="stat-val" id="sFilt">0</div>
+        <div class="stat-lbl">Após filtro</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="sAreas">0</div>
+        <div class="stat-lbl">Áreas carregadas</div>
+      </div>
+      <div class="stat o">
+        <div class="stat-val" id="sFilas">0</div>
+        <div class="stat-lbl">Filas ativas</div>
+      </div>
+      <div class="stat r">
+        <div class="stat-val" id="sSlaVencido">0</div>
+        <div class="stat-lbl">SLA vencido</div>
+      </div>
+    </div>
+
+
+    <!-- DEBUG PANEL -->
+    <div id="debugPanel" style="display:none;background:#1e1e2e;color:#cdd6f4;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:14px 16px;border-radius:8px;border:1px solid #444;white-space:pre-wrap;max-height:300px;overflow:auto;margin-bottom:8px"></div>
+    <button onclick="runDebug()" style="margin-bottom:12px;padding:6px 14px;background:#ff8b00;color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:'IBM Plex Sans',sans-serif">🐛 Debug: ver o que está carregado</button>
+    <!-- TAB: TABELA -->
+    <div class="tab-panel active" id="panel-tabela">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar em todos os campos…" oninput="onSearch()">
+        <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none">✕</button>
+      </div>
+
+      <div class="tcard">
+        <div class="ttoolbar">
+          <span class="ttitle">Resultados</span>
+          <span class="rows-badge" id="rowsBadge">—</span>
+          <span class="inverse-badge" id="inverseBadge">INVERSO</span>
+          <div id="areaBadges" style="display:flex;gap:6px;flex-wrap:wrap;margin-left:4px"></div>
+        </div>
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-bar-bg"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+          <span class="progress-txt" id="progressTxt">Lendo arquivo…</span>
+        </div>
+        <div class="tscroll" id="tableContainer">
+          <div class="empty">
+            <div class="empty-ico">📂</div>
+            <h3>Nenhum arquivo carregado</h3>
+            <p>Carregue os arquivos de cada área na barra lateral.<br>Os filtros de <strong>REGRA USUÁRIO CRIADOR</strong> serão detectados automaticamente.<br><br>As 3 filas padrão são pré-selecionadas:</p>
+            <div class="hint-tags">
+              <span class="hint-tag">ISOC MONITORACAO TRANSPORTE DADOS</span>
+              <span class="hint-tag">ISOC MONITORACAO TRANSPORTE TX</span>
+              <span class="hint-tag">ISOC SERVICOS FIXO TRANSMISSAO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: GRÁFICOS -->
+    <div class="tab-panel" id="panel-graficos">
+      <div class="charts-grid" id="chartsGrid">
+        <div class="chart-card">
+          <div class="chart-title">OS por Fila</div>
+          <div class="chart-wrap"><canvas id="chartFila"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">OS por Área</div>
+          <div class="chart-wrap"><canvas id="chartArea"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">OS por Estado</div>
+          <div class="chart-wrap"><canvas id="chartEstado"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">OS por Prioridade</div>
+          <div class="chart-wrap"><canvas id="chartPrioridade"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: SITES FORA -->
+    <div class="tab-panel" id="panel-sitesfora">
+
+      <div class="sf-stats" id="sfStats" style="display:none">
+        <div class="sf-stat total">
+          <div class="sf-stat-val" id="sfTotal">0</div>
+          <div class="sf-stat-lbl">Sites colados</div>
+        </div>
+        <div class="sf-stat fora">
+          <div class="sf-stat-val" id="sfFora">0</div>
+          <div class="sf-stat-lbl">Com OS na fila</div>
+        </div>
+        <div class="sf-stat dentro">
+          <div class="sf-stat-val" id="sfDentro">0</div>
+          <div class="sf-stat-lbl">Sem OS na fila</div>
+        </div>
+      </div>
+
+      <div class="sf-layout">
+
+        <!-- Esquerda: configuração -->
+        <div class="sf-left">
+          <div class="sf-paste-card">
+            <div class="sec-label" style="margin-bottom:0">📋 Cole os dados de sites fora</div>
+            <textarea id="sfPasteArea" placeholder="Cole aqui o conteúdo copiado do sistema (CTRL+V)&#10;&#10;Exemplo:&#10;NE-ID    Endereço    Status&#10;MIPE07   Rua X, 123  Fora&#10;TRJN01   Av Y, 456   Fora&#10;SR-CBFR04 Rua Z, 789 Fora" oninput="parsePaste()"></textarea>
+
+            <div class="sf-col-picker" id="sfColPicker" style="display:none">
+              <div class="sf-col-label">Qual coluna tem os IDs de site?</div>
+              <div class="sf-col-chips" id="sfColChips"></div>
+            </div>
+          </div>
+
+          <div class="sf-paste-card" id="sfXlsxConfig" style="display:none">
+            <div class="sf-xlsx-col-picker">
+              <div class="sf-col-label">Coluna do Excel para comparar</div>
+              <select class="sf-xlsx-select" id="sfXlsxCol" onchange="runComparison()">
+                <option value="">— carregue um arquivo Excel primeiro —</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" id="sfBtnCompare" onclick="runComparison()" style="margin-top:4px">🔍 Comparar agora</button>
+            <button class="btn btn-export" id="sfBtnExport" onclick="exportSitesFora()" disabled style="margin-top:0">⬇ Exportar resultado</button>
+          </div>
+        </div>
+
+        <!-- Direita: resultado -->
+        <div class="sf-right">
+          <div class="tcard" style="flex:1">
+            <div class="ttoolbar">
+              <span class="ttitle">OS com site fora</span>
+              <span class="rows-badge" id="sfResultBadge">—</span>
+            </div>
+            <div class="tscroll" id="sfTableContainer">
+              <div class="empty">
+                <div class="empty-ico">📡</div>
+                <h3>Nenhuma comparação feita</h3>
+                <p>Cole os dados de sites fora ao lado,<br>escolha a coluna dos IDs e clique em <strong>Comparar</strong>.<br><br>As OS com site fora serão destacadas em vermelho.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  
+<!-- Modal escolha de cor -->
+<div id="colorModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:28px 32px;width:380px;box-shadow:0 8px 32px rgba(0,0,0,0.25);font-family:'IBM Plex Sans',sans-serif;">
+    <div style="font-size:15px;font-weight:700;color:#172b4d;margin-bottom:6px;">🎨 Cor do relatório</div>
+    <div style="font-size:12px;color:#6b778c;margin-bottom:20px;">Escolha a cor base das abas do Excel exportado.</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;" id="colorPalette"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <label style="font-size:11px;color:#6b778c;font-weight:600;">COR PERSONALIZADA</label>
+      <input type="color" id="customColorPick" value="#1565C0" style="width:40px;height:32px;border:1px solid #e2e4e9;border-radius:5px;cursor:pointer;padding:2px;">
+      <span id="customColorHex" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#172b4d;">#1565C0</span>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="confirmExport()" style="flex:1;padding:10px;background:#0052cc;color:#fff;border:none;border-radius:5px;font-weight:700;font-size:13px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">⬇ Exportar</button>
+      <button onclick="document.getElementById('colorModal').style.display='none'" style="padding:10px 16px;background:#f0f2f5;color:#172b4d;border:none;border-radius:5px;font-weight:600;font-size:13px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">Cancelar</button>
+    </div>
+  </div>
+</div>
+</main>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="obs-dropdown" id="obsDropdownMenu"></div>
+
+<script>
+// ─── Configuração ──────────────────────────────────────────────
+const REGRA_COL  = 'Regra usuário criador';
+const ESTADO_COL = 'Estado';
+const PRIO_COL   = 'Prioridade';
+const SLA_COLS   = ['Fim SLA', 'ETA'];
+
+const AREA_LABELS   = { B: 'BAIXADA', O: 'OESTE', G: 'GRANDE RJ', I: 'INTERIOR', E: 'ESPÍRITO SANTO' };
+const ALL_AREAS     = ['B','O','G','I','E'];
+const EXPORT_COLORS = { B: '0052CC', O: '006644', G: '6554C0', I: 'B85C00', E: '006B75' };
+const SHEET_NAMES   = { B: 'BAIXADA', O: 'OESTE', G: 'GRANDE RJ', I: 'INTERIOR', E: 'ESPIRITO SANTO' };
+
+const DISPLAY_COLS = [
+  'FILA EM QUE ESTÁ','TSK','Estado','Fim SLA',
+  'Bairro','BSC/RNC','CM','END_ID','NE ID','Título do Alarme','P',
+];
+const TSK_SOURCE_COL = 'Número de Ordem';
+
+// ─── Estado ────────────────────────────────────────────────────
+const areaData      = { B: null, O: null, G: null, I: null, E: null };
+let allFilas        = new Map();   // nome_original → { total, norm }
+let selectedNorms   = new Set();   // nomes NORMALIZADOS selecionados
+let userDeselNorms  = new Set();   // nomes NORMALIZADOS explicitamente desmarcados
+let selectedEstados = new Set();
+let selectedPrios   = new Set();
+let filteredRows    = [];
+let searchQuery     = '';
+let sortCol         = null;
+let sortDir         = 1;
+let charts          = {};
+
+// ─── OBS Map ───────────────────────────────────────────────────
+// Chave: TSK da OS. Valor: string da opção escolhida ou ''
+const obsMap = {};
+
+const OBS_OPTIONS = [
+  'Falta de Sobressalente',
+  'Associação',
+  'Sem Acesso',
+  'Critica de Encerramento',
+  'Em acionamento',
+  'Normalizado',
+];
+
+let _obsDropdownOpen = null; // TSK atualmente com dropdown aberto
+
+function openObsDropdown(tsk, btn) {
+  try {
+    closeObsDropdown();
+    const menu = document.getElementById('obsDropdownMenu');
+    const current = obsMap[tsk] || '';
+    let html = '';
+    for (const opt of OBS_OPTIONS) {
+      const selected = current === opt ? ' selected' : '';
+      const extra = opt === 'Normalizado' ? ' opt-normalizado' : '';
+      html += '<div class="obs-option'+extra+selected+'" data-tsk="'+tsk+'" data-val="'+opt+'">'+opt+'</div>';
+    }
+    if (current) {
+      html += '<div class="obs-option opt-limpar" data-tsk="'+tsk+'" data-val="">✕ Limpar</div>';
+    }
+    menu.innerHTML = html;
+    menu.querySelectorAll('.obs-option').forEach(el=>{
+      el.onclick = function(ev){
+        ev.stopPropagation();
+        selectObs(this.dataset.tsk, this.dataset.val);
+      };
+    });
+    const rect = btn.getBoundingClientRect();
+    menu.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+    menu.style.left = (rect.left + window.scrollX) + 'px';
+    menu.style.display = 'block';
+    menu.classList.add('open');
+    _obsDropdownOpen = tsk;
+  } catch(err) { console.error(err); }
+}
+
+function closeObsDropdown() {
+  const m = document.getElementById('obsDropdownMenu');
+  if (!m) return;
+  m.classList.remove('open');
+  m.style.display='none';
+  _obsDropdownOpen = null;
+}
+
+function selectObs(tsk, value) {
+  if (value === '') { delete obsMap[tsk]; }
+  else              { obsMap[tsk] = value; }
+  closeObsDropdown();
+  renderTable(); // re-renderiza para atualizar botão e cor da linha
+}
+
+
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('.obs-open-btn');
+  if (btn){
+    e.stopPropagation();
+    openObsDropdown(btn.dataset.tsk, btn);
+  }
+});
+
+// Fecha dropdown ao clicar fora
+document.addEventListener('click', function(e) {
+  if (!e.target.classList.contains('obs-btn') &&
+      !document.getElementById('obsDropdownMenu').contains(e.target)) {
+    closeObsDropdown();
+  }
+}, true);
+
+// Sites Fora
+let sfParsedRows  = [];
+let sfHeaders     = [];
+let sfSelectedCol = null;
+let sfSiteIds     = new Set();   // IDs normalizados do paste
+let sfResults     = [];
+
+const SITE_ID_REGEX = /^[A-Z]{2,}[-]?[A-Z0-9]{2,}[0-9]+$/i;
+
+// ─── Normalização ──────────────────────────────────────────────
+// CHAVE: toda comparação de fila usa normFila() dos dois lados
+function normFila(v) {
+  return String(v).trim().toUpperCase().replace(/\s+/g, ' ');
+}
+function normId(v) {
+  return String(v).trim().toUpperCase().replace(/\s+/g, '');
+}
+
+// ─── Tabs ──────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('panel-' + tab);
+  if (panel) panel.classList.add('active');
+  const btn = document.querySelector('.tab-btn[onclick="switchTab(\'' + tab + '\')"]');
+  if (btn) btn.classList.add('active');
+  if (tab === 'graficos') renderCharts();
+  if (tab === 'sitesfora') buildXlsxColSelect();
+}
+
+// ─── Drag & Drop ───────────────────────────────────────────────
+function handleDragOver(e, area) {
+  if (areaData[area]) return;
+  e.preventDefault();
+  document.getElementById('slot-' + area).classList.add('drag-over');
+}
+function handleDragLeave(e, area) {
+  document.getElementById('slot-' + area).classList.remove('drag-over');
+}
+function handleDrop(e, area) {
+  e.preventDefault();
+  document.getElementById('slot-' + area).classList.remove('drag-over');
+  if (areaData[area]) return;
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file, area);
+}
+
+// ─── Upload ────────────────────────────────────────────────────
+function triggerUpload(area) {
+  if (areaData[area]) return;
+  document.getElementById('fi-' + area).click();
+}
+function handleFile(ev, area) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  ev.target.value = '';
+  processFile(file, area);
+}
+
+function normalizeRow(row) {
+  const out = { ...row };
+  if (!out['TSK'] || String(out['TSK']).trim() === '') {
+    const src = String(out[TSK_SOURCE_COL] || '').trim();
+    out['TSK'] = src ? (src.toUpperCase().startsWith('TSK') ? src : 'TSK' + src) : '';
+  }
+  if (!out['FILA EM QUE ESTÁ']) out['FILA EM QUE ESTÁ'] = out[REGRA_COL] || '';
+  if (!out['P'] || String(out['P']).trim() === '') {
+    const p = String(out[PRIO_COL] || '').trim();
+    const m = p.match(/P\d/i);
+    out['P'] = m ? m[0].toUpperCase() : p;
+  }
+  return out;
+}
+
+function processFile(file, area) {
+  showProgress(true, 'Lendo arquivo…', 20);
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      showProgress(true, 'Processando planilha…', 55);
+      const wb = XLSX.read(e.target.result, { type: 'binary', cellDates: true });
+      let rows = null, foundSheet = null;
+      for (const sn of wb.SheetNames) {
+        const c = XLSX.utils.sheet_to_json(wb.Sheets[sn], { defval: '' });
+        if (c.length && c[0].hasOwnProperty(REGRA_COL)) { rows = c; foundSheet = sn; break; }
+      }
+      if (!rows) {
+        foundSheet = wb.SheetNames[0];
+        rows = XLSX.utils.sheet_to_json(wb.Sheets[foundSheet], { defval: '' });
+      }
+      rows = rows.map(normalizeRow);
+      areaData[area] = { rows, fileName: file.name, sheetName: foundSheet };
+
+      const slot = document.getElementById('slot-' + area);
+      slot.className = `slot loaded ${area}`;
+      slot.onclick = null;
+      document.getElementById('sub-' + area).textContent = `${file.name}  ·  ${rows.length} linhas`;
+      if (!slot.querySelector('.slot-x')) {
+        const btn = document.createElement('button');
+        btn.className = 'slot-x'; btn.innerHTML = '✕'; btn.title = 'Remover arquivo';
+        btn.onclick = ev => { ev.stopPropagation(); removeArea(area); };
+        slot.appendChild(btn);
+      }
+      showProgress(true, 'Construindo filtros…', 85);
+      userDeselNorms.clear(); // reset ao carregar novo arquivo
+      rebuildFilas();
+      showProgress(false);
+      toast(`✅ ${AREA_LABELS[area]}: ${rows.length} linhas (aba "${foundSheet}")`, 'ok');
+    } catch(err) {
+      showProgress(false);
+      toast(`❌ Erro ao ler arquivo da área ${AREA_LABELS[area]}: ${err.message}`, 'err');
+    }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function removeArea(area) {
+  areaData[area] = null;
+  const slot = document.getElementById('slot-' + area);
+  slot.className = 'slot';
+  slot.onclick = () => triggerUpload(area);
+  slot.ondragover  = e => handleDragOver(e, area);
+  slot.ondragleave = e => handleDragLeave(e, area);
+  slot.ondrop      = e => handleDrop(e, area);
+  document.getElementById('sub-' + area).textContent = 'Clique ou arraste o arquivo';
+  const x = slot.querySelector('.slot-x');
+  if (x) x.remove();
+  rebuildFilas();
+  toast(`🗑️ ${AREA_LABELS[area]} removida`, 'inf');
+}
+
+// ─── Filas ─────────────────────────────────────────────────────
+function rebuildFilas() {
+  allFilas = new Map();  // chave = nome original, valor = { norm, total }
+  ALL_AREAS.forEach(area => {
+    if (!areaData[area]) return;
+    areaData[area].rows.forEach(row => {
+      const orig = String(row[REGRA_COL] || '').trim();
+      if (!orig) return;
+      const norm = normFila(orig);
+      if (!allFilas.has(orig)) allFilas.set(orig, { norm, total: 0 });
+      allFilas.get(orig).total++;
+    });
+  });
+
+  // Reconstrói selectedNorms:
+  // Tudo marcado por padrão. Só fica desmarcado o que o usuário desmarcou explicitamente.
+  const existingNorms = new Set([...allFilas.values()].map(v => v.norm));
+  const valid = new Set();
+  for (const n of existingNorms) {
+    if (!userDeselNorms.has(n)) valid.add(n);
+  }
+  selectedNorms = valid;
+
+  rebuildExtraFilters();
+  const anyLoaded = ALL_AREAS.some(a => areaData[a]);
+  document.getElementById('statsRow').style.display    = anyLoaded ? 'flex' : 'none';
+  document.getElementById('extraFilters').style.display = anyLoaded ? 'flex' : 'none';
+  renderFilterList();
+  applyAndRender();
+  buildXlsxColSelect();
+}
+
+function rebuildExtraFilters() {
+  const estados = new Set(), prios = new Set();
+  ALL_AREAS.forEach(area => {
+    if (!areaData[area]) return;
+    areaData[area].rows.forEach(row => {
+      const e = String(row[ESTADO_COL] || '').trim();
+      const p = String(row[PRIO_COL]   || '').trim();
+      if (e) estados.add(e);
+      if (p) prios.add(p);
+    });
+  });
+  for (const e of selectedEstados) if (!estados.has(e)) selectedEstados.delete(e);
+  for (const p of selectedPrios)   if (!prios.has(p))   selectedPrios.delete(p);
+  renderChips('chipsEstado',     [...estados].sort(), selectedEstados, 'estado');
+  renderChips('chipsPrioridade', [...prios].sort(),   selectedPrios,   'prio');
+}
+
+function renderChips(id, values, selected, type) {
+  const el = document.getElementById(id);
+  if (!values.length) { el.innerHTML = '<span style="font-size:10px;color:var(--subtle)">—</span>'; return; }
+  el.innerHTML = values.map(v => {
+    const on = selected.has(v);
+    return `<span class="chip ${on?'on':''}" data-type="${type}" data-val="${esc(v)}" onclick="toggleChip(this)">${esc(v)}</span>`;
+  }).join('');
+}
+
+function toggleChip(el) {
+  const set = el.dataset.type === 'estado' ? selectedEstados : selectedPrios;
+  const val = el.dataset.val;
+  if (set.has(val)) { set.delete(val); el.classList.remove('on'); }
+  else              { set.add(val);    el.classList.add('on'); }
+  applyAndRender();
+}
+
+function renderFilterList() {
+  const container = document.getElementById('filterList');
+  if (!allFilas.size) {
+    container.innerHTML = '<div style="color:var(--muted);font-size:11px;line-height:1.6;padding:4px">Carregue um arquivo para ver os filtros disponíveis.</div>';
+    return;
+  }
+  const sorted = [...allFilas.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  container.innerHTML = sorted.map(([nome, info]) => {
+    const n  = info.norm;
+    const on = selectedNorms.has(n);
+    return `
+      <label class="filter-item ${on?'on':''}" data-norm="${esc(n)}">
+        <input type="checkbox" ${on?'checked':''} onchange="toggleFila(this)">
+        <span class="filter-name">${esc(nome)}</span>
+        <span class="filter-badge">${info.total}</span>
+      </label>`;
+  }).join('');
+}
+
+function toggleFila(cb) {
+  const label = cb.closest('.filter-item');
+  const norm  = label.dataset.norm;
+  if (cb.checked) { selectedNorms.add(norm); userDeselNorms.delete(norm); label.classList.add('on'); }
+  else            { selectedNorms.delete(norm); userDeselNorms.add(norm); label.classList.remove('on'); }
+  applyAndRender();
+}
+
+function selectAllFilas() {
+  for (const [,info] of allFilas) { selectedNorms.add(info.norm); userDeselNorms.delete(info.norm); }
+  renderFilterList(); applyAndRender();
+}
+function clearAllFilas() {
+  selectedNorms.clear();
+  for (const [,info] of allFilas) userDeselNorms.add(info.norm);
+  renderFilterList(); applyAndRender();
+}
+
+// ─── Busca ─────────────────────────────────────────────────────
+function onSearch() {
+  searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+  document.getElementById('searchClear').style.display = searchQuery ? 'block' : 'none';
+  renderTable(); updateStats();
+}
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  searchQuery = '';
+  document.getElementById('searchClear').style.display = 'none';
+  renderTable(); updateStats();
+}
+
+// ─── Aplicar & Renderizar ──────────────────────────────────────
+function applyAndRender() {
+  filteredRows = [];
+  ALL_AREAS.forEach(area => {
+    if (!areaData[area]) return;
+    areaData[area].rows.forEach(row => {
+      // Comparação normalizada — resolve diferenças de case/espaço
+      const fila   = normFila(row[REGRA_COL]  || '');
+      const estado = String(row[ESTADO_COL] || '').trim();
+      const prio   = String(row[PRIO_COL]   || '').trim();
+
+      if (selectedNorms.size && !selectedNorms.has(fila)) return;
+      if (selectedEstados.size && !selectedEstados.has(estado)) return;
+      if (selectedPrios.size   && !selectedPrios.has(prio))     return;
+
+      filteredRows.push({ ...row, __area: area });
+    });
+  });
+
+  if (sortCol) {
+    filteredRows.sort((a, b) => {
+      const av = String(a[sortCol] ?? ''), bv = String(b[sortCol] ?? '');
+      return av.localeCompare(bv, 'pt-BR', { numeric: true }) * sortDir;
+    });
+  }
+
+  renderTable();
+  updateStats();
+  document.getElementById('btnExport').disabled  = !filteredRows.length;
+  document.getElementById('btnInverse').disabled = !getInverseRows().length;
+}
+
+function getInverseRows() {
+  const rows = [];
+  ALL_AREAS.forEach(area => {
+    if (!areaData[area]) return;
+    areaData[area].rows.forEach(row => {
+      const fila   = normFila(row[REGRA_COL]  || '');
+      const estado = String(row[ESTADO_COL] || '').trim();
+      const prio   = String(row[PRIO_COL]   || '').trim();
+      if (!selectedNorms.size || selectedNorms.has(fila)) return;
+      if (selectedEstados.size && !selectedEstados.has(estado)) return;
+      if (selectedPrios.size   && !selectedPrios.has(prio))     return;
+      rows.push({ ...row, __area: area });
+    });
+  });
+  return rows;
+}
+
+// ─── SLA ───────────────────────────────────────────────────────
+function parseSLA(val) {
+  if (!val) return null;
+  if (val instanceof Date) return val;
+  const s = String(val);
+  const m = s.match(/(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1], +(m[4]||0), +(m[5]||0));
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function slaStatus(row) {
+  for (const col of SLA_COLS) {
+    if (row[col] === undefined) continue;
+    const d = parseSLA(row[col]);
+    if (!d) continue;
+    const diff = (d - new Date()) / 3600000;
+    if (diff < 0) return 'vencido';
+    if (diff < 4) return 'alerta';
+    return 'ok';
+  }
+  return null;
+}
+
+// ─── Tabela ────────────────────────────────────────────────────
+function rowSiteFora(row) {
+  if (!sfSiteIds.size) return false;
+  const xlsxCol = document.getElementById('sfXlsxCol')?.value;
+  if (!xlsxCol) return false;
+  const cellVal = normId(row[xlsxCol] ?? '');
+  if (!cellVal) return false;
+  for (const id of sfSiteIds) {
+    if (cellVal === id || cellVal.includes(id) || id.includes(cellVal)) return true;
+  }
+  return false;
+}
+
+function renderTable() {
+  const container = document.getElementById('tableContainer');
+  const badge     = document.getElementById('rowsBadge');
+  const badgesEl  = document.getElementById('areaBadges');
+
+  let rows = filteredRows;
+  if (searchQuery) rows = rows.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(searchQuery)));
+
+  badge.textContent = `${rows.length} linha${rows.length !== 1 ? 's' : ''}`;
+  document.getElementById('inverseBadge').classList.remove('show');
+
+  const areasPresentes = [...new Set(rows.map(r => r.__area))];
+  badgesEl.innerHTML = areasPresentes.map(a => `<span class="area-pill ${a}">${AREA_LABELS[a]}</span>`).join('');
+
+  if (!rows.length) {
+    const nada = !ALL_AREAS.some(a => areaData[a]);
+    container.innerHTML = nada
+      ? `<div class="empty"><div class="empty-ico">📂</div><h3>Nenhum arquivo carregado</h3><p>Use os slots na barra lateral para carregar os arquivos.</p><div class="hint-tags"><span class="hint-tag">ISOC MONITORACAO TRANSPORTE DADOS</span><span class="hint-tag">ISOC MONITORACAO TRANSPORTE TX</span><span class="hint-tag">ISOC SERVICOS FIXO TRANSMISSAO</span></div></div>`
+      : `<div class="empty"><div class="empty-ico">🔍</div><h3>Nenhum resultado</h3><p>Nenhuma linha encontrada com os filtros selecionados.</p></div>`;
+    return;
+  }
+
+  const byArea = {};
+  rows.forEach(r => { if (!byArea[r.__area]) byArea[r.__area]=[]; byArea[r.__area].push(r); });
+
+  let html = '';
+  ALL_AREAS.forEach(area => {
+    if (!byArea[area]) return;
+    const aRows   = byArea[area];
+    const allKeys = Object.keys(aRows[0]).filter(c => c !== '__area');
+    let cols = DISPLAY_COLS.filter(c => allKeys.includes(c));
+    if (!cols.length) cols = allKeys.slice(0, 12);
+
+    html += `<table>
+      <thead><tr>
+        <th onclick="setSort('#')">&#35; <span class="sort-arrow">${sortArrow('#')}</span></th>
+        <th>ÁREA</th>
+        <th>SITE</th>
+        <th style="color:var(--green);background:#e8faf0">OBS</th>
+        ${cols.map(c => `<th ${c===REGRA_COL?'class="key-col"':''} onclick="setSort(${JSON.stringify(c)})">${esc(c)} <span class="sort-arrow">${sortArrow(c)}</span></th>`).join('')}
+      </tr></thead>
+      <tbody>
+        ${aRows.map((row, i) => {
+          const sl   = slaStatus(row);
+          const sf   = rowSiteFora(row);
+          const tsk  = String(row['TSK'] ?? '').trim();
+          const obs  = obsMap[tsk] || '';
+          const isNorm = obs === 'Normalizado';
+          let cls = isNorm ? 'row-normalizado' : (sf ? 'site-fora' : (sl === 'vencido' ? 'sla-vencido' : sl === 'alerta' ? 'sla-alerta' : ''));
+          const obsBtnCls = isNorm ? 'obs-btn obs-normalizado' : (obs ? 'obs-btn has-obs' : 'obs-btn');
+          const obsBtnLbl = obs ? obs : '+ OBS';
+          return `<tr class="${cls}">
+            <td class="num-cell">${i+1}</td>
+            <td><span class="area-cell ${area}">${AREA_LABELS[area]}</span></td>
+            <td>${sf ? '<span class="site-fora-tag">🔴 FORA</span>' : '<span class="site-ok-tag">✅</span>'}</td>
+            <td><button type="button" class="${obsBtnCls} obs-open-btn" data-tsk="${esc(tsk)}" title="${esc(obs)}">${esc(obsBtnLbl)}</button></td>
+            ${cols.map(c => {
+              const v = String(row[c] ?? '');
+              if (c === REGRA_COL) return `<td><span class="regra-cell" title="${esc(v)}">${esc(v)}</span></td>`;
+              if (SLA_COLS.includes(c) && sl) return `<td><span class="sla-tag ${sl}">${esc(v)}</span></td>`;
+              const d = v.length > 50 ? v.slice(0,48)+'…' : v;
+              return `<td title="${esc(v)}">${esc(d)}</td>`;
+            }).join('')}
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+  });
+  container.innerHTML = html;
+}
+
+function sortArrow(col) { return sortCol !== col ? '↕' : sortDir === 1 ? '↑' : '↓'; }
+function setSort(col) {
+  if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+  applyAndRender();
+}
+
+// ─── Exportar XLSX ─────────────────────────────────────────────
+// Colunas fixas do relatório exportado
+const EXPORT_REPORT_COLS = [
+  { header: 'Provedor',                        label: 'Provedor',         width: 16 },
+  { header: 'TSK',                             label: 'TSK',              width: 16 },
+  { header: 'Estado',                          label: 'Estado',           width: 18 },
+  { header: 'Fim SLA',                         label: 'Fim SLA',          width: 22 },
+  { header: 'Bairro',                          label: 'Bairro',           width: 20 },
+  { header: 'CM',                              label: 'CM',               width: 26 },
+  { header: 'END_ID',                          label: 'END_ID',           width: 16 },
+  { header: 'NE ID',                           label: 'NE ID',            width: 16 },
+  { header: 'Título do Alarme',                label: 'Título do Alarme', width: 34 },
+  { header: 'Faixa Priorização Dispatching',   label: 'P',                width: 8  },
+  { header: 'OBS',                             label: 'OBS',              width: 32 },
+];
+
+// Paleta de cores disponíveis
+const COLOR_PALETTE = [
+  { name: 'Azul',         hex: '1565C0' },
+  { name: 'Azul Claro',   hex: '0288D1' },
+  { name: 'Verde',        hex: '2E7D32' },
+  { name: 'Verde Água',   hex: '00695C' },
+  { name: 'Roxo',         hex: '4527A0' },
+  { name: 'Roxo Claro',   hex: '7B1FA2' },
+  { name: 'Laranja',      hex: 'E65100' },
+  { name: 'Vermelho',     hex: 'B71C1C' },
+  { name: 'Cinza',        hex: '37474F' },
+  { name: 'Preto',        hex: '212121' },
+  { name: 'Rosa',         hex: 'AD1457' },
+  { name: 'Amarelo',      hex: 'F57F17' },
+];
+
+let _exportInverse = false;
+let _chosenColor   = '1565C0';
+
+function hexToRgb(hex) {
+  return hex.replace('#','').toUpperCase();
+}
+
+// Gera cor de fundo claro a partir do hex escuro (mistura com branco)
+function lightenHex(hex, amount) {
+  const r = parseInt(hex.slice(0,2),16), g = parseInt(hex.slice(2,4),16), b = parseInt(hex.slice(4,6),16);
+  const lr = Math.round(r + (255-r)*amount), lg = Math.round(g + (255-g)*amount), lb = Math.round(b + (255-b)*amount);
+  return [lr,lg,lb].map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+
+function openColorModal(inverse) {
+  _exportInverse = inverse;
+  // Renderiza paleta
+  const palette = document.getElementById('colorPalette');
+  palette.innerHTML = COLOR_PALETTE.map(c => `
+    <div onclick="selectPaletteColor('${c.hex}',this)"
+      style="cursor:pointer;border-radius:8px;padding:8px 4px;text-align:center;border:2px solid transparent;transition:all 0.15s;"
+      title="${c.name}">
+      <div style="width:36px;height:36px;border-radius:6px;background:#${c.hex};margin:0 auto 4px;box-shadow:0 2px 4px rgba(0,0,0,0.2)"></div>
+      <div style="font-size:9px;color:#6b778c;font-weight:600">${c.name}</div>
+    </div>`).join('');
+  // Select default
+  document.getElementById('customColorPick').value = '#' + _chosenColor;
+  document.getElementById('customColorHex').textContent = '#' + _chosenColor;
+  document.getElementById('colorModal').style.display = 'flex';
+}
+
+function selectPaletteColor(hex, el) {
+  _chosenColor = hex;
+  document.getElementById('customColorPick').value = '#' + hex;
+  document.getElementById('customColorHex').textContent = '#' + hex;
+  document.querySelectorAll('#colorPalette > div').forEach(d => d.style.border = '2px solid transparent');
+  el.style.border = '2px solid #0052cc';
+  el.style.background = '#deebff';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const picker = document.getElementById('customColorPick');
+  if (picker) {
+    picker.addEventListener('input', () => {
+      _chosenColor = hexToRgb(picker.value);
+      document.getElementById('customColorHex').textContent = picker.value.toUpperCase();
+      document.querySelectorAll('#colorPalette > div').forEach(d => { d.style.border='2px solid transparent'; d.style.background=''; });
+    });
+  }
+});
+
+function confirmExport() {
+  document.getElementById('colorModal').style.display = 'none';
+  doExportXlsx(_exportInverse, _chosenColor);
+}
+
+function isSiteForaRow(row) {
+  const xlsxCol = document.getElementById('sfXlsxCol')?.value;
+  if (!sfSiteIds.size || !xlsxCol) return false;
+  const cellVal = normId(row[xlsxCol] ?? '');
+  if (!cellVal) return false;
+  for (const id of sfSiteIds) {
+    if (cellVal === id || cellVal.includes(id) || id.includes(cellVal)) return true;
+  }
+  return false;
+}
+
+function parseSLADate(val) {
+  // Formatos aceitos:
+  // dd/MM/yy HH:mm   → ex: 17/04/26 15:49  (ano 2 dígitos)
+  // dd/MM/yyyy HH:mm → ex: 17/04/2026 15:49 (ano 4 dígitos)
+  if (!val) return null;
+  if (val instanceof Date) return val;
+  const s = String(val).trim();
+
+  // Tenta dd/MM/yy(yy) HH:mm(:ss)?
+  const m = s.match(/^(\d{2})\/(\d{2})\/(\d{2,4})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if (m) {
+    let year = +m[3];
+    if (year < 100) year += 2000; // 26 → 2026
+    return new Date(year, +m[2]-1, +m[1], +(m[4]||0), +(m[5]||0), +(m[6]||0));
+  }
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+function makeBorder(colorHex, style) {
+  const b = { style: style||'thin', color: { rgb: colorHex } };
+  return { top: b, bottom: b, left: b, right: b };
+}
+
+// exportXlsx agora abre o modal de cor
+function exportXlsx(inverse) {
+  const rows = inverse ? getInverseRows() : filteredRows;
+  if (!rows.length) { toast('❌ Sem dados para exportar', 'err'); return; }
+  openColorModal(inverse);
+}
+
+function doExportXlsx(inverse, baseColorHex) {
+  const rows = inverse ? getInverseRows() : filteredRows;
+  if (!rows.length) { toast('❌ Sem dados para exportar', 'err'); return; }
+
+  const now      = new Date();  // hora exata agora
+  const today    = new Date(); today.setHours(0,0,0,0);
+  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate()+1);
+
+  // Deriva cores a partir da cor escolhida
+  const headerBg  = baseColorHex;
+  const rowOdd    = lightenHex(baseColorHex, 0.88);  // muito claro
+  const rowEven   = lightenHex(baseColorHex, 0.75);  // levemente mais escuro
+
+  const wb = XLSX.utils.book_new();
+  const byArea = {};
+  rows.forEach(({ __area, ...row }) => {
+    if (!byArea[__area]) byArea[__area] = [];
+    byArea[__area].push({ row, isFora: isSiteForaRow(row) });
+  });
+
+  ALL_AREAS.forEach(area => {
+    if (!byArea[area]?.length) return;
+    const entries = byArea[area];
+    const cols    = EXPORT_REPORT_COLS;
+    const ws      = {};
+
+    // ── Cabeçalho ──
+    cols.forEach((col, C) => {
+      ws[XLSX.utils.encode_cell({ r: 0, c: C })] = {
+        v: col.label, t: 's',
+        s: {
+          font:      { bold: true, color: { rgb: 'FFFFFF' }, sz: 11, name: 'Arial' },
+          fill:      { patternType: 'solid', fgColor: { rgb: headerBg } },
+          alignment: { horizontal: 'center', vertical: 'center', wrapText: false },
+          border:    makeBorder('FFFFFF', 'medium'),
+        }
+      };
+    });
+
+    // ── Dados ──
+    entries.forEach(({ row, isFora }, rowIdx) => {
+      const R       = rowIdx + 1;
+      const slaDate  = parseSLADate(row['Fim SLA']);
+      const isPast   = slaDate && slaDate < now;                              // já venceu (hora exata)
+      const isToday  = slaDate && !isPast && slaDate < tomorrow;              // vence hoje ainda
+      const isSoon   = slaDate && !isPast && (slaDate - now) < 4*3600*1000;  // vence em menos de 4h
+
+      // Linha site fora: fundo avermelhado em toda a linha
+      const lineBg   = isFora ? 'FFCDD2' : 'FFFFFF';
+      const lineFont = isFora ? '7F0000' : '1A1A2E';
+
+      cols.forEach((col, C) => {
+        const isSlCol  = col.header === 'Fim SLA';
+        const isObsCol = col.header === 'OBS';
+        const rowTsk   = String(row['TSK'] ?? '').trim();
+        const rowObs   = obsMap[rowTsk] || '';
+        const isNormRow = rowObs === 'Normalizado';
+        const rawVal   = isObsCol ? rowObs : (row[col.header] ?? '');
+        const val      = String(rawVal);
+
+        // Linha normalizado → fundo verde em toda a linha
+        let cellBg   = isNormRow ? 'C8F5DC' : lineBg;
+        let cellFont = isNormRow ? '1B5E20' : lineFont;
+        let cellBold = isNormRow;
+        let borderColor = isNormRow ? '66BB6A' : 'C0C8D8';
+
+        // Só a célula Fim SLA recebe cor especial (exceto normalizado e site fora)
+        if (isSlCol && !isFora && !isNormRow) {
+          if (isPast)                  { cellBg = 'FFCDD2'; cellFont = 'B71C1C'; cellBold = false; } // vencido — vermelho claro
+          if (isSoon)                  { cellBg = 'C62828'; cellFont = 'FFFFFF'; cellBold = true;  } // menos de 4h — vermelho forte
+          if (isToday && !isSoon)      { cellBg = 'E53935'; cellFont = 'FFFFFF'; cellBold = true;  } // vence hoje >4h — vermelho médio
+        }
+
+        if (isObsCol && !isNormRow) borderColor = '888888';
+
+        ws[XLSX.utils.encode_cell({ r: R, c: C })] = {
+          v: val, t: 's',
+          s: {
+            font:      { sz: 10, color: { rgb: cellFont }, name: 'Arial', bold: cellBold },
+            fill:      { patternType: 'solid', fgColor: { rgb: cellBg } },
+            alignment: { vertical: 'center', horizontal: isObsCol ? 'left' : 'center' },
+            border:    makeBorder(borderColor, 'thin'),
+          }
+        };
+      });
+    });
+
+    const totalRows = entries.length + 1;
+    ws['!ref']  = XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:totalRows-1,c:cols.length-1} });
+
+    // Largura automática: máximo de chars em cada coluna (header + dados), com mínimo e máximo
+    const colWidths = cols.map((col, C) => {
+      let max = col.label.length + 2; // começa pelo tamanho do header
+      entries.forEach(({ row }) => {
+        const v = String(col.header === 'OBS' ? (obsMap[String(row['TSK'] ?? '').trim()] || '') : (row[col.header] ?? ''));
+        if (v.length > max) max = v.length;
+      });
+      return { wch: Math.min(Math.max(max + 2, col.width), 60) };
+    });
+    ws['!cols'] = colWidths;
+
+    // Altura automática das linhas baseada no conteúdo mais longo de cada linha
+    const rowHeights = [{ hpt: 30 }]; // cabeçalho
+    entries.forEach(({ row }) => {
+      let maxLines = 1;
+      cols.forEach(col => {
+        const v = String(col.header === 'OBS' ? (obsMap[String(row['TSK'] ?? '').trim()] || '') : (row[col.header] ?? ''));
+        // Conta quebras de linha e estima linhas pelo comprimento vs largura da coluna
+        const colW = colWidths[cols.indexOf(col)].wch;
+        const lines = Math.max(1, Math.ceil(v.length / Math.max(colW, 1)));
+        if (lines > maxLines) maxLines = lines;
+      });
+      rowHeights.push({ hpt: Math.min(Math.max(maxLines * 14, 18), 80) });
+    });
+    ws['!rows'] = rowHeights;
+
+    XLSX.utils.book_append_sheet(wb, ws, SHEET_NAMES[area]);
+  });
+
+  const date  = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+  const sufx  = inverse ? '_NAO_SELECIONADOS' : '_filtrado';
+  const fname = `REPORT_CSM_FIXA${sufx}_${date}.xlsx`;
+  XLSX.writeFile(wb, fname);
+  toast(`⬇ ${rows.length} linha${rows.length!==1?'s':''} exportadas → ${fname}`, 'ok');
+}
+
+
+// ─── Gráficos ──────────────────────────────────────────────────
+function renderCharts() {
+  if (!filteredRows.length) return;
+  const countBy = key => {
+    const m = {};
+    filteredRows.forEach(r => { const v = String(r[key]||'(vazio)').trim()||'(vazio)'; m[v]=(m[v]||0)+1; });
+    return m;
+  };
+  const palette = ['#0052cc','#00875a','#6554c0','#ff8b00','#bf2600','#4fc3f7','#36b37e','#ff5630','#ffab00','#b85c00'];
+
+  const makeBar = (id, data, label) => {
+    const sorted = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,15);
+    if (charts[id]) charts[id].destroy();
+    charts[id] = new Chart(document.getElementById(id), {
+      type: 'bar',
+      data: { labels: sorted.map(([k])=>k.length>28?k.slice(0,26)+'…':k), datasets: [{ label, data: sorted.map(([,v])=>v), backgroundColor: palette, borderRadius: 4 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 10 }, maxRotation: 35 } }, y: { ticks: { font: { size: 10 } }, beginAtZero: true } } }
+    });
+  };
+  const makeDoughnut = (id, data, label) => {
+    const sorted = Object.entries(data).sort((a,b)=>b[1]-a[1]);
+    if (charts[id]) charts[id].destroy();
+    charts[id] = new Chart(document.getElementById(id), {
+      type: 'doughnut',
+      data: { labels: sorted.map(([k])=>k), datasets: [{ label, data: sorted.map(([,v])=>v), backgroundColor: palette, borderWidth: 2 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 12 } } } }
+    });
+  };
+
+  makeBar('chartFila', countBy(REGRA_COL), 'OS');
+  makeDoughnut('chartArea', (() => { const m={}; filteredRows.forEach(r=>{const a=AREA_LABELS[r.__area];m[a]=(m[a]||0)+1;}); return m; })(), 'OS');
+  makeDoughnut('chartEstado',     countBy(ESTADO_COL), 'OS');
+  makeDoughnut('chartPrioridade', countBy(PRIO_COL),   'OS');
+}
+
+// ─── Stats ─────────────────────────────────────────────────────
+function updateStats() {
+  const total  = ALL_AREAS.reduce((s,a) => s + (areaData[a]?.rows.length||0), 0);
+  const loaded = ALL_AREAS.filter(a => areaData[a]).length;
+  let rows = filteredRows;
+  if (searchQuery) rows = rows.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(searchQuery)));
+  let slaV = 0;
+  rows.forEach(r => { if (slaStatus(r) === 'vencido') slaV++; });
+  document.getElementById('sTot').textContent        = total;
+  document.getElementById('sFilt').textContent       = rows.length;
+  document.getElementById('sAreas').textContent      = loaded;
+  document.getElementById('sFilas').textContent      = selectedNorms.size;
+  document.getElementById('sSlaVencido').textContent = slaV;
+}
+
+// ─── Helpers ───────────────────────────────────────────────────
+function showProgress(show, txt='', pct=0) {
+  const wrap = document.getElementById('progressWrap');
+  wrap.classList.toggle('show', show);
+  if (show) { document.getElementById('progressTxt').textContent=txt; document.getElementById('progressBar').style.width=pct+'%'; }
+}
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg, type='inf') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('show'), 4000);
+}
+
+
+// ─── Debug ─────────────────────────────────────────────────────
+function runDebug() {
+  const panel = document.getElementById('debugPanel');
+  panel.style.display = 'block';
+  let out = '';
+  out += '=== selectedNorms (' + selectedNorms.size + ') ===\n';
+  for (const n of selectedNorms) out += '  "' + n + '"\n';
+  out += '\n=== userDeselNorms (' + userDeselNorms.size + ') ===\n';
+  for (const n of userDeselNorms) out += '  "' + n + '"\n';
+  out += '\n=== allFilas ===\n';
+  for (const [orig, info] of allFilas) {
+    const match = selectedNorms.has(info.norm);
+    out += '  orig: "' + orig + '"\n';
+    out += '  norm: "' + info.norm + '" | total: ' + info.total + ' | selected: ' + match + '\n\n';
+  }
+  out += '=== filteredRows: ' + filteredRows.length + ' ===\n';
+  out += '=== areaData loaded: ' + ALL_AREAS.filter(a=>areaData[a]).join(', ') + '\n';
+  // Sample first 3 rows normFila check
+  out += '\n=== Sample rows normFila check ===\n';
+  let count = 0;
+  ALL_AREAS.forEach(area => {
+    if (!areaData[area] || count > 5) return;
+    areaData[area].rows.slice(0, 3).forEach(row => {
+      if (count > 5) return;
+      const fila = normFila(row[REGRA_COL] || '');
+      const match = !selectedNorms.size || selectedNorms.has(fila);
+      out += '  raw: "' + String(row[REGRA_COL]||'') + '"\n';
+      out += '  norm: "' + fila + '" | inSelected: ' + selectedNorms.has(fila) + ' | passes: ' + match + '\n\n';
+      count++;
+    });
+  });
+  panel.textContent = out;
+}
+
+// ─── Sites Fora ────────────────────────────────────────────────
+function parsePaste() {
+  const raw = document.getElementById('sfPasteArea').value.trim();
+  if (!raw) {
+    sfParsedRows=[]; sfHeaders=[]; sfSelectedCol=null; sfSiteIds.clear();
+    document.getElementById('sfColPicker').style.display = 'none';
+    document.getElementById('sfXlsxConfig').style.display = 'none';
+    document.getElementById('sfStats').style.display = 'none';
+    renderSfTable([]);
+    renderTable(); // atualiza coluna SITE na tabela principal
+    return;
+  }
+  const lines = raw.split(/\r?\n/).filter(l => l.trim());
+  const firstLine = lines[0];
+  let sep = '\t';
+  if ((firstLine.match(/\t/g)||[]).length >= 1)    sep = '\t';
+  else if ((firstLine.match(/;/g)||[]).length >= 1)  sep = ';';
+  else if ((firstLine.match(/,/g)||[]).length >= 1)  sep = ',';
+  else sep = /\s{2,}/.test(firstLine) ? 'spaces' : '\t';
+
+  const splitLine = l => sep === 'spaces' ? l.trim().split(/\s{2,}/) : l.split(sep).map(c=>c.trim());
+  const headerLine = splitLine(lines[0]);
+  const dataLines  = lines.slice(1);
+
+  let headers, rows;
+  if (headerLine.length === 1) {
+    headers = ['ID'];
+    rows = lines.map(l => ({ ID: l.trim() }));
+  } else {
+    headers = headerLine;
+    rows = dataLines.map(l => {
+      const cols = splitLine(l);
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = cols[i] ?? ''; });
+      return obj;
+    }).filter(r => Object.values(r).some(v => v.trim()));
+  }
+
+  sfParsedRows = rows; sfHeaders = headers;
+
+  const scores = headers.map(h => {
+    const vals = rows.map(r => normId(r[h])).filter(Boolean);
+    const hits  = vals.filter(v => SITE_ID_REGEX.test(v)).length;
+    return { h, score: vals.length ? hits/vals.length : 0 };
+  });
+  const best = scores.sort((a,b)=>b.score-a.score)[0];
+  sfSelectedCol = best && best.score > 0 ? best.h : headers[0];
+
+  renderColPicker();
+  updateSiteIds();
+  buildXlsxColSelect();
+  document.getElementById('sfColPicker').style.display = 'flex';
+  document.getElementById('sfXlsxConfig').style.display = 'flex';
+  runComparison();
+}
+
+function renderColPicker() {
+  const el = document.getElementById('sfColChips');
+  el.innerHTML = sfHeaders.map(h => {
+    const on = h === sfSelectedCol;
+    const sample = sfParsedRows.slice(0,3).map(r=>normId(r[h])).filter(Boolean).join(', ');
+    return `<span class="sf-col-chip ${on?'on':''}" data-col="${esc(h)}" onclick="selectSfCol(this)" title="${esc(sample)}">${esc(h)}</span>`;
+  }).join('');
+}
+
+function selectSfCol(el) {
+  sfSelectedCol = el.dataset.col;
+  document.querySelectorAll('.sf-col-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  updateSiteIds();
+  runComparison();
+}
+
+function updateSiteIds() {
+  sfSiteIds.clear();
+  if (!sfSelectedCol) return;
+  sfParsedRows.forEach(r => { const v = normId(r[sfSelectedCol]); if (v) sfSiteIds.add(v); });
+}
+
+function buildXlsxColSelect() {
+  const sel = document.getElementById('sfXlsxCol');
+  const cols = new Set();
+  ALL_AREAS.forEach(area => {
+    if (!areaData[area]?.rows?.length) return;
+    Object.keys(areaData[area].rows[0]).forEach(c => { if (c !== '__area') cols.add(c); });
+  });
+  if (!cols.size) { sel.innerHTML = '<option value="">— carregue um arquivo Excel primeiro —</option>'; return; }
+  const colList = [...cols];
+  const neIdCol = colList.find(c => /^NE[\s_-]?ID$/i.test(c.trim()));
+  const prio    = colList.filter(c => /\b(NE|END|NODE|SITE|ID)\b/i.test(c) && c !== neIdCol);
+  const sorted  = [...(neIdCol?[neIdCol]:[]), ...prio, ...colList.filter(c=>c!==neIdCol&&!prio.includes(c))];
+  const prev = sel.value;
+  sel.innerHTML = sorted.map(c=>`<option value="${esc(c)}" ${c===prev?'selected':''}>${esc(c)}</option>`).join('');
+  if (neIdCol && (!prev || !cols.has(prev))) sel.value = neIdCol;
+  else if (!prev && sorted.length) sel.value = sorted[0];
+}
+
+function runComparison() {
+  const xlsxCol = document.getElementById('sfXlsxCol').value;
+  if (!sfSiteIds.size || !xlsxCol) return;
+
+  sfResults = [];
+  ALL_AREAS.forEach(area => {
+    if (!areaData[area]) return;
+    areaData[area].rows.forEach(row => {
+      const cellVal = normId(row[xlsxCol] ?? '');
+      if (!cellVal) return;
+      let found = false;
+      for (const id of sfSiteIds) {
+        if (cellVal === id || cellVal.includes(id) || id.includes(cellVal)) { found=true; break; }
+      }
+      if (found) sfResults.push({ ...row, __area: area, __siteStatus: 'fora' });
+    });
+  });
+
+  const sfFora = sfResults.length;
+  document.getElementById('sfStats').style.display  = 'flex';
+  document.getElementById('sfTotal').textContent    = sfSiteIds.size;
+  document.getElementById('sfFora').textContent     = sfFora;
+  document.getElementById('sfDentro').textContent   = Math.max(0, sfSiteIds.size - sfFora);
+  document.getElementById('sfBtnExport').disabled   = !sfResults.length;
+
+  renderSfTable(sfResults);
+  renderTable(); // atualiza coluna SITE na tabela principal
+}
+
+function renderSfTable(rows) {
+  const container = document.getElementById('sfTableContainer');
+  const badge     = document.getElementById('sfResultBadge');
+  badge.textContent = rows.length ? `${rows.length} OS` : '—';
+
+  if (!rows.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-ico">📡</div><h3>Nenhuma OS encontrada</h3><p>Nenhuma OS tem site correspondente nos dados colados.</p></div>`;
+    return;
+  }
+
+  const xlsxCol = document.getElementById('sfXlsxCol').value;
+  const allLines = rows.map(r => {
+    const tsk   = String(r['TSK']??'').trim()||'—';
+    const neId  = String(r[xlsxCol]??'').trim()||'—';
+    const prio  = String(r['Prioridade']??'').trim()||'—';
+    const est   = String(r['Estado']??'').trim()||'—';
+    return `${tsk} / ${neId} - ${prio} - ${est}`;
+  }).join('\n');
+
+  const byArea = {};
+  rows.forEach(r => { if (!byArea[r.__area]) byArea[r.__area]=[]; byArea[r.__area].push(r); });
+
+  let html = `<div style="padding:10px 16px;border-bottom:1px solid var(--border);background:#fafbfc;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:11px;font-weight:700;color:var(--muted)">📋 CÓPIA RÁPIDA</span>
+    <button onclick="copySfAll()" style="padding:5px 14px;border-radius:4px;border:1px solid var(--accent);background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;">⎘ Copiar todas (${rows.length})</button>
+    <span style="font-size:10px;color:var(--subtle);font-family:'IBM Plex Mono',monospace">TSK / NE-ID - PRIORIDADE - STATUS</span>
+  </div>`;
+
+  ALL_AREAS.forEach(area => {
+    if (!byArea[area]) return;
+    const aRows   = byArea[area];
+    const allKeys = Object.keys(aRows[0]).filter(c=>c!=='__area'&&c!=='__siteStatus');
+    let cols = DISPLAY_COLS.filter(c=>allKeys.includes(c));
+    if (!cols.length) cols = allKeys.slice(0,10);
+    const priorityCols = ['TSK', xlsxCol].filter(c=>allKeys.includes(c)&&!cols.includes(c));
+    cols = [...priorityCols, ...cols];
+
+    html += `<table class="sf-preview-table">
+      <thead><tr><th>#</th><th>ÁREA</th><th>STATUS</th><th>⎘</th>
+        ${cols.map(c=>`<th style="${c==='TSK'||c===xlsxCol?'color:var(--accent);background:var(--accent-light)':''}">${esc(c)}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+        ${aRows.map((row,i)=>{
+          const tsk=String(row['TSK']??'').trim()||'—', neId=String(row[xlsxCol]??'').trim()||'—';
+          const prio=String(row['Prioridade']??'').trim()||'—', est=String(row['Estado']??'').trim()||'—';
+          const copyTxt=`${tsk} / ${neId} - ${prio} - ${est}`;
+          return `<tr class="site-fora">
+            <td class="num-cell">${i+1}</td>
+            <td><span class="area-cell ${area}">${AREA_LABELS[area]}</span></td>
+            <td><span class="site-fora-tag">🔴 SITE FORA</span></td>
+            <td><button class="sf-copy-btn" onclick="copySfRow(this)" data-txt="${esc(copyTxt)}">⎘</button></td>
+            ${cols.map(c=>{
+              const v=String(row[c]??'');
+              if(c===REGRA_COL) return `<td><span class="regra-cell" title="${esc(v)}">${esc(v)}</span></td>`;
+              const d=v.length>40?v.slice(0,38)+'…':v;
+              return `<td title="${esc(v)}" style="${c==='TSK'||c===xlsxCol?'font-weight:700;color:var(--accent);font-family:\'IBM Plex Mono\',monospace':''}">${esc(d)}</td>`;
+            }).join('')}
+          </tr>`;
+        }).join('')}
+      </tbody></table>`;
+  });
+
+  container._allLines = allLines;
+  container.innerHTML = html;
+}
+
+function copySfRow(btn) {
+  navigator.clipboard.writeText(btn.dataset.txt).then(() => {
+    btn.textContent='✓'; btn.style.color='var(--green-btn)';
+    setTimeout(()=>{btn.textContent='⎘';btn.style.color='';},1500);
+    toast(`📋 Copiado!`, 'ok');
+  }).catch(()=>toast('❌ Erro ao copiar','err'));
+}
+function copySfAll() {
+  const txt = document.getElementById('sfTableContainer')._allLines||'';
+  if (!txt) return;
+  navigator.clipboard.writeText(txt).then(()=>toast(`📋 ${sfResults.length} linhas copiadas!`,'ok')).catch(()=>toast('❌ Erro ao copiar','err'));
+}
+
+function exportSitesFora() {
+  if (!sfResults.length) { toast('❌ Sem dados para exportar','err'); return; }
+  const wb = XLSX.utils.book_new();
+  const byArea = {};
+  sfResults.forEach(({__area,__siteStatus,...row})=>{
+    if(!byArea[__area]) byArea[__area]=[];
+    byArea[__area].push({'STATUS SITE':'🔴 SITE FORA',...row});
+  });
+  ALL_AREAS.forEach(area => {
+    if (!byArea[area]?.length) return;
+    const ws = XLSX.utils.json_to_sheet(byArea[area]);
+    const range = XLSX.utils.decode_range(ws['!ref']||'A1');
+    for (let C=range.s.c;C<=range.e.c;C++) {
+      const addr=XLSX.utils.encode_cell({r:0,c:C});
+      if(ws[addr]) ws[addr].s={font:{bold:true,color:{rgb:'FFFFFF'},sz:11},fill:{fgColor:{rgb:'BF2600'}},alignment:{horizontal:'center'}};
+    }
+    const colWidths=[];
+    for(let C=range.s.c;C<=range.e.c;C++){
+      let maxW=10;
+      for(let R=range.s.r;R<=Math.min(range.e.r,50);R++){const cell=ws[XLSX.utils.encode_cell({r:R,c:C})];if(cell?.v!=null)maxW=Math.max(maxW,String(cell.v).length);}
+      colWidths.push({wch:Math.min(maxW+2,50)});
+    }
+    ws['!cols']=colWidths;
+    XLSX.utils.book_append_sheet(wb,ws,SHEET_NAMES[area]);
+  });
+  const date=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+  const fname=`REPORT_CSM_FIXA_SITES_FORA_${date}.xlsx`;
+  XLSX.writeFile(wb,fname);
+  toast(`⬇ ${sfResults.length} OS exportadas → ${fname}`,'ok');
+}
+</script>
+</body>
+</html>
