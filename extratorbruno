@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TLP · Extrator de Filas</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F0F2F7;--surface:#FFFFFF;--surface2:#F7F8FC;--surface3:#EEF0F8;
+  --border:#E2E5F0;--border2:#CBD0E8;--text:#0F1628;--text2:#4A5280;--muted:#8C93B8;
+  --accent:#3B5BFF;--accent-bg:rgba(59,91,255,0.08);--accent-glow:rgba(59,91,255,0.20);
+  --green:#00C48C;--green-bg:rgba(0,196,140,0.10);--red:#FF3F5C;--red-bg:rgba(255,63,92,0.10);
+  --amber:#F5A623;--amber-bg:rgba(245,166,35,0.10);
+  --shadow-sm:0 1px 3px rgba(15,22,40,0.06),0 1px 2px rgba(15,22,40,0.04);
+  --shadow-md:0 4px 12px rgba(15,22,40,0.08),0 2px 6px rgba(15,22,40,0.04);
+  --shadow-lg:0 12px 36px rgba(15,22,40,0.10),0 4px 12px rgba(15,22,40,0.06);
+  --radius-sm:8px;--radius-md:12px;--radius-lg:18px;--radius-xl:24px;
+  --transition:0.2s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="dark"] {
+  --bg:#0C0F1A;--surface:#131726;--surface2:#1A1F35;--surface3:#222844;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#EDF0FF;--text2:#8B95C9;--muted:#4A5280;
+  --accent:#5B7FFF;--accent-bg:rgba(91,127,255,0.12);--accent-glow:rgba(91,127,255,0.25);
+  --green:#00E5A6;--green-bg:rgba(0,229,166,0.10);--red:#FF5572;--red-bg:rgba(255,85,114,0.10);
+  --amber:#FFB830;--amber-bg:rgba(255,184,48,0.10);
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.30);--shadow-md:0 4px 12px rgba(0,0,0,0.40);--shadow-lg:0 12px 36px rgba(0,0,0,0.50);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;line-height:1.5;min-height:100vh;transition:background var(--transition),color var(--transition);-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:0.4;}
+body>*{position:relative;z-index:1;}
+.app-layout{display:grid;grid-template-rows:auto 1fr auto;min-height:100vh;}
+header{background:var(--surface);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+.header-inner{max-width:1280px;margin:0 auto;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;}
+.brand-icon{width:40px;height:40px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px var(--accent-glow);flex-shrink:0;}
+.brand-icon svg{width:22px;height:22px;fill:#fff;}
+.brand-text{line-height:1.1;}
+.brand-name{font-weight:700;font-size:1rem;letter-spacing:-0.02em;color:var(--text);}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;}
+.header-actions{display:flex;align-items:center;gap:0.75rem;}
+.theme-toggle{width:44px;height:24px;background:var(--surface3);border:1px solid var(--border2);border-radius:100px;position:relative;cursor:pointer;transition:background var(--transition),border-color var(--transition);flex-shrink:0;}
+.theme-toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:var(--accent);border-radius:50%;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),background var(--transition);box-shadow:0 1px 4px rgba(0,0,0,0.2);}
+[data-theme="dark"] .theme-toggle::after{transform:translateX(20px);}
+.theme-label{font-size:0.72rem;font-weight:500;color:var(--muted);font-family:'JetBrains Mono',monospace;user-select:none;cursor:pointer;}
+.shift-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text2);}
+.shift-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);flex-shrink:0;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.6;transform:scale(0.85);}}
+main{max-width:1280px;margin:0 auto;padding:2.5rem 2rem 4rem;width:100%;}
+.page-hero{margin-bottom:2.5rem;animation:fadeUp 0.5s ease both;}
+.page-hero h1{font-size:2rem;font-weight:800;letter-spacing:-0.04em;line-height:1.1;color:var(--text);margin-bottom:0.5rem;}
+.page-hero h1 .highlight{background:linear-gradient(135deg,var(--accent) 0%,#8B5CF6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-hero p{font-size:0.88rem;color:var(--text2);max-width:520px;}
+.stepper{display:flex;align-items:center;gap:0;margin-bottom:2rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.5rem;box-shadow:var(--shadow-sm);overflow-x:auto;animation:fadeUp 0.5s 0.1s ease both;}
+.step{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--radius-sm);font-size:0.78rem;font-weight:500;color:var(--muted);transition:all var(--transition);white-space:nowrap;flex-shrink:0;cursor:default;}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:600;color:var(--muted);flex-shrink:0;transition:all var(--transition);}
+.step.active{background:var(--accent-bg);color:var(--accent);}
+.step.active .step-num{background:var(--accent);color:#fff;}
+.step.done{color:var(--green);}
+.step.done .step-num{background:var(--green-bg);color:var(--green);}
+.step.done .step-num::after{content:'✓';}
+.step.done .step-num span{display:none;}
+.step-sep{width:24px;height:1px;background:var(--border2);flex-shrink:0;margin:0 4px;}
+.alerts-wrap{margin-bottom:1.25rem;display:flex;flex-direction:column;gap:0.5rem;}
+.alert{display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);font-size:0.8rem;font-weight:500;border:1px solid;animation:slideIn 0.25s ease;}
+.alert.active{display:flex;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.alert-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;}
+.alert-success{background:var(--green-bg);border-color:rgba(0,196,140,0.3);color:var(--green);}
+.alert-success .alert-icon{background:var(--green);color:#fff;}
+.alert-error{background:var(--red-bg);border-color:rgba(255,63,92,0.3);color:var(--red);}
+.alert-error .alert-icon{background:var(--red);color:#fff;}
+.loading{display:none;align-items:center;justify-content:center;gap:10px;padding:14px;font-size:0.8rem;font-weight:500;color:var(--accent);font-family:'JetBrains Mono',monospace;}
+.loading.active{display:flex;}
+.spinner{width:18px;height:18px;border-radius:50%;border:2px solid var(--accent-bg);border-top-color:var(--accent);animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;animation:fadeUp 0.5s 0.15s ease both;}
+@media(max-width:860px){.input-grid{grid-template-columns:1fr;}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:1rem;transition:border-color var(--transition),box-shadow var(--transition);}
+.card:hover{border-color:var(--border2);box-shadow:var(--shadow-md);}
+.card-header{display:flex;align-items:flex-start;gap:12px;}
+.card-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;}
+.card-icon.blue{background:var(--accent-bg);}
+.card-icon.green{background:var(--green-bg);}
+.card-title{font-size:0.9rem;font-weight:700;color:var(--text);}
+.card-sub{font-size:0.78rem;color:var(--muted);line-height:1.55;margin-top:2px;}
+textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.76rem;padding:0.9rem 1rem;resize:vertical;min-height:200px;outline:none;line-height:1.7;transition:border-color var(--transition),background var(--transition);}
+textarea:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-glow);}
+textarea::placeholder{color:var(--muted);}
+.btn-row{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);border:1px solid transparent;font-family:'Outfit',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all var(--transition);white-space:nowrap;text-decoration:none;}
+.btn:disabled{opacity:0.35;cursor:not-allowed;}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px var(--accent-glow);}
+.btn-primary:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 4px 16px var(--accent-glow);}
+.btn-ghost{background:var(--surface2);color:var(--text2);border-color:var(--border);}
+.btn-ghost:hover:not(:disabled){background:var(--surface3);color:var(--text);border-color:var(--border2);}
+.btn-success{background:var(--green-bg);color:var(--green);border-color:rgba(0,196,140,0.25);}
+.btn-success:hover:not(:disabled){background:rgba(0,196,140,0.18);}
+.btn-danger{background:var(--red-bg);color:var(--red);border-color:rgba(255,63,92,0.2);}
+.btn-danger:hover:not(:disabled){background:rgba(255,63,92,0.18);}
+.btn-export{background:linear-gradient(135deg,var(--accent) 0%,#7C3AED 100%);color:#fff;border:none;box-shadow:0 2px 12px var(--accent-glow);padding:9px 20px;font-size:0.84rem;}
+.btn-export:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 20px var(--accent-glow);}
+.btn-preview-full{background:linear-gradient(135deg,#0F766E 0%,#0D9488 100%);color:#fff;border:none;box-shadow:0 2px 10px rgba(13,148,136,0.3);padding:9px 20px;font-size:0.84rem;}
+.btn-preview-full:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 5px 18px rgba(13,148,136,0.4);}
+.count-badge{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);padding:4px 8px;background:var(--surface3);border-radius:100px;border:1px solid var(--border);}
+.sites-preview{display:none;}
+.sites-preview-label{font-size:0.72rem;font-weight:600;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:6px;max-height:120px;overflow-y:auto;}
+.tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;background:var(--red-bg);border:1px solid rgba(255,63,92,0.25);border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:0.66rem;color:var(--red);cursor:pointer;transition:all var(--transition);}
+.tag:hover{background:rgba(255,63,92,0.2);}
+.tag-x{font-size:0.6rem;opacity:0.6;}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-md);background:var(--surface2);padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.9rem;text-align:center;cursor:pointer;flex:1;transition:all var(--transition);}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:var(--accent-bg);transform:translateY(-2px);}
+.upload-zone.dragover{transform:scale(1.01);}
+input[type="file"]{display:none;}
+.upload-zone-icon{width:52px;height:52px;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:var(--shadow-md);animation:float 4s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.upload-title{font-size:0.92rem;font-weight:700;color:var(--text);}
+.upload-sub{font-size:0.75rem;color:var(--muted);line-height:1.5;max-width:200px;}
+.file-status{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface3);border-radius:100px;border:1px solid var(--border);}
+.file-status.active{color:var(--accent);border-color:var(--accent-glow);background:var(--accent-bg);}
+.section{display:none;}
+.section.active{display:block;animation:fadeUp 0.4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0.75rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem 1.25rem;transition:all var(--transition);}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:var(--shadow-md);}
+.stat-label{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:6px;font-family:'JetBrains Mono',monospace;}
+.stat-value{font-size:1.8rem;font-weight:800;letter-spacing:-0.03em;line-height:1;color:var(--accent);}
+.stat-value.danger{color:var(--red);}
+.toolbar{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;padding:0.75rem;margin-bottom:1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);}
+.search-box{flex:1;min-width:160px;display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;transition:border-color var(--transition);}
+.search-box:focus-within{border-color:var(--accent);}
+.search-box svg{width:14px;height:14px;fill:none;stroke:var(--muted);stroke-width:2;flex-shrink:0;}
+.search-box input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.76rem;}
+.search-box input::placeholder{color:var(--muted);}
+.divider{width:1px;height:24px;background:var(--border);margin:0 4px;flex-shrink:0;}
+.col-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.5rem;margin-bottom:1.5rem;}
+.col-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.7rem 0.9rem;cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden;}
+.col-item:hover{border-color:var(--border2);background:var(--surface2);}
+.col-item.selected{border-color:var(--accent);background:var(--accent-bg);box-shadow:0 0 0 1px var(--accent);}
+.col-item.rec{border-left:3px solid var(--green);}
+.col-item.rec.selected{border-color:var(--green);background:var(--green-bg);box-shadow:0 0 0 1px var(--green);}
+.col-label{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text2);cursor:pointer;user-select:none;line-height:1.4;}
+.col-item.selected .col-label{color:var(--text);}
+.col-label input[type="checkbox"]{width:15px;height:15px;flex-shrink:0;accent-color:var(--accent);cursor:pointer;border-radius:4px;}
+.badge-rec{display:inline-flex;align-items:center;padding:1px 6px;border-radius:100px;font-size:0.6rem;font-weight:600;background:var(--green-bg);color:var(--green);margin-left:auto;flex-shrink:0;}
+.badge-neid{display:inline-flex;align-items:center;padding:1px 6px;border-radius:100px;font-size:0.6rem;font-weight:600;background:var(--red-bg);color:var(--red);margin-left:4px;flex-shrink:0;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;gap:1rem;flex-wrap:wrap;}
+.section-title{font-size:1.05rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px;}
+.section-title .icon{width:32px;height:32px;border-radius:8px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+.cross-info{font-family:'JetBrains Mono',monospace;font-size:0.72rem;padding:5px 12px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);}
+.cross-info.warn{border-color:rgba(245,166,35,0.4);background:var(--amber-bg);color:var(--amber);}
+.cross-info.danger{border-color:rgba(255,63,92,0.3);background:var(--red-bg);color:var(--red);}
+.preview-section{display:none;margin-top:1.5rem;}
+.preview-section.active{display:block;animation:fadeUp 0.3s ease;}
+.preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.75rem;}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;}
+.leg{display:flex;align-items:center;gap:5px;font-size:0.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.leg-dot{width:8px;height:8px;border-radius:50%;}
+.table-container{border-radius:var(--radius-md);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-md);}
+.table-scroll{overflow-x:auto;max-height:360px;}
+table{width:100%;border-collapse:collapse;background:var(--surface);}
+thead tr{background:var(--surface2);}
+th{padding:10px 14px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:0.63rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;position:sticky;top:0;z-index:10;background:var(--surface2);border-bottom:1px solid var(--border2);white-space:nowrap;}
+th.th-accent{color:var(--accent);border-bottom-color:var(--accent);}
+th.th-danger{color:var(--red);border-bottom-color:var(--red);}
+th.th-amber{color:var(--amber);border-bottom-color:var(--amber);}
+td{padding:9px 14px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text2);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface2);}
+tr.row-out td{background:var(--red-bg);color:var(--red);}
+tr.row-out:hover td{background:rgba(255,63,92,0.15);}
+.badge-ok{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:100px;font-size:0.65rem;font-weight:600;background:var(--green-bg);color:var(--green);}
+.badge-fora{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:100px;font-size:0.65rem;font-weight:600;background:var(--red-bg);color:var(--red);}
+.alarm-cell{color:var(--amber);font-style:italic;}
+.columns-section-wrap{margin-top:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.75rem;box-shadow:var(--shadow-sm);}
+
+/* ═══ REGRA FILTER — CHECKBOX STYLE ═══ */
+.regra-filter-wrap{
+  margin-top:1.25rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow-sm);
+  transition:border-color var(--transition),box-shadow var(--transition);
+}
+.regra-filter-wrap.has-exclusions{
+  border-color:rgba(255,63,92,0.4);
+  box-shadow:0 0 0 2px rgba(255,63,92,0.08);
+}
+.regra-filter-header{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1rem 1.25rem;
+  cursor:pointer;user-select:none;
+  transition:background var(--transition);
+}
+.regra-filter-header:hover{background:var(--surface2);}
+.regra-filter-title{
+  display:flex;align-items:center;gap:10px;
+  font-size:0.88rem;font-weight:700;color:var(--text);
+}
+.regra-title-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(139,92,246,0.12);
+  display:flex;align-items:center;justify-content:center;font-size:0.9rem;
+}
+.regra-excl-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:100px;
+  font-size:0.65rem;font-weight:700;font-family:'JetBrains Mono',monospace;
+  background:var(--red);color:#fff;
+  animation:fadeUp 0.2s ease;
+}
+.regra-ok-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:100px;
+  font-size:0.65rem;font-weight:600;font-family:'JetBrains Mono',monospace;
+  background:var(--green-bg);color:var(--green);border:1px solid rgba(0,196,140,0.25);
+}
+.regra-chevron{
+  font-size:0.7rem;color:var(--muted);
+  transition:transform 0.2s ease;font-family:'JetBrains Mono',monospace;
+}
+.regra-chevron.open{transform:rotate(180deg);}
+.regra-filter-body{
+  display:none;
+  border-top:1px solid var(--border);
+}
+.regra-filter-body.open{display:block;animation:fadeUp 0.2s ease;}
+
+/* summary bar */
+.regra-summary-bar{
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:0.75rem 1.25rem;
+  background:var(--surface2);
+  border-bottom:1px solid var(--border);
+}
+.regra-sum-item{
+  display:flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text2);
+}
+.regra-sum-item strong{font-weight:700;}
+.regra-sum-item.ok strong{color:var(--green);}
+.regra-sum-item.excl strong{color:var(--red);}
+.regra-sum-item.total strong{color:var(--accent);}
+.regra-sum-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.regra-sum-sep{width:1px;height:14px;background:var(--border);flex-shrink:0;}
+
+/* toolbar */
+.regra-toolbar{
+  display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;
+  padding:0.75rem 1.25rem;
+  border-bottom:1px solid var(--border);
+}
+.regra-search-box{
+  flex:1;min-width:180px;max-width:320px;
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:6px 12px;transition:border-color var(--transition);
+}
+.regra-search-box:focus-within{border-color:var(--accent);}
+.regra-search-box svg{width:13px;height:13px;fill:none;stroke:var(--muted);stroke-width:2;flex-shrink:0;}
+.regra-search-box input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.74rem;}
+.regra-search-box input::placeholder{color:var(--muted);}
+.regra-filter-hint{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);margin-left:auto;}
+
+/* checkbox list */
+.regra-list{
+  max-height:280px;overflow-y:auto;
+  padding:0.5rem 0;
+}
+.regra-cb-item{
+  display:flex;align-items:center;gap:0;
+  padding:0;
+  border-bottom:1px solid var(--border);
+  transition:background var(--transition);
+  cursor:pointer;
+}
+.regra-cb-item:last-child{border-bottom:none;}
+.regra-cb-item:hover{background:var(--surface2);}
+.regra-cb-item.excluded{background:var(--red-bg);}
+.regra-cb-item.excluded:hover{background:rgba(255,63,92,0.15);}
+.regra-cb-checkbox{
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:100%;min-height:44px;flex-shrink:0;
+}
+.regra-cb-checkbox input[type="checkbox"]{
+  width:16px;height:16px;
+  accent-color:var(--accent);cursor:pointer;
+  flex-shrink:0;
+}
+.regra-cb-content{
+  flex:1;min-width:0;
+  padding:10px 12px 10px 0;
+  display:flex;align-items:center;gap:8px;
+}
+.regra-cb-name{
+  flex:1;min-width:0;
+  font-family:'JetBrains Mono',monospace;font-size:0.72rem;
+  color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.regra-cb-item.excluded .regra-cb-name{
+  color:var(--red);text-decoration:line-through;text-decoration-color:rgba(255,63,92,0.5);
+}
+.regra-cb-count{
+  display:inline-flex;align-items:center;
+  padding:1px 7px;border-radius:100px;
+  font-family:'JetBrains Mono',monospace;font-size:0.62rem;font-weight:600;
+  background:var(--surface3);color:var(--muted);border:1px solid var(--border);
+  flex-shrink:0;
+}
+.regra-cb-item.excluded .regra-cb-count{
+  background:rgba(255,63,92,0.12);color:var(--red);border-color:rgba(255,63,92,0.2);
+}
+.regra-excl-tag{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:1px 7px;border-radius:100px;
+  font-family:'JetBrains Mono',monospace;font-size:0.6rem;font-weight:700;
+  background:var(--red);color:#fff;flex-shrink:0;
+}
+.regra-cb-item .regra-excl-tag{display:none;}
+.regra-cb-item.excluded .regra-excl-tag{display:inline-flex;}
+
+/* empty state */
+.regra-empty{
+  padding:2rem;text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:0.74rem;color:var(--muted);
+}
+
+/* ═══ FULL PREVIEW MODAL ═══ */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);
+  animation:fadeOverlay 0.2s ease;
+}
+.modal-overlay.open{display:flex;align-items:stretch;}
+@keyframes fadeOverlay{from{opacity:0;}to{opacity:1;}}
+.modal{
+  background:var(--surface);border-left:1px solid var(--border);
+  width:100%;max-width:100vw;
+  display:flex;flex-direction:column;
+  animation:slideModal 0.3s cubic-bezier(0.34,1.2,0.64,1);
+}
+@keyframes slideModal{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  position:sticky;top:0;z-index:10;
+  box-shadow:var(--shadow-sm);
+  flex-shrink:0;
+}
+.modal-title{font-size:1rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px;}
+.modal-actions{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;}
+.modal-close{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1rem;color:var(--text2);
+  transition:all var(--transition);
+}
+.modal-close:hover{background:var(--red-bg);color:var(--red);border-color:rgba(255,63,92,0.3);}
+.modal-stats{
+  display:flex;gap:1rem;align-items:center;flex-wrap:wrap;
+  padding:0.65rem 1.5rem;
+  background:var(--surface2);border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.modal-stat{
+  display:flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text2);
+}
+.modal-stat strong{color:var(--text);font-weight:700;}
+.modal-stat-sep{width:1px;height:14px;background:var(--border);flex-shrink:0;}
+.modal-filter-bar{
+  display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;
+  padding:0.65rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  flex-shrink:0;
+}
+.modal-filter-bar .search-box{max-width:260px;}
+.modal-body{flex:1;overflow:auto;padding:0;}
+.full-table-container{min-height:100%;}
+.full-table{width:100%;border-collapse:collapse;}
+.full-table thead tr{background:var(--surface2);position:sticky;top:0;z-index:5;}
+.full-table th{
+  padding:9px 12px;text-align:left;
+  font-family:'JetBrains Mono',monospace;font-size:0.6rem;font-weight:600;
+  color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;
+  background:var(--surface2);border-bottom:2px solid var(--border2);
+  white-space:nowrap;cursor:default;
+}
+.full-table th.col-selected-hdr{color:var(--accent);border-bottom-color:var(--accent);}
+.full-table th.col-status-hdr{color:var(--red);border-bottom-color:var(--red);}
+.full-table th.col-regra-hdr{color:#8B5CF6;border-bottom-color:#8B5CF6;}
+.full-table th.th-sort{cursor:pointer;}
+.full-table th.th-sort:hover{color:var(--text);}
+.full-table td{
+  padding:8px 12px;border-bottom:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text2);
+  max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.full-table tr:hover td{background:var(--surface2);}
+.full-table tr.row-fora td{background:rgba(255,63,92,0.06);}
+.full-table tr.row-fora:hover td{background:rgba(255,63,92,0.12);}
+.full-table .cell-ne-fora{color:var(--red);font-weight:600;}
+.full-table .cell-ne-ok{color:var(--green);}
+.row-num{color:var(--muted);font-size:0.6rem;text-align:right;width:36px;min-width:36px;border-right:1px solid var(--border);padding-right:8px;}
+.status-pill-fora{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:2px 7px;border-radius:100px;font-size:0.62rem;font-weight:700;
+  background:var(--red);color:#fff;white-space:nowrap;
+}
+.status-pill-ok{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:2px 7px;border-radius:100px;font-size:0.62rem;font-weight:700;
+  background:var(--green-bg);color:var(--green);white-space:nowrap;
+}
+.no-results{
+  padding:3rem;text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--muted);
+}
+.modal-footer{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:0.75rem 1.5rem;
+  border-top:1px solid var(--border);
+  background:var(--surface);
+  flex-shrink:0;flex-wrap:wrap;
+}
+.modal-footer-info{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);}
+.modal-footer-info strong{color:var(--text);}
+.highlight-match{background:rgba(59,91,255,0.2);border-radius:2px;color:var(--accent);}
+footer{border-top:1px solid var(--border);background:var(--surface);}
+.footer-inner{max-width:1280px;margin:0 auto;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-brand{font-weight:700;font-size:0.85rem;color:var(--text);}
+.footer-copy{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-md);padding:12px 18px;font-size:0.82rem;font-weight:500;color:var(--text);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;max-width:320px;transform:translateY(100px) scale(0.95);opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);}
+.toast.show{transform:translateY(0) scale(1);opacity:1;}
+.toast.ok{border-left:3px solid var(--green);}
+.toast.err{border-left:3px solid var(--red);}
+.toast-icon{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;}
+.toast.ok .toast-icon{background:var(--green);color:#fff;}
+.toast.err .toast-icon{background:var(--red);color:#fff;}
+@media(max-width:640px){
+  .header-inner{padding:0 1rem;}
+  main{padding:1.5rem 1rem 3rem;}
+  .page-hero h1{font-size:1.5rem;}
+  .columns-section-wrap{padding:1.25rem;}
+  footer .footer-inner{padding:0.75rem 1rem;}
+}
+</style>
+</head>
+<body>
+<div class="app-layout">
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm14 3a4 4 0 100-8 4 4 0 000 8z"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="brand-name">TLP · Extrator de Filas</div>
+        <div class="brand-sub">Telecomunicações · v3</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="shift-badge">
+        <div class="shift-dot"></div>
+        <span id="shiftLabel">Turno Diurno</span>
+        <span style="color:var(--border2)">·</span>
+        <span id="shiftClock" style="font-family:'JetBrains Mono',monospace;"></span>
+      </div>
+      <label class="theme-label" for="themeToggle" id="themeLabel">Claro</label>
+      <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema"></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="page-hero">
+    <h1>Extração de Filas <span class="highlight">TLP</span></h1>
+    <p>Cole os NE IDs dos sites fora, carregue a planilha de filas e exporte com cruzamento automático e sinalização visual.</p>
+  </div>
+
+  <div class="stepper">
+    <div class="step active" id="step1"><div class="step-num"><span>1</span></div>Sites Fora</div>
+    <div class="step-sep"></div>
+    <div class="step" id="step2"><div class="step-num"><span>2</span></div>Planilha</div>
+    <div class="step-sep"></div>
+    <div class="step" id="step3"><div class="step-num"><span>3</span></div>Colunas</div>
+    <div class="step-sep"></div>
+    <div class="step" id="step4"><div class="step-num"><span>4</span></div>Exportar</div>
+  </div>
+
+  <div class="alerts-wrap">
+    <div id="alertSuccess" class="alert alert-success"><div class="alert-icon">✓</div><span id="alertSuccessText"></span></div>
+    <div id="alertError" class="alert alert-error"><div class="alert-icon">✕</div><span id="alertErrorText"></span></div>
+    <div id="loading" class="loading"><div class="spinner"></div><span id="loadingText">Processando...</span></div>
+  </div>
+
+  <div class="input-grid">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon blue">📋</div>
+        <div>
+          <div class="card-title">Sites Fora — NE IDs</div>
+          <div class="card-sub">Cole o texto com os sites fora. O sistema detecta automaticamente os NE IDs.</div>
+        </div>
+      </div>
+      <textarea id="sitesForaInput" placeholder="Cole aqui os dados dos sites fora...
+
+Exemplos detectados automaticamente:
+  4G-MAGE10  ·  RJNIU_0071  ·  5G-NVIG49
+  SR-NITI05  ·  ESLNS_0002  ·  ES5312"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnParseSites">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Detectar NE IDs
+        </button>
+        <button class="btn btn-danger" id="btnClearSites">✕ Limpar</button>
+        <span class="count-badge" id="sitesCount" style="display:none;"></span>
+      </div>
+      <div class="sites-preview" id="sitesPreview">
+        <div class="sites-preview-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          NE IDs detectados:
+        </div>
+        <div class="tags-wrap" id="sitesTagsWrap"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon green">📂</div>
+        <div>
+          <div class="card-title">Planilha de Filas</div>
+          <div class="card-sub">Arquivo Excel com os dados de filas para cruzamento com os NE IDs.</div>
+        </div>
+      </div>
+      <label class="upload-zone" id="uploadZone" for="fileInput">
+        <div class="upload-zone-icon">📂</div>
+        <div class="upload-title">Arraste o arquivo aqui</div>
+        <div class="upload-sub">ou clique para selecionar — suporte a .xlsx e .xls</div>
+        <input type="file" id="fileInput" accept=".xlsx,.xls">
+        <div class="file-status" id="fileStatus">ℹ Aguardando arquivo...</div>
+      </label>
+    </div>
+  </div>
+
+  <div class="section" id="columnsSection">
+    <div class="columns-section-wrap">
+
+      <div class="section-header">
+        <div class="section-title">
+          <div class="icon">⊞</div>
+          Colunas Disponíveis
+        </div>
+        <div class="cross-info" id="crossInfo">Aguardando NE IDs...</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Total Colunas</div><div class="stat-value" id="totalColumns">0</div></div>
+        <div class="stat-card"><div class="stat-label">Selecionadas</div><div class="stat-value" id="selectedColumns">0</div></div>
+        <div class="stat-card"><div class="stat-label">Registros</div><div class="stat-value" id="totalRows">0</div></div>
+        <div class="stat-card"><div class="stat-label">Sites Fora</div><div class="stat-value danger" id="sitesForaCount">0</div></div>
+        <div class="stat-card"><div class="stat-label">Sinalizadas</div><div class="stat-value danger" id="linhasSinalizadas">0</div></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchBox" placeholder="Buscar coluna...">
+        </div>
+        <div class="divider"></div>
+        <button class="btn btn-ghost" id="selectAllBtn">✓ Todas</button>
+        <button class="btn btn-ghost" id="deselectAllBtn">✕ Nenhuma</button>
+        <button class="btn btn-success" id="recommendedBtn">⭐ Recomendadas</button>
+        <div class="divider"></div>
+        <button class="btn btn-preview-full" id="openFullPreviewBtn" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          Visualizar Planilha
+        </button>
+        <button class="btn btn-export" id="exportBtn" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar com Cruzamento
+        </button>
+      </div>
+
+      <div class="col-grid" id="colGrid"></div>
+
+      <!-- ═══ FILTRO REGRA USUÁRIO CRIADOR — CHECKBOX ═══ -->
+      <div class="regra-filter-wrap" id="regraFilterWrap" style="display:none;">
+
+        <div class="regra-filter-header" id="regraFilterHeader">
+          <div class="regra-filter-title">
+            <div class="regra-title-icon">🔽</div>
+            Filtrar por <em style="color:#8B5CF6;font-style:normal;">"Regra usuário criador"</em>
+            <span id="regraHeaderBadge"></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);" id="regraHeaderHint">Todas incluídas</span>
+            <span class="regra-chevron" id="regraChevron">▼</span>
+          </div>
+        </div>
+
+        <div class="regra-filter-body" id="regraFilterBody">
+
+          <!-- summary -->
+          <div class="regra-summary-bar" id="regraSummaryBar">
+            <div class="regra-sum-item total">
+              <div class="regra-sum-dot" style="background:var(--accent);"></div>
+              Total: <strong id="rsTotal">0</strong> regras
+            </div>
+            <div class="regra-sum-sep"></div>
+            <div class="regra-sum-item ok">
+              <div class="regra-sum-dot" style="background:var(--green);"></div>
+              Incluídas: <strong id="rsIncl">0</strong>
+            </div>
+            <div class="regra-sum-sep"></div>
+            <div class="regra-sum-item excl">
+              <div class="regra-sum-dot" style="background:var(--red);"></div>
+              Excluídas: <strong id="rsExcl">0</strong>
+              <span id="rsExclRows" style="font-size:0.62rem;opacity:0.75;"></span>
+            </div>
+            <div class="regra-sum-sep"></div>
+            <div class="regra-sum-item" style="margin-left:auto;color:var(--muted);font-size:0.62rem;">
+              Linhas na exportação: <strong id="rsRowsAfter" style="color:var(--text);">—</strong>
+            </div>
+          </div>
+
+          <!-- toolbar -->
+          <div class="regra-toolbar">
+            <button class="btn btn-success" id="regraSelectAll" style="font-size:0.74rem;padding:5px 12px;">
+              ✓ Incluir todas
+            </button>
+            <button class="btn btn-danger" id="regraDeselectAll" style="font-size:0.74rem;padding:5px 12px;">
+              ✕ Excluir todas
+            </button>
+            <div class="regra-search-box">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="regraSearchInput" placeholder="Buscar regra...">
+            </div>
+            <span class="regra-filter-hint">✓ marcado = linhas incluídas na exportação</span>
+          </div>
+
+          <!-- list -->
+          <div class="regra-list" id="regraList"></div>
+
+        </div>
+      </div>
+      <!-- /FILTRO REGRA -->
+
+      <div class="preview-section" id="previewSection">
+        <div class="preview-header">
+          <div class="section-title" style="font-size:0.9rem;">
+            <div class="icon" style="font-size:.8rem;">👁</div>
+            Prévia — 15 primeiros registros
+          </div>
+          <div class="legend">
+            <div class="leg"><div class="leg-dot" style="background:var(--red);"></div>Site fora</div>
+            <div class="leg"><div class="leg-dot" style="background:var(--green);"></div>Normal</div>
+            <div class="leg"><div class="leg-dot" style="background:var(--amber);"></div>Alarmes (gerado)</div>
+          </div>
+        </div>
+        <div class="table-container"><div class="table-scroll">
+          <table><thead id="previewHead"></thead><tbody id="previewBody"></tbody></table>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">TLP · Extrator de Filas</div>
+    <div class="footer-copy">Sistema de Processamento de Filas · Telecomunicações © 2026</div>
+  </div>
+</footer>
+</div>
+
+<!-- ═══ FULL PREVIEW MODAL ═══ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        Visualização Completa da Planilha
+        <span id="modalFileName" style="font-size:0.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;font-weight:400;"></span>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modalToggleFora" style="font-size:0.76rem;">🔴 Só fora</button>
+        <button class="btn btn-ghost" id="modalToggleSelected" style="font-size:0.76rem;">⊞ Só selecionadas</button>
+        <button class="modal-close" id="modalClose" title="Fechar">✕</button>
+      </div>
+    </div>
+
+    <div class="modal-stats">
+      <div class="modal-stat">Registros: <strong id="ms-total">—</strong></div>
+      <div class="modal-stat-sep"></div>
+      <div class="modal-stat">Exibindo: <strong id="ms-showing">—</strong></div>
+      <div class="modal-stat-sep"></div>
+      <div class="modal-stat" style="color:var(--red);">Sites Fora: <strong id="ms-fora" style="color:var(--red);">—</strong></div>
+      <div class="modal-stat-sep"></div>
+      <div class="modal-stat" style="color:var(--green);">OK: <strong id="ms-ok" style="color:var(--green);">—</strong></div>
+      <div class="modal-stat-sep"></div>
+      <div class="modal-stat">Filtro Regra: <strong id="ms-regra">Tudo</strong></div>
+    </div>
+
+    <div class="modal-filter-bar">
+      <div class="search-box" style="max-width:300px;">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="modalSearch" placeholder="Buscar em qualquer coluna...">
+      </div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);">Esc para fechar · Scroll para navegar</span>
+    </div>
+
+    <div class="modal-body" id="modalBody">
+      <div class="full-table-container">
+        <table class="full-table">
+          <thead id="fullTableHead"></thead>
+          <tbody id="fullTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="modal-footer-info">Mostrando <strong id="mf-count">0</strong> registros de <strong id="mf-total">0</strong> · use a busca para filtrar</div>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="btn btn-export" id="modalExportBtn" style="padding:7px 16px;font-size:0.78rem;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar
+        </button>
+        <button class="btn btn-ghost" id="modalCloseFooter">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toastIcon"></div>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+/* ══ THEME ══ */
+const html=document.documentElement;
+const themeToggle=document.getElementById('themeToggle');
+const themeLabel=document.getElementById('themeLabel');
+function setTheme(t){html.setAttribute('data-theme',t);themeLabel.textContent=t==='dark'?'Escuro':'Claro';localStorage.setItem('tlp-theme',t);}
+const saved=localStorage.getItem('tlp-theme');
+if(saved)setTheme(saved);else if(window.matchMedia('(prefers-color-scheme: dark)').matches)setTheme('dark');
+themeToggle.addEventListener('click',()=>setTheme(html.getAttribute('data-theme')==='dark'?'light':'dark'));
+
+/* ══ SHIFT CLOCK ══ */
+function updateShift(){const now=new Date(),h=now.getHours(),m=String(now.getMinutes()).padStart(2,'0');const night=h>=15||h<7;document.getElementById('shiftLabel').textContent=night?'🌙 Noturno':'☀️ Diurno';document.getElementById('shiftClock').textContent=`${h}:${m}`;}
+updateShift();setInterval(updateShift,30000);
+
+/* ══ TOAST ══ */
+function toast(msg,type='ok'){const el=document.getElementById('toast');document.getElementById('toastIcon').textContent=type==='ok'?'✓':'✕';document.getElementById('toastMsg').textContent=msg;el.className=`toast ${type}`;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);}
+
+/* ══ ALERTS ══ */
+function showAlert(type,msg){const id=type==='success'?'alertSuccess':'alertError';const tid=type==='success'?'alertSuccessText':'alertErrorText';document.getElementById(tid).textContent=msg;document.getElementById(id).classList.add('active');toast(msg,type==='success'?'ok':'err');setTimeout(()=>document.getElementById(id).classList.remove('active'),6000);}
+
+/* ══ REC COLUMNS ══ */
+const REC=['numero de ordem','titulo do alarme','fim sla','end id','ne id','tipo da falha','faixa priorizacao dispatching','estado','regra usuario criador'];
+const norm=t=>t.toString().toLowerCase().trim().replace(/\s+/g,' ').replace(/[_-]/g,' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const isRec=h=>REC.some(r=>norm(r)===norm(h));
+
+/* ══ STATE ══ */
+let allData=[],headers=[],neIdColIndex=-1;
+let selected=new Set();
+let sitesForaSet=new Set();
+let regraColIndex=-1;
+
+// regraIncludeSet: values that ARE included. If size === allRegraValues.length → all included
+let regraIncludeSet=new Set();
+let allRegraValues=[]; // [{value, count}]
+
+let fileName='';
+
+// Modal state
+let modalShowOnlyFora=false;
+let modalShowOnlySelected=false;
+let modalSearchQuery='';
+
+/* ══ NE ID DETECT ══ */
+const endIdFmtCol=/^[A-Z]{4,8}_\d{3,6}$/i;
+const neIdValuePattern=/^(?:[A-Z0-9]{1,10}-[A-Z0-9]{2,12}(?:[_-][A-Z0-9]+)*|[A-Z]{1,4}\d{3,6}|\d{1,2}[A-Z]{2,8}\d{2,6}|[A-Z]{3,10}\d{2,6})$/i;
+function isNeIdValue(v){const s=String(v||'').trim();if(s.length<4||s.length>20)return false;if(endIdFmtCol.test(s))return false;return neIdValuePattern.test(s);}
+const normHdr=t=>String(t).toLowerCase().trim().replace(/[\s_\-]+/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const NE_ID_HDR_NAMES=['neid','site','neidentifier','nodeelement','ne'];
+const END_ID_HDR_NAMES=['endid','end_id','enodebid','nodeid'];
+function detectNeIdColumn(hdrs){const sample=allData.slice(1,21);for(let i=0;i<hdrs.length;i++){if(NE_ID_HDR_NAMES.includes(normHdr(hdrs[i])))return i;}let best=-1,bestScore=0;for(let i=0;i<hdrs.length;i++){if(END_ID_HDR_NAMES.includes(normHdr(hdrs[i])))continue;let neHits=0,endHits=0;for(const row of sample){const v=String(row[i]||'').trim();if(endIdFmtCol.test(v))endHits++;else if(isNeIdValue(v))neHits++;}if(endHits>neHits)continue;if(neHits>bestScore){bestScore=neHits;best=i;}}return bestScore>=2?best:-1;}
+
+/* ══ DETECT REGRA COLUMN ══ */
+function detectRegraColumn(hdrs){const candidates=['regra usuario criador','regra usuário criador','regrausuariocriador','regra criador','usuariocriador'];for(let i=0;i<hdrs.length;i++){if(candidates.some(c=>norm(c)===norm(hdrs[i])))return i;}return -1;}
+
+/* ══ PARSE SITES FORA ══ */
+const neIdPattern=/\b(?:[A-Z0-9]{1,10}-[A-Z0-9]{2,12}(?:[_-][A-Z0-9]+)*|[A-Z]{2,8}\d{2,6}|\d{1,2}[A-Z]{2,8}\d{2,6})\b/gi;
+function parseSitesFora(){
+  const txt=document.getElementById('sitesForaInput').value;
+  if(!txt.trim()){showAlert('error','Cole os dados de sites fora primeiro!');return;}
+  const matches=txt.match(neIdPattern)||[];
+  const blocklist=['SITE','FORA','FILA','DATA','HORA','STATUS','TURNO','TLP','HUB','ANF','EVE','TSK','CRQ','SLA','HW','SW','MW','AC','RF','OK','TX','ID','C1','C2','C3','C4'];
+  const endIdFmt=/^[A-Z]{4,8}_\d{3,6}$/i;
+  const filtered=matches.filter(m=>{const u=m.trim().toUpperCase();return u.length>=4&&!blocklist.includes(u)&&!endIdFmt.test(u);});
+  sitesForaSet=new Set(filtered.map(m=>m.trim().toUpperCase()));
+  renderSitesTags();updateSitesCount();
+  if(sitesForaSet.size>0){stepDone('step1');stepActive('step2');showAlert('success',`${sitesForaSet.size} NE IDs detectados como sites fora.`);if(allData.length)updateCross();}
+  else showAlert('error','Nenhum NE ID detectado. Verifique o formato.');
+}
+function renderSitesTags(){const wrap=document.getElementById('sitesTagsWrap');const preview=document.getElementById('sitesPreview');if(sitesForaSet.size===0){preview.style.display='none';return;}preview.style.display='block';wrap.innerHTML=[...sitesForaSet].map(ne=>`<span class="tag" onclick="removeSite('${ne}')" title="Clique para remover">${ne}<span class="tag-x">✕</span></span>`).join('');}
+function removeSite(ne){sitesForaSet.delete(ne);renderSitesTags();updateSitesCount();if(allData.length)updateCross();}
+function updateSitesCount(){const el=document.getElementById('sitesCount');if(sitesForaSet.size>0){el.textContent=`${sitesForaSet.size} NE IDs`;el.style.display='';}else{el.style.display='none';}document.getElementById('sitesForaCount').textContent=sitesForaSet.size;}
+
+document.getElementById('btnParseSites').addEventListener('click',parseSitesFora);
+document.getElementById('btnClearSites').addEventListener('click',()=>{document.getElementById('sitesForaInput').value='';sitesForaSet.clear();renderSitesTags();updateSitesCount();if(allData.length)updateCross();});
+
+/* ══ STEPS ══ */
+function stepDone(id){const el=document.getElementById(id);el.classList.remove('active');el.classList.add('done');}
+function stepActive(id){document.getElementById(id).classList.add('active');}
+
+/* ══ FILE UPLOAD ══ */
+const fileInput=document.getElementById('fileInput');
+const uploadZone=document.getElementById('uploadZone');
+const fileStatus=document.getElementById('fileStatus');
+const loading=document.getElementById('loading');
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('dragover');});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('dragover');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0]);});
+fileInput.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0]);});
+
+function handleFile(file){
+  if(!file.name.match(/\.(xlsx|xls)$/i)){showAlert('error','Selecione um arquivo Excel válido (.xlsx ou .xls)');return;}
+  fileName=file.name;
+  fileStatus.innerHTML=`📄 ${file.name} · ${fmtSize(file.size)}`;
+  fileStatus.classList.add('active');
+  document.getElementById('loadingText').textContent='Processando arquivo...';
+  loading.classList.add('active');
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      allData=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',blankrows:false});
+      if(!allData.length){showAlert('error','Arquivo vazio!');loading.classList.remove('active');return;}
+      headers=allData[0].map((h,i)=>h||`Coluna ${i+1}`);
+      neIdColIndex=detectNeIdColumn(headers);
+      regraColIndex=detectRegraColumn(headers);
+      regraIncludeSet=new Set();
+      allRegraValues=[];
+      buildColumns();
+      loading.classList.remove('active');
+      const neMsg=neIdColIndex>=0?` · NE ID: "${headers[neIdColIndex]}"`:' · ⚠ Coluna NE ID não detectada';
+      showAlert('success',`${allData.length-1} registros carregados.${neMsg}`);
+      stepDone('step2');stepActive('step3');
+    }catch(err){loading.classList.remove('active');showAlert('error','Erro ao processar: '+err.message);}
+  };
+  reader.onerror=()=>{loading.classList.remove('active');showAlert('error','Erro ao ler o arquivo');};
+  reader.readAsBinaryString(file);
+}
+
+/* ══ BUILD COLUMNS ══ */
+function buildColumns(){
+  const rows=allData.slice(1);
+  document.getElementById('totalColumns').textContent=headers.length;
+  document.getElementById('totalRows').textContent=rows.length;
+  selected.clear();
+  const colGrid=document.getElementById('colGrid');
+  colGrid.innerHTML='';
+  headers.forEach((h,i)=>{
+    const rec=isRec(h);const isNeId=i===neIdColIndex;
+    const item=document.createElement('div');
+    item.className='col-item'+(rec?' rec':'');
+    const badges=(rec?`<span class="badge-rec">⭐ rec</span>`:'')+( isNeId?`<span class="badge-neid">NE ID</span>`:'');
+    item.innerHTML=`<label class="col-label"><input type="checkbox" data-i="${i}"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;">${h}</span>${badges}</label>`;
+    const cb=item.querySelector('input');
+    cb.addEventListener('change',()=>{if(cb.checked){selected.add(i);item.classList.add('selected');}else{selected.delete(i);item.classList.remove('selected');}syncCount();updatePreview();});
+    item.addEventListener('click',e=>{if(e.target.tagName!=='INPUT'){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}});
+    colGrid.appendChild(item);
+  });
+  document.getElementById('columnsSection').classList.add('active');
+  buildRegraFilter();
+  updateCross();
+  document.getElementById('openFullPreviewBtn').disabled=false;
+}
+
+/* ══════════════════════════════════════════════
+   REGRA FILTER — CHECKBOX LOGIC
+══════════════════════════════════════════════ */
+
+function getRegraValueCounts(){
+  const rows=allData.slice(1);
+  const counts={};
+  rows.forEach(row=>{
+    const v=String(row[regraColIndex]||'').trim();
+    if(v) counts[v]=(counts[v]||0)+1;
+  });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([value,count])=>({value,count}));
+}
+
+function buildRegraFilter(){
+  const wrap=document.getElementById('regraFilterWrap');
+  if(regraColIndex<0){wrap.style.display='none';return;}
+  wrap.style.display='block';
+
+  // Initialize: ALL values included
+  allRegraValues=getRegraValueCounts();
+  regraIncludeSet=new Set(allRegraValues.map(x=>x.value));
+
+  renderRegraList('');
+  updateRegraSummary();
+  updateRegraHeaderBadge();
+}
+
+function renderRegraList(query){
+  const container=document.getElementById('regraList');
+  const q=query.toLowerCase();
+  const filtered=q?allRegraValues.filter(x=>x.value.toLowerCase().includes(q)):allRegraValues;
+
+  if(!filtered.length){
+    container.innerHTML=`<div class="regra-empty">Nenhuma regra encontrada para "${escHtml(query)}"</div>`;
+    return;
+  }
+
+  container.innerHTML=filtered.map(({value,count})=>{
+    const included=regraIncludeSet.has(value);
+    const cls=included?'regra-cb-item':'regra-cb-item excluded';
+    return `<div class="${cls}" onclick="toggleRegraItem(this,'${escAttr(value)}')">
+      <div class="regra-cb-checkbox">
+        <input type="checkbox"${included?' checked':''} onclick="event.stopPropagation();toggleRegraItem(this.parentElement.parentElement,'${escAttr(value)}')">
+      </div>
+      <div class="regra-cb-content">
+        <span class="regra-cb-name" title="${escHtml(value)}">${escHtml(value)}</span>
+        <span class="regra-cb-count">${count} linhas</span>
+        <span class="regra-excl-tag">✕ excluída</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleRegraItem(itemEl,value){
+  const cb=itemEl.querySelector('input[type="checkbox"]');
+  if(regraIncludeSet.has(value)){
+    regraIncludeSet.delete(value);
+    itemEl.classList.add('excluded');
+    if(cb) cb.checked=false;
+  } else {
+    regraIncludeSet.add(value);
+    itemEl.classList.remove('excluded');
+    if(cb) cb.checked=true;
+  }
+  updateRegraSummary();
+  updateRegraHeaderBadge();
+  updateCross();
+  updatePreview();
+}
+
+function updateRegraSummary(){
+  const total=allRegraValues.length;
+  const inclCount=regraIncludeSet.size;
+  const exclCount=total-inclCount;
+
+  document.getElementById('rsTotal').textContent=total;
+  document.getElementById('rsIncl').textContent=inclCount;
+  document.getElementById('rsExcl').textContent=exclCount;
+
+  // count how many rows are excluded by regra filter
+  const exclRows=allData.slice(1).filter(row=>{
+    const v=String(row[regraColIndex]||'').trim();
+    return v && !regraIncludeSet.has(v);
+  }).length;
+  const inclRows=allData.slice(1).length-exclRows;
+
+  document.getElementById('rsExclRows').textContent=exclRows>0?` (${exclRows} linhas removidas)`:'';
+  document.getElementById('rsRowsAfter').textContent=inclRows;
+
+  // highlight wrap if exclusions active
+  const wrap=document.getElementById('regraFilterWrap');
+  wrap.classList.toggle('has-exclusions',exclCount>0);
+}
+
+function updateRegraHeaderBadge(){
+  const total=allRegraValues.length;
+  const exclCount=total-regraIncludeSet.size;
+  const badgeEl=document.getElementById('regraHeaderBadge');
+  const hintEl=document.getElementById('regraHeaderHint');
+
+  if(exclCount===0){
+    badgeEl.innerHTML='<span class="regra-ok-badge">✓ Todas incluídas</span>';
+    hintEl.textContent='';
+  } else {
+    badgeEl.innerHTML=`<span class="regra-excl-badge">✕ ${exclCount} excluída${exclCount>1?'s':''}</span>`;
+    const exclRows=allData.slice(1).filter(row=>{
+      const v=String(row[regraColIndex]||'').trim();
+      return v && !regraIncludeSet.has(v);
+    }).length;
+    hintEl.textContent=`${exclRows} linhas removidas da exportação`;
+  }
+}
+
+// collapse/expand
+document.getElementById('regraFilterHeader').addEventListener('click',()=>{
+  const body=document.getElementById('regraFilterBody');
+  const chevron=document.getElementById('regraChevron');
+  const open=body.classList.toggle('open');
+  chevron.classList.toggle('open',open);
+});
+
+// search
+document.getElementById('regraSearchInput').addEventListener('input',e=>{
+  renderRegraList(e.target.value);
+});
+
+// select / deselect all
+document.getElementById('regraSelectAll').addEventListener('click',()=>{
+  regraIncludeSet=new Set(allRegraValues.map(x=>x.value));
+  renderRegraList(document.getElementById('regraSearchInput').value);
+  updateRegraSummary();
+  updateRegraHeaderBadge();
+  updateCross();
+  updatePreview();
+  toast('Todas as regras incluídas','ok');
+});
+
+document.getElementById('regraDeselectAll').addEventListener('click',()=>{
+  regraIncludeSet=new Set();
+  renderRegraList(document.getElementById('regraSearchInput').value);
+  updateRegraSummary();
+  updateRegraHeaderBadge();
+  updateCross();
+  updatePreview();
+  toast('Todas as regras excluídas — nenhuma linha será exportada','err');
+});
+
+/* ══ CROSS DATA ══ */
+function isLinhaFora(row){
+  if(neIdColIndex<0||sitesForaSet.size===0)return false;
+  return sitesForaSet.has(String(row[neIdColIndex]||'').trim().toUpperCase());
+}
+
+function isLinhaRegraOk(row){
+  if(regraColIndex<0)return true;
+  // If ALL values are included (no filter active), show all
+  if(regraIncludeSet.size>=allRegraValues.length)return true;
+  const v=String(row[regraColIndex]||'').trim();
+  if(!v) return true; // rows with no regra value pass through
+  return regraIncludeSet.has(v);
+}
+
+function buildAlarmesValue(row){
+  if(neIdColIndex<0)return '';
+  const ne=String(row[neIdColIndex]||'').trim();
+  return ne?`${ne} alarmes`:'';
+}
+
+function getFilteredRows(){
+  return allData.slice(1).filter(row=>isLinhaRegraOk(row));
+}
+
+function updateCross(){
+  if(!allData.length)return;
+  const rows=getFilteredRows();
+  let count=0;
+  rows.forEach(row=>{if(isLinhaFora(row))count++;});
+  document.getElementById('linhasSinalizadas').textContent=count;
+  document.getElementById('sitesForaCount').textContent=sitesForaSet.size;
+  document.getElementById('totalRows').textContent=rows.length;
+
+  const ci=document.getElementById('crossInfo');
+  if(neIdColIndex>=0&&sitesForaSet.size>0){ci.textContent=`✓ Cruzando via "${headers[neIdColIndex]}" · ${count} linhas sinalizadas`;ci.className='cross-info danger';}
+  else if(neIdColIndex<0){ci.textContent='⚠ Coluna NE ID não detectada';ci.className='cross-info warn';}
+  else{ci.textContent=`Coluna NE ID: "${headers[neIdColIndex]}" — cole os NE IDs para cruzar`;ci.className='cross-info';}
+  updatePreview();
+}
+
+function syncCount(){
+  document.getElementById('selectedColumns').textContent=selected.size;
+  document.getElementById('exportBtn').disabled=selected.size===0;
+  if(selected.size>0){stepDone('step3');stepActive('step4');}
+  else{const s3=document.getElementById('step3');s3.classList.remove('done');s3.classList.add('active');document.getElementById('step4').classList.remove('active');}
+}
+
+/* ══ PREVIEW (small) ══ */
+function updatePreview(){
+  const si=Array.from(selected).sort((a,b)=>a-b);
+  if(!si.length){document.getElementById('previewSection').classList.remove('active');return;}
+  document.getElementById('previewHead').innerHTML=`<tr>${si.map((idx,i)=>`<th class="${i===0?'th-accent':''}">${headers[idx]}</th>`).join('')}<th></th><th class="th-danger">STATUS SITE</th><th class="th-amber">ALARMES</th></tr>`;
+  const rows=getFilteredRows().slice(0,15);
+  document.getElementById('previewBody').innerHTML=rows.map(row=>{
+    const fora=isLinhaFora(row);
+    return `<tr class="${fora?'row-out':''}">${si.map(idx=>`<td>${row[idx]??''}</td>`).join('')}<td></td><td>${fora?'<span class="badge-fora">● SITE FORA</span>':'<span class="badge-ok">● OK</span>'}</td><td class="alarm-cell">${buildAlarmesValue(row)}</td></tr>`;
+  }).join('');
+  document.getElementById('previewSection').classList.add('active');
+}
+
+/* ══ TOOLBAR ══ */
+document.getElementById('searchBox').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  document.getElementById('colGrid').querySelectorAll('.col-item').forEach(item=>{item.style.display=item.textContent.toLowerCase().includes(q)?'':'none';});
+});
+document.getElementById('selectAllBtn').addEventListener('click',()=>{document.getElementById('colGrid').querySelectorAll('input[type=checkbox]').forEach(cb=>{if(cb.parentElement.parentElement.style.display!=='none'){cb.checked=true;cb.dispatchEvent(new Event('change'));}});});
+document.getElementById('deselectAllBtn').addEventListener('click',()=>{document.getElementById('colGrid').querySelectorAll('input[type=checkbox]').forEach(cb=>{cb.checked=false;cb.dispatchEvent(new Event('change'));});});
+document.getElementById('recommendedBtn').addEventListener('click',()=>{
+  document.getElementById('colGrid').querySelectorAll('input[type=checkbox]').forEach(cb=>{cb.checked=false;cb.parentElement.parentElement.classList.remove('selected');});
+  selected.clear();let found=0;
+  headers.forEach((h,i)=>{if(isRec(h)){const cb=document.getElementById('colGrid').querySelector(`input[data-i="${i}"]`);if(cb){cb.checked=true;cb.parentElement.parentElement.classList.add('selected');selected.add(i);found++;}}});
+  if(neIdColIndex>=0&&!selected.has(neIdColIndex)){const cb=document.getElementById('colGrid').querySelector(`input[data-i="${neIdColIndex}"]`);if(cb){cb.checked=true;cb.parentElement.parentElement.classList.add('selected');selected.add(neIdColIndex);found++;}}
+  syncCount();updatePreview();
+  if(found>0)showAlert('success',`${found} colunas recomendadas selecionadas.`);
+  else showAlert('error','Nenhuma coluna recomendada encontrada na planilha.');
+});
+
+/* ══ FULL PREVIEW MODAL ══ */
+document.getElementById('openFullPreviewBtn').addEventListener('click',openModal);
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('modalCloseFooter').addEventListener('click',closeModal);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+function openModal(){
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modalFileName').textContent=fileName?`· ${fileName}`:'';
+  modalShowOnlyFora=false;modalShowOnlySelected=false;modalSearchQuery='';
+  document.getElementById('modalSearch').value='';
+  document.getElementById('modalToggleFora').classList.remove('btn-primary');
+  document.getElementById('modalToggleSelected').classList.remove('btn-primary');
+  renderFullTable();
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+
+document.getElementById('modalToggleFora').addEventListener('click',function(){
+  modalShowOnlyFora=!modalShowOnlyFora;
+  this.classList.toggle('btn-primary',modalShowOnlyFora);
+  renderFullTable();
+});
+document.getElementById('modalToggleSelected').addEventListener('click',function(){
+  modalShowOnlySelected=!modalShowOnlySelected;
+  this.classList.toggle('btn-primary',modalShowOnlySelected);
+  renderFullTable();
+});
+document.getElementById('modalSearch').addEventListener('input',e=>{
+  modalSearchQuery=e.target.value.toLowerCase();
+  renderFullTable();
+});
+
+function renderFullTable(){
+  if(!allData.length)return;
+  const si=modalShowOnlySelected&&selected.size>0?Array.from(selected).sort((a,b)=>a-b):headers.map((_,i)=>i);
+
+  const thead=document.getElementById('fullTableHead');
+  thead.innerHTML=`<tr>
+    <th style="width:36px;text-align:right;">#</th>
+    ${si.map(i=>{
+      const isNeid=i===neIdColIndex;const isRegra=i===regraColIndex;const isSel=selected.has(i);
+      const cls=isNeid?'col-selected-hdr':isRegra?'col-regra-hdr':isSel?'col-selected-hdr':'';
+      return `<th class="${cls}" title="${headers[i]}">${headers[i]}${isSel&&!modalShowOnlySelected?' ⊞':''}</th>`;
+    }).join('')}
+    <th class="col-status-hdr">STATUS SITE</th>
+  </tr>`;
+
+  let rows=getFilteredRows();
+  if(modalShowOnlyFora)rows=rows.filter(r=>isLinhaFora(r));
+
+  const totalAll=allData.slice(1).length;
+  const totalFora=allData.slice(1).filter(r=>isLinhaFora(r)).length;
+  const totalOk=totalAll-totalFora;
+  document.getElementById('ms-total').textContent=totalAll;
+  document.getElementById('ms-fora').textContent=totalFora;
+  document.getElementById('ms-ok').textContent=totalOk;
+
+  const exclCount=allRegraValues.length - regraIncludeSet.size;
+  document.getElementById('ms-regra').textContent=exclCount===0?'Tudo':`${exclCount} excluída(s)`;
+
+  if(modalSearchQuery){
+    rows=rows.filter(row=>si.some(i=>{
+      const v=String(row[i]||'').toLowerCase();
+      return v.includes(modalSearchQuery);
+    }));
+  }
+
+  document.getElementById('ms-showing').textContent=rows.length;
+  document.getElementById('mf-count').textContent=rows.length;
+  document.getElementById('mf-total').textContent=totalAll;
+
+  const tbody=document.getElementById('fullTableBody');
+  if(rows.length===0){tbody.innerHTML=`<tr><td colspan="${si.length+2}" class="no-results">Nenhum registro encontrado com os filtros atuais.</td></tr>`;return;}
+
+  const RENDER_LIMIT=500;
+  const toRender=rows.slice(0,RENDER_LIMIT);
+
+  tbody.innerHTML=toRender.map((row,idx)=>{
+    const fora=isLinhaFora(row);
+    const rowClass=fora?'row-fora':'';
+    const tds=si.map(i=>{
+      let val=String(row[i]??'');
+      const isNeid=i===neIdColIndex;
+      const cellClass=isNeid?(fora?'cell-ne-fora':'cell-ne-ok'):'';
+      if(modalSearchQuery&&val.toLowerCase().includes(modalSearchQuery)){
+        const re=new RegExp(`(${escRegex(modalSearchQuery)})`,'gi');
+        val=val.replace(re,'<mark class="highlight-match">$1</mark>');
+      }
+      return `<td class="${cellClass}" title="${String(row[i]??'')}">${val}</td>`;
+    }).join('');
+    const statusPill=fora?'<span class="status-pill-fora">● FORA</span>':'<span class="status-pill-ok">● OK</span>';
+    return `<tr class="${rowClass}"><td class="row-num">${idx+1}</td>${tds}<td>${statusPill}</td></tr>`;
+  }).join('');
+
+  if(rows.length>RENDER_LIMIT){
+    const extra=document.createElement('tr');
+    extra.innerHTML=`<td colspan="${si.length+2}" style="text-align:center;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--amber);">⚠ Exibindo ${RENDER_LIMIT} de ${rows.length} registros — use a busca para filtrar</td>`;
+    tbody.appendChild(extra);
+  }
+}
+
+/* ══ EXPORT ══ */
+document.getElementById('exportBtn').addEventListener('click',doExport);
+document.getElementById('modalExportBtn').addEventListener('click',doExport);
+
+function doExport(){
+  if(!selected.size){showAlert('error','Selecione ao menos uma coluna!');return;}
+  try{
+    document.getElementById('loadingText').textContent='Gerando planilha com cruzamento...';
+    loading.classList.add('active');
+    const si=Array.from(selected).sort((a,b)=>a-b);
+    const dataRows=getFilteredRows();
+
+    const statusEmptyColIdx=si.length;const statusColIdx=si.length+1;const alarmesColIdx=si.length+2;const totalCols=si.length+3;
+
+    const sHdr={fill:{patternType:'solid',fgColor:{rgb:'1E2B5E'}},font:{bold:true,color:{rgb:'FFFFFF'},sz:11,name:'Calibri'},alignment:{horizontal:'center',vertical:'center',wrapText:true},border:{top:{style:'medium',color:{rgb:'3B5BFF'}},bottom:{style:'medium',color:{rgb:'3B5BFF'}},left:{style:'thin',color:{rgb:'3B5BFF'}},right:{style:'thin',color:{rgb:'3B5BFF'}}}};
+    const sHdrAlarm={fill:{patternType:'solid',fgColor:{rgb:'2D1E00'}},font:{bold:true,color:{rgb:'F5A623'},sz:11,name:'Calibri'},alignment:{horizontal:'center',vertical:'center',wrapText:true},border:{top:{style:'medium',color:{rgb:'F5A623'}},bottom:{style:'medium',color:{rgb:'F5A623'}},left:{style:'thin',color:{rgb:'F5A623'}},right:{style:'thin',color:{rgb:'F5A623'}}}};
+    const sFora={fill:{patternType:'solid',fgColor:{rgb:'FF3F5C'}},font:{bold:true,color:{rgb:'FFFFFF'},sz:10,name:'Calibri'},alignment:{vertical:'center'},border:{top:{style:'thin',color:{rgb:'CC0020'}},bottom:{style:'thin',color:{rgb:'CC0020'}},left:{style:'thin',color:{rgb:'CC0020'}},right:{style:'thin',color:{rgb:'CC0020'}}}};
+    const sOk={fill:{patternType:'solid',fgColor:{rgb:'FFFFFF'}},font:{color:{rgb:'333333'},sz:10,name:'Calibri'},alignment:{vertical:'center'},border:{top:{style:'thin',color:{rgb:'E2E5F0'}},bottom:{style:'thin',color:{rgb:'E2E5F0'}},left:{style:'thin',color:{rgb:'E2E5F0'}},right:{style:'thin',color:{rgb:'E2E5F0'}}}};
+    const sStatusFora={fill:{patternType:'solid',fgColor:{rgb:'CC0020'}},font:{bold:true,color:{rgb:'FFFFFF'},sz:11,name:'Calibri'},alignment:{horizontal:'center',vertical:'center'},border:{top:{style:'medium',color:{rgb:'880015'}},bottom:{style:'medium',color:{rgb:'880015'}},left:{style:'medium',color:{rgb:'880015'}},right:{style:'medium',color:{rgb:'880015'}}}};
+    const sStatusOk={fill:{patternType:'solid',fgColor:{rgb:'00C48C'}},font:{bold:true,color:{rgb:'FFFFFF'},sz:11,name:'Calibri'},alignment:{horizontal:'center',vertical:'center'},border:{top:{style:'thin',color:{rgb:'009068'}},bottom:{style:'thin',color:{rgb:'009068'}},left:{style:'thin',color:{rgb:'009068'}},right:{style:'thin',color:{rgb:'009068'}}}};
+    const sAlarm={fill:{patternType:'solid',fgColor:{rgb:'FFF8EE'}},font:{italic:true,color:{rgb:'B87A00'},sz:10,name:'Calibri'},alignment:{vertical:'center'},border:{top:{style:'thin',color:{rgb:'E8D090'}},bottom:{style:'thin',color:{rgb:'E8D090'}},left:{style:'thin',color:{rgb:'E8D090'}},right:{style:'thin',color:{rgb:'E8D090'}}}};
+    const sAlarmFora={fill:{patternType:'solid',fgColor:{rgb:'4A0010'}},font:{italic:true,bold:true,color:{rgb:'FFC0A0'},sz:10,name:'Calibri'},alignment:{vertical:'center'},border:{top:{style:'thin',color:{rgb:'880030'}},bottom:{style:'thin',color:{rgb:'880030'}},left:{style:'thin',color:{rgb:'880030'}},right:{style:'thin',color:{rgb:'880030'}}}};
+
+    const ws={};
+    const hdrLabels=[...si.map(i=>headers[i]),'STATUS','STATUS SITE','ALARMES'];
+    hdrLabels.forEach((label,c)=>{ws[XLSX.utils.encode_cell({r:0,c})]={v:label,t:'s',s:c===alarmesColIdx?sHdrAlarm:sHdr};});
+
+    let sitesForaCount=0;
+    dataRows.forEach((row,ri)=>{
+      const r=ri+1;const fora=isLinhaFora(row);if(fora)sitesForaCount++;
+      const estilo=fora?sFora:sOk;
+      si.forEach((colIdx,c)=>{const raw=row[colIdx];const isNum=raw!==''&&raw!==null&&raw!==undefined&&!isNaN(raw)&&String(raw).trim()!=='';ws[XLSX.utils.encode_cell({r,c})]={v:raw===undefined||raw===null?'':raw,t:isNum?'n':'s',s:estilo};});
+      ws[XLSX.utils.encode_cell({r,c:statusEmptyColIdx})]={v:'',t:'s',s:sOk};
+      ws[XLSX.utils.encode_cell({r,c:statusColIdx})]={v:fora?'SITE FORA':'OK',t:'s',s:fora?sStatusFora:sStatusOk};
+      ws[XLSX.utils.encode_cell({r,c:alarmesColIdx})]={v:buildAlarmesValue(row),t:'s',s:fora?sAlarmFora:sAlarm};
+    });
+
+    ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:dataRows.length,c:totalCols-1}});
+    ws['!cols']=[...si.map(()=>({wch:22})),{wch:14},{wch:20},{wch:28}];
+    ws['!rows']=[{hpt:22},...dataRows.map(row=>({hpt:isLinhaFora(row)?18:15}))];
+
+    const wb={SheetNames:['Filas TLP'],Sheets:{'Filas TLP':ws}};
+
+    // summary sheet
+    const exclCount=allRegraValues.length-regraIncludeSet.size;
+    const regraInfo=exclCount>0
+      ?[['',''],['Filtro Regra Usuário','ATIVO'],['Regras incluídas',regraIncludeSet.size],['Regras excluídas',exclCount],...[...allRegraValues.filter(x=>!regraIncludeSet.has(x.value))].map(({value,count})=>[`  Excluída: ${value}`,`${count} linhas removidas`])]
+      :[['',''],['Filtro Regra Usuário','Todas incluídas']];
+    const sumRows=[['RELATÓRIO DE CRUZAMENTO — TLP',''],['',''],['Data de Geração',new Date().toLocaleString('pt-BR')],['Total de Registros (exportados)',dataRows.length],['Sites Fora (sinalizados)',sitesForaCount],['Sites OK',dataRows.length-sitesForaCount],['NE IDs na lista',sitesForaSet.size],...regraInfo,['',''],['NE ID','STATUS'],...[...sitesForaSet].map(ne=>[ne,'FORA'])];
+    const wsSummary={};
+    sumRows.forEach((row,r)=>{row.forEach((val,c)=>{const isFoRow=r>=9+regraInfo.length&&c===1&&val==='FORA';wsSummary[XLSX.utils.encode_cell({r,c})]={v:val,t:typeof val==='number'?'n':'s',s:isFoRow?sStatusFora:r===0?sHdr:sOk};});});
+    wsSummary['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:sumRows.length-1,c:1}});
+    wsSummary['!cols']=[{wch:40},{wch:20}];
+    wb.SheetNames.push('Resumo');wb.Sheets['Resumo']=wsSummary;
+
+    const ts=new Date().toISOString().slice(0,19).replace(/:/g,'-');
+    XLSX.writeFile(wb,`TLP_Filas_Cruzado_${ts}.xlsx`,{bookType:'xlsx',type:'binary',cellStyles:true});
+    loading.classList.remove('active');
+    showAlert('success',`Exportado! ${sitesForaCount} sinalizadas · ${dataRows.length-sitesForaCount} OK · ${dataRows.length} registros.`);
+  }catch(err){loading.classList.remove('active');showAlert('error','Erro ao exportar: '+err.message);console.error(err);}
+}
+
+/* ══ UTILS ══ */
+function fmtSize(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'];const i=Math.floor(Math.log(b)/Math.log(k));return(b/Math.pow(k,i)).toFixed(1)+' '+s[i];}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escAttr(s){return String(s).replace(/'/g,"\\'");}
+function escRegex(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+</script>
+</body>
+</html>
