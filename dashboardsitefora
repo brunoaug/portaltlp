@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de Sites</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg:       #05061a;
+    --surface:  #0b0e2e;
+    --surface2: #111540;
+    --accent:   #ff5f00;
+    --accent2:  #ff8c42;
+    --text:     #e8eaf6;
+    --muted:    #5c6080;
+    --border:   rgba(255,95,0,0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 60% 40% at 80% 10%, rgba(255,95,0,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 30% at 10% 80%, rgba(56,189,248,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 40px 40px;
+}
+
+header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 36px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.header-title { display: flex; flex-direction: column; gap: 4px; }
+
+.header-title .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; line-height: 1; }
+h1 span { color: var(--accent); }
+
+.menu {
+    display: flex;
+    gap: 6px;
+    background: var(--surface);
+    padding: 5px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.menu button {
+    padding: 8px 20px;
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.menu button:hover { color: var(--text); background: var(--surface2); }
+.menu button.active { background: var(--accent); color: white; }
+
+/* ─── CARDS ─── */
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    min-width: 130px;
+    flex: 1;
+}
+
+.card:hover { transform: translateY(-2px); }
+
+.card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--cc);
+}
+
+.card-number {
+    font-size: 1.9rem;
+    font-weight: 800;
+    font-family: 'DM Mono', monospace;
+    line-height: 1;
+    margin-bottom: 5px;
+    color: var(--cc);
+}
+
+.card-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* ─── FILTROS ─── */
+.filtros {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filtros input, .filtros select {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.filtros input:focus, .filtros select:focus { border-color: var(--accent); }
+.filtros input { flex: 1; min-width: 180px; }
+.filtros select option { background: var(--surface2); }
+
+/* ─── TABELA ─── */
+.table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
+
+th {
+    padding: 13px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+}
+
+td {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.15s; }
+tbody tr:hover { background: rgba(255,95,0,0.04); }
+
+/* ─── PILL ─── */
+.pill {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border: 1px solid var(--pc);
+    color: var(--pc);
+    background: color-mix(in srgb, var(--pc) 12%, transparent);
+}
+
+.pill::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--pc);
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.site-name { font-weight: 600; font-size: 14px; }
+
+.tsk-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.cell-wrap {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.obs-cell {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ─── PENDÊNCIA ─── */
+.pendencia-cell {
+    font-size: 12px;
+    color: var(--accent2);
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: 'DM Mono', monospace;
+}
+
+.pendencia-cell.vazio { color: var(--muted); }
+
+.resp-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(255,95,0,0.1);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--accent2);
+}
+
+/* ─── BOTÃO EDITAR ─── */
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-edit:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255,95,0,0.08);
+}
+
+.btn-edit svg { width: 12px; height: 12px; }
+
+/* ─── ABAS ─── */
+.tab { display: none; }
+.tab.active { display: block; animation: fadeIn 0.25s ease; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── GRÁFICOS ─── */
+.graficos { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; align-items: start; }
+
+.grafico-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+}
+
+.grafico-card h3 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+    font-family: 'DM Mono', monospace;
+}
+
+.grafico-card canvas { max-height: 420px; }
+.grafico-card.resp-card { overflow-y: auto; max-height: 620px; }
+.grafico-card.resp-card canvas { max-height: none; }
+
+.empty { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
+
+/* ─── MODAL ─── */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5,6,26,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+.modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 560px;
+    padding: 32px;
+    position: relative;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+}
+
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 12px;
+}
+
+.modal-header h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.modal-header .site-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-close:hover { color: var(--text); }
+
+.modal-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field.full { grid-column: 1 / -1; }
+
+.field label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.field input,
+.field textarea,
+.field select {
+    padding: 10px 12px;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: none;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus { border-color: var(--accent); }
+
+.field textarea { min-height: 72px; }
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancel {
+    padding: 10px 22px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover { color: var(--text); border-color: var(--muted); }
+
+.btn-save {
+    padding: 10px 28px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-save:hover { background: var(--accent2); transform: translateY(-1px); }
+.btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    z-index: 2000;
+    display: none;
+    animation: slideUp 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.toast.ok  { background: rgba(0,229,160,0.15); border-color: #00e5a0; color: #00e5a0; }
+.toast.err { background: rgba(244,63,94,0.15);  border-color: #f43f5e; color: #f43f5e; }
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) { .graficos { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+    .container { padding: 20px 16px; }
+    .modal-fields { grid-template-columns: 1fr; }
+    th:nth-child(3), td:nth-child(3),
+    th:nth-child(5), td:nth-child(5),
+    th:nth-child(6), td:nth-child(6),
+    th:nth-child(7), td:nth-child(7) { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <div class="header-title">
+            <span class="label">Dashboard</span>
+            <h1>Sala de crise <span>TIM</span></h1>
+        </div>
+        <nav class="menu">
+            <button onclick="trocarAba('tabela', this)" class="active">Tabela</button>
+            <button onclick="trocarAba('graficos', this)">Gráficos</button>
+        </nav>
+    </header>
+
+    <!-- ABA TABELA -->
+    <div id="tabela" class="tab active">
+        <div class="cards" id="cards-container"></div>
+
+        <div class="filtros">
+            <input type="text" id="search" placeholder="🔍  Buscar site...">
+            <select id="filtroCategoria"><option value="">Todas as Categorias</option></select>
+            <select id="filtroResp"><option value="">Todos os Responsáveis</option></select>
+            <select id="ordenar">
+                <option value="az">A → Z</option>
+                <option value="za">Z → A</option>
+            </select>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Site</th>
+                        <th>Status</th>
+                        <th>TSK</th>
+                        <th>Responsável</th>
+                        <th>Previsão</th>
+                        <th>Pendência</th>
+                        <th>OBS</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ABA GRÁFICOS -->
+    <div id="graficos" class="tab">
+        <div class="graficos">
+            <div class="grafico-card">
+                <h3>Por Categoria</h3>
+                <canvas id="graficoStatus"></canvas>
+            </div>
+            <div class="grafico-card resp-card">
+                <canvas id="graficoResp"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL DE EDIÇÃO -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <div>
+                <div class="site-label">Editando</div>
+                <h2 id="modalSiteNome">—</h2>
+            </div>
+            <button class="btn-close" onclick="fecharModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-fields">
+            <div class="field">
+                <label>Status</label>
+                <input type="text" id="fStatus" placeholder="Status atual">
+            </div>
+            <div class="field">
+                <label>TSK</label>
+                <input type="text" id="fTsk" placeholder="Número TSK">
+            </div>
+            <div class="field">
+                <label>Responsável</label>
+                <input type="text" id="fResp" placeholder="Nome do responsável">
+            </div>
+            <div class="field">
+                <label>Previsão</label>
+                <input type="text" id="fPrevisao" placeholder="Previsão de normalização">
+            </div>
+            <div class="field full">
+                <label>Pendência</label>
+                <textarea id="fPendencia" placeholder="Pendências..."></textarea>
+            </div>
+            <div class="field full">
+                <label>OBS</label>
+                <textarea id="fObs" placeholder="Observações..."></textarea>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-save" id="btnSalvar" onclick="salvar()">
+                <span class="spinner" id="spinner"></span>
+                <span id="btnSalvarText">Salvar</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwip3C7S8xKQQLLHi_Fzeg6SuWeCNpVJ5MHFROjw_6OaLdoRiRi3kMTmRMVpbqks8HLaw/exec';
+
+const hoje = new Date();
+const dia  = String(hoje.getDate()).padStart(2, '0');
+const mes  = String(hoje.getMonth() + 1).padStart(2, '0');
+const paginaHoje = `${dia}/${mes}`;
+
+let dados = [];
+let chartsCreated = false;
+let editandoIndex = null;
+
+function escHtml(str) {
+    return (str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+// ─── CATEGORIAS ──────────────────────────────────────────
+const CATS = [
+    { key:'normalizado',   label:'Normalizado',    color:'#00e5a0', kw:['normalizado','normal'] },
+    { key:'provedor',      label:'Provedor',        color:'#38bdf8', kw:['provedor','vtal','ihs','fmo','k2'] },
+    { key:'gmg',           label:'GMG Ativo',       color:'#fb923c', kw:['gmg'] },
+    { key:'sobressalente', label:'Sobressalente',   color:'#facc15', kw:['sobressalente','sobres'] },
+    { key:'vandalismo',    label:'Vandalismo',      color:'#f43f5e', kw:['vandalismo','vandal','furto','furtad'] },
+    { key:'blacklist',     label:'Blacklist',       color:'#f87171', kw:['blacklist','black list','tráfico','trafico','milicia','milícia','escolta'] },
+    { key:'whitelist',     label:'Whitelist',       color:'#94a3b8', kw:['whitelist','white list',' wl'] },
+    { key:'implantacao',   label:'Implantação',     color:'#34d399', kw:['implantação','implantacao','modernização','modernizacao','remanejado','remanejamento'] },
+    { key:'fat',           label:'FAT / Compras',   color:'#e879f9', kw:['fat','orçamento','orcamento','compras','boq'] },
+    { key:'acesso',        label:'Sem Acesso / AC', color:'#60a5fa', kw:['sem acesso','zeladoria','pendencia contratual','falta de ac','infiltra','alagado','corte de ac','acesso'] },
+    { key:'campo',         label:'Em Campo',        color:'#a78bfa', kw:['no local','verificando','atuando','previsão','previsao','acionado','acionamento','deslocamento','chegada'] },
+];
+const CAT_OUTRO = { key:'outro', label:'Outro', color:'#6b7280' };
+
+function categorizar(previsao, status) {
+    const txt = ((previsao || '') + ' ' + (status || '')).toLowerCase();
+    for (const c of CATS) { if (c.kw.some(k => txt.includes(k))) return c; }
+    return CAT_OUTRO;
+}
+
+// ─── BOOT ────────────────────────────────────────────────
+Chart.defaults.color = '#e8eaf6';
+Chart.defaults.font  = { family: "'DM Mono', monospace", size: 11 };
+
+carregarDados();
+
+function carregarDados() {
+    const url = `${APPS_SCRIPT_URL}?aba=${encodeURIComponent(paginaHoje)}`;
+    fetch(url)
+        .then(r => r.json())
+        .then(data => {
+            if (!Array.isArray(data) || data.length === 0) throw new Error('vazio');
+            dados = data;
+            preencherFiltros();
+            renderCards();
+            renderTabela();
+        })
+        .catch(() => {
+            document.getElementById('tbody').innerHTML =
+                `<tr><td colspan="8" class="empty">⚠️ Aba "${paginaHoje}" não encontrada ou sem dados.</td></tr>`;
+        });
+}
+
+// ─── ABAS ────────────────────────────────────────────────
+function trocarAba(nome, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(nome).classList.add('active');
+    document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (nome === 'graficos' && !chartsCreated) { chartsCreated = true; criarGraficos(); }
+}
+
+// ─── FILTROS ─────────────────────────────────────────────
+function preencherFiltros() {
+    const respSet = new Set();
+    const catSet  = new Set();
+    dados.forEach(i => {
+        if (i["RESPONSÁVEL"]) respSet.add(i["RESPONSÁVEL"]);
+        catSet.add(categorizar(i["PREVISÃO"], i["STATUS"]).key);
+    });
+
+    const selResp = document.getElementById('filtroResp');
+    selResp.innerHTML = '<option value="">Todos os Responsáveis</option>';
+    [...respSet].sort().forEach(r => selResp.innerHTML += `<option value="${r}">${escHtml(r)}</option>`);
+
+    const selCat = document.getElementById('filtroCategoria');
+    selCat.innerHTML = '<option value="">Todas as Categorias</option>';
+    CATS.filter(c => catSet.has(c.key)).forEach(c => {
+        selCat.innerHTML += `<option value="${c.key}">${c.label}</option>`;
+    });
+    if (catSet.has('outro')) selCat.innerHTML += `<option value="outro">Outro</option>`;
+}
+
+// ─── CARDS ───────────────────────────────────────────────
+function renderCards() {
+    const counts = {};
+    dados.forEach(i => {
+        const c = categorizar(i["PREVISÃO"], i["STATUS"]);
+        if (!counts[c.key]) counts[c.key] = { cat: c, n: 0 };
+        counts[c.key].n++;
+    });
+
+    const container = document.getElementById('cards-container');
+    container.innerHTML = `
+        <div class="card" style="--cc:#ff5f00">
+            <div class="card-number">${dados.length}</div>
+            <div class="card-label">Total</div>
+        </div>`;
+
+    const order = CATS.map(c => c.key);
+    Object.values(counts)
+        .sort((a, b) => order.indexOf(a.cat.key) - order.indexOf(b.cat.key))
+        .forEach(({ cat, n }) => {
+            container.innerHTML += `
+                <div class="card" style="--cc:${cat.color}">
+                    <div class="card-number">${n}</div>
+                    <div class="card-label">${cat.label}</div>
+                </div>`;
+        });
+}
+
+// ─── TABELA ──────────────────────────────────────────────
+function renderTabela() {
+    const tbody      = document.getElementById('tbody');
+    tbody.innerHTML  = '';
+
+    const busca      = document.getElementById('search').value.toLowerCase();
+    const catFiltro  = document.getElementById('filtroCategoria').value;
+    const respFiltro = document.getElementById('filtroResp').value;
+    const ordem      = document.getElementById('ordenar').value;
+
+    let lista = dados.map((item, idx) => ({ item, idx }))
+        .sort((a, b) => {
+            const A = (a.item["SITE"] || "").toLowerCase();
+            const B = (b.item["SITE"] || "").toLowerCase();
+            return ordem === "az" ? A.localeCompare(B) : B.localeCompare(A);
+        });
+
+    let found = false;
+    lista.forEach(({ item, idx }) => {
+        const site = item["SITE"] || "";
+        const resp = item["RESPONSÁVEL"] || "";
+        const cat  = categorizar(item["PREVISÃO"], item["STATUS"]);
+
+        if (!site.toLowerCase().includes(busca)) return;
+        if (catFiltro && cat.key !== catFiltro) return;
+        if (respFiltro && resp !== respFiltro) return;
+
+        found = true;
+
+        const prev      = escHtml(item["PREVISÃO"]  || "—");
+        const obs       = escHtml(item["OBS"]        || "—");
+        const status    = escHtml(item["STATUS"]     || "—");
+        const tsk       = escHtml(item["TSK"]        || "—");
+        const respEsc   = escHtml(resp);
+        const pendencia = escHtml(item["PENDÊNCIA"]  || "");
+
+        tbody.innerHTML += `
+        <tr>
+            <td><span class="site-name">${escHtml(site)}</span></td>
+            <td><span class="tsk-badge cell-wrap" style="color:${cat.color};font-size:13px;font-weight:600">${status}</span></td>
+            <td><span class="tsk-badge">${tsk}</span></td>
+            <td>${resp ? `<span class="resp-tag">${respEsc}</span>` : "—"}</td>
+            <td><span class="pill" style="--pc:${cat.color}" title="${prev}">${prev}</span></td>
+            <td><span class="pendencia-cell${pendencia ? '' : ' vazio'}">${pendencia || '—'}</span></td>
+            <td><span class="obs-cell" title="${obs}">${obs}</span></td>
+            <td>
+                <button class="btn-edit" onclick="abrirModal(${idx})">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Editar
+                </button>
+            </td>
+        </tr>`;
+    });
+
+    if (!found)
+        tbody.innerHTML = `<tr><td colspan="8" class="empty">Nenhum resultado encontrado.</td></tr>`;
+}
+
+document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', renderTabela));
+
+// ─── MODAL ───────────────────────────────────────────────
+function abrirModal(idx) {
+    editandoIndex = idx;
+    const item = dados[idx];
+
+    document.getElementById('modalSiteNome').textContent = item["SITE"]       || "—";
+    document.getElementById('fStatus').value             = item["STATUS"]     || '';
+    document.getElementById('fTsk').value                = item["TSK"]        || '';
+    document.getElementById('fResp').value               = item["RESPONSÁVEL"]|| '';
+    document.getElementById('fPrevisao').value           = item["PREVISÃO"]   || '';
+    document.getElementById('fPendencia').value          = item["PENDÊNCIA"]  || '';
+    document.getElementById('fObs').value                = item["OBS"]        || '';
+
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('fStatus').focus();
+}
+
+function fecharModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    editandoIndex = null;
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) fecharModal();
+});
+
+// ─── SALVAR ──────────────────────────────────────────────
+async function salvar() {
+    if (editandoIndex === null) return;
+
+    const btn     = document.getElementById('btnSalvar');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btnSalvarText');
+
+    btn.disabled          = true;
+    spinner.style.display = 'block';
+    btnText.textContent   = 'Salvando...';
+
+    const item = dados[editandoIndex];
+    item["STATUS"]      = document.getElementById('fStatus').value.trim();
+    item["TSK"]         = document.getElementById('fTsk').value.trim();
+    item["RESPONSÁVEL"] = document.getElementById('fResp').value.trim();
+    item["PREVISÃO"]    = document.getElementById('fPrevisao').value.trim();
+    item["PENDÊNCIA"]   = document.getElementById('fPendencia').value.trim();
+    item["OBS"]         = document.getElementById('fObs').value.trim();
+
+    try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                aba:      paginaHoje,
+                rowIndex: editandoIndex + 1,
+                data:     item
+            })
+        });
+
+        const json = await res.json();
+        if (json.error) throw new Error(json.error);
+
+        fecharModal();
+        renderCards();
+        renderTabela();
+        mostrarToast('✓ Salvo na planilha!', 'ok');
+
+    } catch (err) {
+        mostrarToast('✗ Erro ao salvar. Tente novamente.', 'err');
+        console.error(err);
+    } finally {
+        btn.disabled          = false;
+        spinner.style.display = 'none';
+        btnText.textContent   = 'Salvar';
+    }
+}
+
+// ─── TOAST ───────────────────────────────────────────────
+function mostrarToast(msg, tipo) {
+    const t = document.getElementById('toast');
+    t.textContent   = msg;
+    t.className     = `toast ${tipo}`;
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 3500);
+}
+
+// ─── GRÁFICOS ────────────────────────────────────────────
+function criarGraficos() {
+    const catCounts = {};
+    const respMap   = {};
+
+    dados.forEach(i => {
+        const c = categorizar(i["PREVISÃO"], i["STATUS"]);
+        catCounts[c.key] = catCounts[c.key] || { label: c.label, n: 0, color: c.color };
+        catCounts[c.key].n++;
+        const r = i["RESPONSÁVEL"] || "Sem";
+        respMap[r] = (respMap[r] || 0) + 1;
+    });
+
+    const order    = CATS.map(c => c.key);
+    const catEntry = Object.values(catCounts).sort((a, b) =>
+        order.indexOf(Object.keys(catCounts).find(k => catCounts[k] === a)) -
+        order.indexOf(Object.keys(catCounts).find(k => catCounts[k] === b))
+    );
+
+    const gridColor = 'rgba(255,255,255,0.06)';
+
+    new Chart(document.getElementById('graficoStatus'), {
+        type: 'doughnut',
+        data: {
+            labels: catEntry.map(c => c.label),
+            datasets: [{
+                data: catEntry.map(c => c.n),
+                backgroundColor: catEntry.map(c => c.color),
+                borderWidth: 0,
+                hoverOffset: 10,
+            }]
+        },
+        options: {
+            cutout: '60%',
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, boxWidth: 8, font: { size: 10 } } }
+            }
+        }
+    });
+
+    const respLabels = Object.keys(respMap).sort((a, b) => respMap[b] - respMap[a]);
+    const palette    = ['#ff5f00','#38bdf8','#a78bfa','#00e5a0','#facc15','#f43f5e','#e879f9','#fb923c','#34d399','#60a5fa'];
+
+    const respCanvas = document.getElementById('graficoResp');
+    respCanvas.style.height = (respLabels.length * 90 + 40) + 'px';
+
+    new Chart(respCanvas, {
+        type: 'bar',
+        data: {
+            labels: respLabels,
+            datasets: [{
+                data: respLabels.map(r => respMap[r]),
+                backgroundColor: respLabels.map((_, i) => palette[i % palette.length] + 'cc'),
+                borderRadius: 6,
+                borderSkipped: false,
+                categoryPercentage: 0.35,
+                barPercentage: 0.7,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x} site${ctx.parsed.x > 1 ? 's' : ''}` } }
+            },
+            scales: {
+                x: {
+                    grid: { color: gridColor },
+                    ticks: { precision: 0, font: { size: 11 } },
+                    border: { display: false }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { font: { family: "'Outfit', sans-serif", size: 12, weight: '600' }, color: '#e8eaf6', autoSkip: false, maxRotation: 0 },
+                    border: { display: false }
+                }
+            }
+        }
+    });
+}
+</script>
+</body>
+</html>
