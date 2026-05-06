@@ -23,6 +23,8 @@
     --orange:   #e8630a;
     --orange2:  #f07830;
     --blue:     #5aa0d8;
+    --green:    #3da882;
+    --purple:   #8b6fd4;
   }
 
   html { scroll-behavior: smooth; }
@@ -184,6 +186,20 @@
   }
   .card-blue:hover { border-color: rgba(90,160,216,.4); }
 
+  /* card — green tint */
+  .card-green {
+    background: #0a1e18;
+    border: 1px solid #0f2d22;
+  }
+  .card-green:hover { border-color: rgba(61,168,130,.4); }
+
+  /* card — purple tint */
+  .card-purple {
+    background: #10111e;
+    border: 1px solid #1a1a35;
+  }
+  .card-purple:hover { border-color: rgba(139,111,212,.4); }
+
   /* card — orange accent (hero card) */
   .card-orange {
     background: var(--orange);
@@ -199,6 +215,8 @@
   }
   .card-dark .card-glow   { background: radial-gradient(circle, rgba(232,99,10,.14) 0%, transparent 70%); }
   .card-blue .card-glow   { background: radial-gradient(circle, rgba(55,138,221,.18) 0%, transparent 70%); }
+  .card-green .card-glow  { background: radial-gradient(circle, rgba(61,168,130,.16) 0%, transparent 70%); }
+  .card-purple .card-glow { background: radial-gradient(circle, rgba(139,111,212,.18) 0%, transparent 70%); }
   .card-orange .card-glow { background: radial-gradient(circle, rgba(255,255,255,.18) 0%, transparent 70%); }
 
   /* bottom line */
@@ -207,6 +225,8 @@
   }
   .card-dark .card-line   { background: linear-gradient(90deg, transparent, var(--orange), transparent); opacity: .5; }
   .card-blue .card-line   { background: linear-gradient(90deg, transparent, var(--blue), transparent); opacity: .6; }
+  .card-green .card-line  { background: linear-gradient(90deg, transparent, var(--green), transparent); opacity: .6; }
+  .card-purple .card-line { background: linear-gradient(90deg, transparent, var(--purple), transparent); opacity: .6; }
   .card-orange .card-line { background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent); }
 
   .card-top {
@@ -221,6 +241,8 @@
   }
   .card-dark .tag   { background: #0f2035; color: var(--muted); border: 1px solid var(--border2); }
   .card-blue .tag   { background: #0f2540; color: var(--blue);  border: 1px solid var(--border3); }
+  .card-green .tag  { background: #0a2018; color: var(--green); border: 1px solid #0f2d22; }
+  .card-purple .tag { background: #14112a; color: var(--purple); border: 1px solid #1e1a40; }
   .card-orange .tag { background: rgba(0,0,0,.18); color: #ffe4cc; border: 1px solid rgba(255,255,255,.15); }
 
   .icon {
@@ -229,6 +251,8 @@
   }
   .card-dark .icon   { background: #0f2035; border: 1px solid var(--border2); }
   .card-blue .icon   { background: #0f2540; border: 1px solid var(--border3); }
+  .card-green .icon  { background: #0a2018; border: 1px solid #0f2d22; }
+  .card-purple .icon { background: #14112a; border: 1px solid #1e1a40; }
   .card-orange .icon { background: rgba(0,0,0,.2); border: 1px solid rgba(255,255,255,.15); }
 
   .card h2 {
@@ -239,11 +263,11 @@
     margin-bottom: .45rem;
     line-height: 1.15;
   }
-  .card-dark h2, .card-blue h2 { color: var(--text); }
+  .card-dark h2, .card-blue h2, .card-green h2, .card-purple h2 { color: var(--text); }
   .card-orange h2 { color: #fff; }
 
   .card p { font-size: .82rem; line-height: 1.7; flex: 1; }
-  .card-dark p, .card-blue p { color: var(--muted2); }
+  .card-dark p, .card-blue p, .card-green p, .card-purple p { color: var(--muted2); }
   .card-orange p { color: #ffd4b0; }
 
   .card-footer {
@@ -254,6 +278,8 @@
   .cta { font-size: .75rem; font-weight: 500; letter-spacing: .06em; }
   .card-dark .cta   { color: var(--orange); }
   .card-blue .cta   { color: var(--blue); }
+  .card-green .cta  { color: var(--green); }
+  .card-purple .cta { color: var(--purple); }
   .card-orange .cta { color: #ffe4cc; }
 
   .arr {
@@ -264,6 +290,8 @@
   }
   .card-dark .arr   { background: #0f2035; color: var(--orange); border: 1px solid #1a3a55; }
   .card-blue .arr   { background: #0f2540; color: var(--blue);   border: 1px solid var(--border3); }
+  .card-green .arr  { background: #0a2018; color: var(--green);  border: 1px solid #0f2d22; }
+  .card-purple .arr { background: #14112a; color: var(--purple); border: 1px solid #1e1a40; }
   .card-orange .arr { background: rgba(0,0,0,.2); color: #fff; border: 1px solid rgba(255,255,255,.2); }
   .card:hover .arr  { transform: translate(3px,-3px); }
 
@@ -422,6 +450,59 @@
       </a>
 
     </div>
+
+    <!-- Row: dois novos cards -->
+    <div class="cards-row">
+
+      <a href="tecnicosfixa.html" class="card card-green">
+        <div class="card-glow"></div>
+        <div class="card-line"></div>
+        <div class="card-top">
+          <div class="tag">04</div>
+          <div class="icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <!-- pessoa / técnico -->
+              <circle cx="8" cy="4.5" r="2.5" fill="#3da882" opacity=".8"/>
+              <path d="M3 14c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="#3da882" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <!-- ferramentas: chave inglesa pequena -->
+              <circle cx="12.5" cy="3.5" r="1.5" fill="none" stroke="#3da882" stroke-width="1" opacity=".6"/>
+              <line x1="11.4" y1="4.6" x2="9.8" y2="6.2" stroke="#3da882" stroke-width="1" stroke-linecap="round" opacity=".6"/>
+            </svg>
+          </div>
+        </div>
+        <h2>Técnicos Fixa</h2>
+        <p>Área de atuação dos técnicos da rede fixa.</p>
+        <div class="card-footer">
+          <span class="cta">Abrir</span>
+          <div class="arr">↗</div>
+        </div>
+      </a>
+
+      <a href="carimbos.html" class="card card-purple">
+        <div class="card-glow"></div>
+        <div class="card-line"></div>
+        <div class="card-top">
+          <div class="tag">05</div>
+          <div class="icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <!-- carimbo -->
+              <rect x="3" y="10" width="10" height="3" rx="1" fill="#8b6fd4" opacity=".9"/>
+              <rect x="5" y="7"  width="6"  height="3" rx="1" fill="#8b6fd4" opacity=".65"/>
+              <rect x="6" y="4"  width="4"  height="3" rx="1" fill="#8b6fd4" opacity=".4"/>
+              <rect x="2" y="13" width="12" height="1.5" rx=".75" fill="#8b6fd4"/>
+            </svg>
+          </div>
+        </div>
+        <h2>Carimbos CSM</h2>
+        <p>Todos os carimbos disponíveis para operação CSM.</p>
+        <div class="card-footer">
+          <span class="cta">Abrir</span>
+          <div class="arr">↗</div>
+        </div>
+      </a>
+
+    </div>
+
   </div>
 
   <footer>
