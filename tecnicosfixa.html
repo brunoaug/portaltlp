@@ -1,0 +1,1717 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Técnicos por Área — RJ</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* ══ TEMA DIURNO ══ */
+:root {
+  --bg:#FFF7F2; --surface:#FFFFFF; --card:#FFFFFF; --card2:#FFF0E8;
+  --border:rgba(255,80,0,0.12); --border2:rgba(255,80,0,0.28);
+  --accent:#FF4500; --accent2:#FF8800; --accent3:#FFCC00;
+  --text:#1A0A00; --text2:#5C3010; --muted:#B07040;
+  --success:#00C97A; --danger:#FF2244; --warn:#FF8C00;
+  --logo-grd:linear-gradient(135deg,#FF4500,#FF8800);
+  --btn-grd:linear-gradient(135deg,#FF4500,#FF8800);
+  --glow:rgba(255,69,0,0.13); --glow2:rgba(255,136,0,0.07);
+  --busy1:#E8A800;--busy2:#E07000;--busy3:#D04000;--busy4:#CC1A1A;--busy5:#990000;
+  --rj-color:#FF4500; --bxd-color:#8B5CF6; --oeste-color:#00A86B;
+  --online:#00C97A; --offline:#FF2244; --wk-color:#D946EF;
+  --tag-bg:rgba(255,80,0,0.06);
+}
+/* ══ TEMA NOTURNO ══ */
+body.theme-night {
+  --bg:#03080F; --surface:#060E1C; --card:#09132A; --card2:#0D1A33;
+  --border:rgba(30,100,255,0.18); --border2:rgba(30,100,255,0.38);
+  --accent:#1E64FF; --accent2:#22B8FF; --accent3:#A3D4FF;
+  --text:#E0ECFF; --text2:#7BA0D8; --muted:#3A5A90;
+  --success:#00FFB2; --danger:#FF3B5C; --warn:#FFB800;
+  --logo-grd:linear-gradient(135deg,#1E64FF,#22B8FF);
+  --btn-grd:linear-gradient(135deg,#1E64FF,#22B8FF);
+  --glow:rgba(30,100,255,0.15); --glow2:rgba(34,184,255,0.08);
+  --busy1:#FFCC00;--busy2:#FF9900;--busy3:#FF6600;--busy4:#FF3333;--busy5:#CC0000;
+  --rj-color:#22B8FF; --bxd-color:#A78BFA; --oeste-color:#34D399;
+  --online:#00FFB2; --offline:#FF3B5C; --wk-color:#F0ABFC;
+  --tag-bg:rgba(30,100,255,0.08);
+}
+body.theme-night header { background:rgba(3,8,15,0.92); border-color:rgba(30,100,255,0.22); }
+/* ══ TEMA MADRUGADA ══ */
+body.theme-dawn {
+  --bg:#07040F; --surface:#0D0A1C; --card:#130F2A; --card2:#1A1535;
+  --border:rgba(124,58,237,0.18); --border2:rgba(168,85,247,0.35);
+  --accent:#7C3AED; --accent2:#C084FC; --accent3:#E9D5FF;
+  --text:#EDE9FF; --text2:#9B7FD4; --muted:#5B4A8A;
+  --success:#00FFB2; --danger:#FF3B5C; --warn:#FFB800;
+  --logo-grd:linear-gradient(135deg,#7C3AED,#C084FC);
+  --btn-grd:linear-gradient(135deg,#7C3AED,#C084FC);
+  --glow:rgba(124,58,237,0.14); --glow2:rgba(192,132,252,0.08);
+  --busy1:#FFCC00;--busy2:#FF9900;--busy3:#FF6600;--busy4:#FF3333;--busy5:#CC0000;
+  --rj-color:#A78BFA; --bxd-color:#818CF8; --oeste-color:#34D399;
+  --online:#00FFB2; --offline:#FF3B5C; --wk-color:#F0ABFC;
+  --tag-bg:rgba(124,58,237,0.08);
+}
+body.theme-dawn header { background:rgba(7,4,15,0.92); border-color:rgba(124,58,237,0.22); }
+/* ══ TEMA ESPECIAL — verde neon ══ */
+body.theme-especial {
+  --bg:#011008; --surface:#031A0E; --card:#042414; --card2:#052D19;
+  --border:rgba(0,230,100,0.15); --border2:rgba(0,230,100,0.35);
+  --accent:#00E664; --accent2:#00FFB2; --accent3:#BAFFD9;
+  --text:#D8FFE8; --text2:#5DC987; --muted:#2A6A48;
+  --success:#00FFB2; --danger:#FF3B5C; --warn:#FFD600;
+  --logo-grd:linear-gradient(135deg,#00C957,#00FFB2);
+  --btn-grd:linear-gradient(135deg,#00C957,#00FFB2);
+  --glow:rgba(0,230,100,0.18); --glow2:rgba(0,255,178,0.10);
+  --busy1:#FFE600;--busy2:#FFB300;--busy3:#FF7300;--busy4:#FF3333;--busy5:#CC0000;
+  --rj-color:#00E664; --bxd-color:#00D4FF; --oeste-color:#B8FF6E;
+  --online:#00FFB2; --offline:#FF3B5C; --wk-color:#A3E635;
+  --tag-bg:rgba(0,230,100,0.07);
+}
+body.theme-especial header { background:rgba(1,16,8,0.94); border-color:rgba(0,230,100,0.22); }
+body.theme-especial .logo-badge { box-shadow:0 0 32px rgba(0,230,100,0.35),0 3px 12px rgba(0,0,0,.18); }
+body.theme-especial::after {
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,230,100,0.012) 2px,rgba(0,230,100,0.012) 4px);
+}
+body.theme-especial .tech-card:not(.is-offline):hover { box-shadow:0 0 18px rgba(0,230,100,0.18),0 6px 24px rgba(0,0,0,.12); }
+
+/* ── THEME TOGGLE BTN ── */
+.theme-toggle-btn {
+  display:flex; align-items:center; gap:.4rem;
+  padding:.42rem .85rem; border-radius:8px;
+  border:1px solid var(--border2); background:transparent;
+  color:var(--text2); font-family:'DM Sans',sans-serif;
+  font-size:.76rem; font-weight:600; cursor:pointer; transition:all .2s; white-space:nowrap;
+}
+.theme-toggle-btn:hover { border-color:var(--accent); color:var(--accent); }
+.theme-dot { width:7px; height:7px; border-radius:50%; background:var(--accent); display:inline-block; box-shadow:0 0 6px var(--accent); flex-shrink:0; }
+
+/* ── PALETTE BUTTON & PANEL ── */
+.theme-palette-btn {
+  width:32px; height:32px; border-radius:8px;
+  border:1px solid var(--border2); background:transparent;
+  font-size:.95rem; cursor:pointer; display:flex; align-items:center;
+  justify-content:center; transition:all .2s; flex-shrink:0;
+}
+.theme-palette-btn:hover { border-color:var(--accent); transform:scale(1.08); }
+.theme-palette-btn.open  { border-color:var(--accent); background:var(--tag-bg); }
+.theme-palette-panel {
+  position:absolute; top:calc(100% + 8px); right:0;
+  width:300px; background:var(--surface); border:1px solid var(--border2);
+  border-radius:14px; padding:1rem; z-index:300;
+  box-shadow:0 12px 40px rgba(0,0,0,.22);
+  opacity:0; pointer-events:none; transform:translateY(-6px);
+  transition:opacity .2s,transform .2s;
+}
+.theme-palette-panel.open { opacity:1; pointer-events:all; transform:translateY(0); }
+.tpp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
+.tpp-title { font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:700; color:var(--text); }
+.tpp-reset { padding:.2rem .55rem; border-radius:6px; border:1px solid var(--border2); background:transparent; color:var(--muted); font-family:'DM Mono',monospace; font-size:.62rem; cursor:pointer; transition:all .15s; }
+.tpp-reset:hover { border-color:var(--danger); color:var(--danger); }
+.tpp-theme-row { margin-bottom:.8rem; }
+.tpp-theme-row:last-child { margin-bottom:0; }
+.tpp-row-label { font-family:'DM Mono',monospace; font-size:.6rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:.38rem; display:flex; align-items:center; gap:.35rem; }
+.tpp-label-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.tpp-swatches { display:flex; gap:.32rem; flex-wrap:wrap; align-items:center; }
+.tpp-swatch { width:22px; height:22px; border-radius:5px; cursor:pointer; border:2px solid transparent; transition:all .15s; flex-shrink:0; }
+.tpp-swatch:hover { transform:scale(1.18); }
+.tpp-swatch.active { border-color:#fff; box-shadow:0 0 0 2px var(--accent); }
+.tpp-color-input { width:22px; height:22px; border-radius:5px; border:1px dashed var(--border2); background:var(--card2); cursor:pointer; padding:1px; overflow:hidden; flex-shrink:0; }
+.tpp-color-input::-webkit-color-swatch-wrapper { padding:0; border-radius:4px; }
+.tpp-color-input::-webkit-color-swatch { border:none; border-radius:4px; }
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background-color:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;transition:background .5s,color .3s;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 55% at 10% 0%,var(--glow) 0%,transparent 55%),radial-gradient(ellipse 50% 40% at 90% 100%,var(--glow2) 0%,transparent 55%);transition:background .5s;}
+body>*{position:relative;z-index:1;}
+
+header{padding:0 2.5rem;height:76px;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-bottom:1px solid var(--border);backdrop-filter:blur(14px);background:rgba(255,247,242,0.92);position:sticky;top:0;z-index:100;transition:background .5s,border-color .5s;}
+.logo-mark{display:flex;align-items:center;gap:.85rem;}
+.logo-badge{background:var(--logo-grd);border-radius:10px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 24px var(--glow),0 3px 12px rgba(0,0,0,.12);position:relative;overflow:hidden;transition:background .5s;}
+.logo-badge::after{content:'';position:absolute;top:-30%;left:-10%;width:60%;height:160%;background:rgba(255,255,255,.18);transform:rotate(20deg);}
+.logo-badge span{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#fff;letter-spacing:.06em;line-height:1;}
+.logo-text h1{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:.08em;color:var(--text);line-height:1;}
+.logo-text p{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:3px;}
+.header-right{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;}
+.btn-home{display:flex;align-items:center;gap:.4rem;padding:.42rem 1rem;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;}
+.btn-home:hover{background:var(--border);color:var(--text);border-color:var(--accent);}
+.shift-pill{display:flex;align-items:center;gap:.6rem;padding:.42rem 1rem;border-radius:8px;border:1px solid var(--border2);background:var(--surface);transition:all .4s;}
+.shift-pill.overlap{border-color:rgba(0,200,130,.4);background:rgba(0,200,130,.06);}
+.shift-icon{font-size:1rem;}
+.shift-label{font-size:.74rem;font-weight:700;color:var(--accent);line-height:1;transition:color .4s;}
+.shift-clock{font-family:'DM Mono',monospace;font-size:.56rem;color:var(--muted);margin-top:2px;line-height:1;}
+
+.container{max-width:1360px;margin:0 auto;padding:1.75rem 2.5rem;}
+
+.shift-warn{display:none;align-items:center;gap:.65rem;padding:.8rem 1.2rem;border-radius:12px;font-family:'DM Mono',monospace;font-size:.74rem;margin-bottom:1rem;}
+.shift-warn.day  {background:rgba(255,69,0,.05);  border:1px solid rgba(255,69,0,.18);  color:var(--accent);}
+.shift-warn.night{background:rgba(30,100,255,.06); border:1px solid rgba(30,100,255,.2); color:#22B8FF;}
+.shift-warn.dawn {background:rgba(124,58,237,.06); border:1px solid rgba(124,58,237,.22);color:#C084FC;}
+.shift-warn.active{display:flex;animation:slideIn .3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+.busy-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:.85rem 1.2rem;margin-bottom:1rem;display:none;}
+.busy-panel.active{display:block;}
+.panel-label{font-family:'DM Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.6rem;}
+.busy-chips{display:flex;flex-wrap:wrap;gap:.4rem;}
+.busy-chip{display:flex;align-items:center;gap:.3rem;padding:.22rem .65rem;border-radius:100px;font-family:'DM Mono',monospace;font-size:.7rem;font-weight:600;border:1.5px solid;}
+
+.forecast-alert{background:rgba(255,34,68,.06);border:1px solid rgba(255,34,68,.25);border-radius:12px;padding:.7rem 1.2rem;margin-bottom:1rem;display:none;align-items:center;gap:.65rem;font-family:'DM Mono',monospace;font-size:.74rem;color:var(--danger);}
+.forecast-alert.active{display:flex;}
+.forecast-alert-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.3rem;}
+
+.weekend-panel{background:rgba(217,70,239,.04);border:1px solid rgba(217,70,239,.18);border-radius:14px;padding:.9rem 1.2rem;margin-bottom:1rem;}
+.weekend-panel-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;gap:.75rem;}
+.weekend-panel-title{font-size:.82rem;font-weight:700;color:var(--wk-color);display:flex;align-items:center;gap:.45rem;}
+.weekend-count{font-size:.65rem;color:var(--muted);font-weight:400;font-family:'DM Mono',monospace;}
+.weekend-panel-chevron{font-size:.7rem;color:var(--wk-color);transition:transform .25s;font-style:normal;}
+.weekend-panel.collapsed .weekend-panel-chevron{transform:rotate(-90deg);}
+.weekend-body{overflow:hidden;transition:max-height .3s ease,opacity .25s;margin-top:.9rem;}
+.weekend-panel.collapsed .weekend-body{max-height:0!important;opacity:0;margin-top:0;}
+.weekend-empty{font-family:'DM Mono',monospace;font-size:.73rem;color:var(--muted);font-style:italic;}
+.weekend-slots{display:flex;flex-wrap:wrap;gap:.5rem;}
+.wk-slot{display:flex;align-items:center;gap:.45rem;padding:.4rem .85rem;border-radius:10px;border:1px solid rgba(217,70,239,.22);background:rgba(217,70,239,.05);}
+.wk-slot-name{font-size:.78rem;font-weight:700;color:var(--wk-color);}
+.wk-slot-area{font-size:.62rem;font-family:'DM Mono',monospace;color:var(--muted);}
+.wk-btn-row{display:flex;align-items:center;gap:.45rem;}
+
+.toolbar{display:flex;flex-direction:column;gap:0;margin-bottom:.85rem;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.toolbar-row{display:flex;align-items:center;gap:.45rem;padding:.6rem .7rem;flex-wrap:wrap;}
+.toolbar-row+.toolbar-row{border-top:1px solid var(--border);}
+.toolbar-sep{width:1px;height:22px;background:var(--border);flex-shrink:0;align-self:center;}
+.search-wrap{flex:1;min-width:180px;display:flex;align-items:center;gap:.45rem;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:.52rem .9rem;}
+.search-wrap .s-ico{color:var(--muted);font-size:.82rem;}
+.search-wrap input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Mono',monospace;font-size:.78rem;}
+.search-wrap input::placeholder{color:var(--muted);}
+.tbtn{display:inline-flex;align-items:center;gap:.38rem;padding:.48rem .95rem;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap;user-select:none;}
+.tbtn:hover{border-color:var(--border2);color:var(--text);background:var(--card2);}
+.tbtn.open{border-color:var(--accent);color:var(--accent);}
+.tbtn .chevron{font-style:normal;font-size:.65rem;transition:transform .22s;}
+.tbtn.open .chevron{transform:rotate(180deg);}
+.tbtn.active{border-color:var(--accent);color:var(--accent);}
+.tbtn.night-btn{border-color:var(--border2);color:var(--muted);}
+.tbtn.night-btn.active{border-color:var(--accent2);color:var(--accent2);background:var(--card2);}
+.tbtn-primary{background:var(--btn-grd);border-color:transparent;color:#fff;box-shadow:0 4px 14px var(--glow);}
+.tbtn-primary:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.tbtn-warn{border-color:rgba(255,34,68,.3);color:var(--danger);}
+.tbtn-warn:hover{background:rgba(255,34,68,.06);}
+.area-badge-pill{font-family:'DM Mono',monospace;font-size:.66rem;font-weight:600;color:var(--accent);background:rgba(255,69,0,.07);border:1px solid var(--border2);border-radius:100px;padding:.22rem .65rem;}
+body.theme-night .area-badge-pill{background:rgba(30,100,255,.1);color:var(--accent2);}
+body.theme-dawn  .area-badge-pill{background:rgba(124,58,237,.1);color:var(--accent2);}
+body.theme-especial .area-badge-pill{background:rgba(0,230,100,.1);color:var(--accent);}
+
+.areas-panel{overflow:hidden;max-height:0;opacity:0;transition:max-height .35s ease,opacity .25s,margin-bottom .25s;margin-bottom:0;}
+.areas-panel.open{max-height:600px;opacity:1;margin-bottom:.85rem;}
+.areas-scroll{display:flex;flex-wrap:wrap;gap:.4rem;padding:.6rem 0 .25rem;}
+.area-btn{padding:.35rem .78rem;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.area-btn:hover{border-color:var(--border2);color:var(--text);}
+.area-btn.selected{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.4rem;}
+.results-count{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);}
+.results-count span{color:var(--accent);font-weight:600;}
+
+.region-section{margin-bottom:2rem;}
+.region-header{display:flex;align-items:center;gap:.65rem;padding-bottom:.55rem;margin-bottom:.9rem;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
+.region-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.region-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.05em;}
+.region-count{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);}
+.region-collapse-btn{margin-left:auto;font-style:normal;font-size:.72rem;color:var(--muted);background:none;border:none;cursor:pointer;transition:all .15s;}
+.region-header:hover .region-collapse-btn{color:var(--accent);}
+.region-body{overflow:hidden;transition:max-height .35s ease,opacity .25s;}
+.region-body.collapsed{max-height:0!important;opacity:0;}
+
+.turno-divider{display:flex;align-items:center;gap:.5rem;margin:.85rem 0 .7rem;}
+.turno-divider-line{flex:1;height:1px;background:var(--border);}
+.turno-divider-label{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .6rem;border-radius:100px;border:1px solid;white-space:nowrap;}
+.turno-divider-label.day  {color:#D04000;border-color:rgba(208,64,0,.35);background:rgba(255,136,0,.07);}
+.turno-divider-label.night{color:#1E64FF;border-color:rgba(30,100,255,.35);background:rgba(30,100,255,.07);}
+.turno-divider-label.dawn {color:#9333EA;border-color:rgba(147,51,234,.35);background:rgba(147,51,234,.07);}
+body.theme-night .turno-divider-label.day{color:var(--accent2);}
+body.theme-night .turno-divider-label.night{color:#4d9fff;}
+body.theme-dawn  .turno-divider-label.dawn{color:var(--accent2);}
+body.theme-especial .turno-divider-label.day{color:#B8FF6E;}
+body.theme-especial .turno-divider-label.night{color:#00D4FF;}
+body.theme-especial .turno-divider-label.dawn{color:#A3E635;}
+
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(315px,1fr));gap:.85rem;}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;transition:border-color .2s,transform .15s,box-shadow .2s,opacity .25s,filter .25s;position:relative;overflow:hidden;}
+.tech-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;opacity:0;transition:opacity .2s;border-radius:14px 14px 0 0;}
+.tech-card:not(.is-offline):hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.07);}
+.tech-card:not(.is-offline):hover::before{opacity:1;}
+.tech-card[data-region="RJ"]   {--rc:var(--rj-color);}
+.tech-card[data-region="BXD"]  {--rc:var(--bxd-color);}
+.tech-card[data-region="OESTE"]{--rc:var(--oeste-color);}
+.tech-card::before{background:var(--rc,var(--accent));}
+.tech-card:not(.is-offline):hover{border-color:var(--rc,var(--accent));}
+.tech-card.night-card{border-color:rgba(30,100,255,.2);}
+.tech-card.dawn-card {border-color:rgba(124,58,237,.22);}
+.tech-card.is-offline{opacity:.42;filter:grayscale(.6);}
+.tech-card.is-offline::before{background:var(--offline)!important;opacity:1!important;}
+.tech-card.is-offline{border-color:rgba(255,34,68,.28)!important;}
+.tech-card.busy-1{border-color:var(--busy1)!important;box-shadow:0 0 10px rgba(232,168,0,.15);}
+.tech-card.busy-2{border-color:var(--busy2)!important;box-shadow:0 0 12px rgba(224,112,0,.2);}
+.tech-card.busy-3{border-color:var(--busy3)!important;box-shadow:0 0 14px rgba(208,64,0,.22);}
+.tech-card.busy-4{border-color:var(--busy4)!important;box-shadow:0 0 16px rgba(204,26,26,.25);}
+.tech-card.busy-5{border-color:var(--busy5)!important;box-shadow:0 0 20px rgba(153,0,0,.3);}
+.tech-card.busy-1::before{opacity:1!important;background:var(--busy1);}
+.tech-card.busy-2::before{opacity:1!important;background:var(--busy2);}
+.tech-card.busy-3::before{opacity:1!important;background:var(--busy3);}
+.tech-card.busy-4::before{opacity:1!important;background:var(--busy4);}
+.tech-card.busy-5::before{opacity:1!important;background:var(--busy5);}
+
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;margin-bottom:.8rem;}
+.card-info{flex:1;min-width:0;}
+.card-name-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .3s,box-shadow .3s;}
+.status-dot.online {background:var(--online); box-shadow:0 0 6px rgba(0,201,122,.5);}
+.status-dot.offline{background:var(--offline);box-shadow:0 0 5px rgba(255,34,68,.4);}
+.tech-name{font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:700;color:var(--text);letter-spacing:-.01em;line-height:1.3;}
+.status-text{font-family:'DM Mono',monospace;font-size:.58rem;font-weight:600;}
+.status-text.online {color:var(--online);}
+.status-text.offline{color:var(--offline);}
+.tech-full-name{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--muted);margin-top:.1rem;line-height:1.45;}
+.tech-role{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--success);margin-top:.15rem;}
+.card-tags{display:flex;flex-wrap:wrap;gap:.22rem;margin-top:.25rem;}
+.night-tag{font-family:'DM Mono',monospace;font-size:.58rem;color:#1E64FF;border:1px solid rgba(30,100,255,.28);background:rgba(30,100,255,.07);border-radius:5px;padding:.1rem .38rem;}
+.dawn-tag {font-family:'DM Mono',monospace;font-size:.58rem;color:#9333EA;border:1px solid rgba(147,51,234,.28);background:rgba(147,51,234,.07);border-radius:5px;padding:.1rem .38rem;}
+.obs-tag  {font-family:'DM Mono',monospace;font-size:.58rem;color:var(--warn);border:1px solid rgba(255,140,0,.28);background:rgba(255,140,0,.07);border-radius:5px;padding:.1rem .38rem;}
+body.theme-night .night-tag{color:#4d9fff;}
+body.theme-dawn  .dawn-tag {color:var(--accent2);}
+body.theme-especial .night-tag{color:#00D4FF;border-color:rgba(0,212,255,.28);background:rgba(0,212,255,.07);}
+body.theme-especial .dawn-tag{color:#A3E635;border-color:rgba(163,230,53,.28);background:rgba(163,230,53,.07);}
+
+.card-actions{display:flex;flex-direction:column;align-items:flex-end;gap:.38rem;flex-shrink:0;}
+.copy-btn{padding:.28rem .6rem;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent);}
+.copy-btn.copied{border-color:var(--success)!important;color:var(--success)!important;}
+.map-btn{padding:.28rem .6rem;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.map-btn:hover{border-color:var(--accent);color:var(--accent);}
+.offline-btn{padding:.28rem .6rem;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.offline-btn:hover{border-color:var(--offline);color:var(--offline);}
+.offline-btn.is-forced{border-color:var(--online)!important;color:var(--online)!important;}
+.wk-card-check{display:flex;align-items:center;gap:.28rem;padding:.22rem .48rem;border-radius:7px;border:1px solid rgba(217,70,239,.22);background:rgba(217,70,239,.04);cursor:pointer;user-select:none;transition:all .15s;}
+.wk-card-check:hover{border-color:var(--wk-color);}
+.wk-card-check.checked{border-color:var(--wk-color);background:rgba(217,70,239,.1);}
+.wk-card-check .wk-box{width:12px;height:12px;border-radius:3px;border:1.5px solid rgba(217,70,239,.4);background:transparent;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.wk-card-check.checked .wk-box{background:var(--wk-color);border-color:var(--wk-color);}
+.wk-card-check.checked .wk-box::after{content:'✓';font-size:.52rem;color:#fff;font-weight:800;}
+.wk-card-check .wk-label{font-family:'DM Mono',monospace;font-size:.56rem;color:rgba(217,70,239,.65);}
+.wk-card-check.checked .wk-label{color:var(--wk-color);}
+
+.busy-row{display:flex;align-items:center;gap:.28rem;}
+.busy-toggle{display:flex;align-items:center;gap:2px;padding:3px 5px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;}
+.busy-toggle:hover{border-color:var(--border2);}
+.busy-dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .15s;}
+.busy-toggle[data-level="1"] .busy-dot:nth-child(-n+1){background:var(--busy1);}
+.busy-toggle[data-level="2"] .busy-dot:nth-child(-n+2){background:var(--busy2);}
+.busy-toggle[data-level="3"] .busy-dot:nth-child(-n+3){background:var(--busy3);}
+.busy-toggle[data-level="4"] .busy-dot:nth-child(-n+4){background:var(--busy4);}
+.busy-toggle[data-level="5"] .busy-dot:nth-child(-n+5){background:var(--busy5);}
+.busy-label{font-family:'DM Mono',monospace;font-size:.56rem;color:var(--muted);white-space:nowrap;}
+.busy-label.l1{color:var(--busy1);}.busy-label.l2{color:var(--busy2);}.busy-label.l3{color:var(--busy3);}
+.busy-label.l4{color:var(--busy4);}.busy-label.l5{color:var(--busy5);}
+
+.data-row{display:flex;gap:.4rem;align-items:baseline;margin-bottom:.22rem;}
+.data-label{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;min-width:38px;flex-shrink:0;}
+.data-val{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--text2);}
+.data-val.tel-val{color:var(--accent);cursor:pointer;text-decoration:none;}
+.data-val.tel-val:hover{text-decoration:underline;}
+
+.areas-tags{margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.24rem;}
+.area-tag{font-family:'DM Mono',monospace;font-size:.58rem;background:var(--tag-bg);border:1px solid var(--border);border-radius:5px;padding:.13rem .4rem;color:var(--muted);}
+
+.card-comment{display:block;width:100%;margin-top:.75rem;padding:.45rem .65rem;background:var(--tag-bg);border:1px solid var(--border);border-radius:7px;color:var(--muted);font-family:'DM Mono',monospace;font-size:.68rem;resize:none;outline:none;transition:border-color .2s,color .2s;min-height:32px;line-height:1.4;}
+.card-comment:focus{border-color:var(--accent);color:var(--text);}
+.card-comment::placeholder{color:var(--muted);opacity:.55;}
+
+.timer-tag{display:inline-flex;align-items:center;gap:.3rem;font-family:'DM Mono',monospace;font-size:.58rem;border-radius:5px;padding:.12rem .45rem;border:1px solid;margin-top:.25rem;}
+.timer-tag.unavail {color:#fb923c;background:rgba(251,146,60,.08);border-color:rgba(251,146,60,.3);}
+.timer-tag.forecast{color:#facc15;background:rgba(250,204,21,.07);border-color:rgba(250,204,21,.25);}
+.timer-tag.forecast.warn   {color:var(--danger);background:rgba(255,34,68,.08);border-color:rgba(255,34,68,.3);animation:pulse-warn .9s ease infinite;}
+.timer-tag.forecast.expired{color:var(--danger);background:rgba(255,34,68,.1); border-color:rgba(255,34,68,.38);}
+@keyframes pulse-warn{0%,100%{opacity:1;}50%{opacity:.5;}}
+.timer-btn{padding:.3rem .65rem;background:var(--btn-grd);border:none;border-radius:6px;color:#fff;font-family:'DM Mono',monospace;font-size:.67rem;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;box-shadow:0 2px 10px var(--glow);}
+.timer-btn:hover{filter:brightness(1.12);transform:translateY(-1px);}
+.timer-row{display:flex;align-items:center;gap:.35rem;margin-top:.35rem;flex-wrap:wrap;}
+.ttag-clear{display:inline-flex;align-items:center;justify-content:center;margin-left:.25rem;width:13px;height:13px;border-radius:50%;background:rgba(0,0,0,.15);border:none;cursor:pointer;font-size:.55rem;color:inherit;line-height:1;transition:background .15s;flex-shrink:0;}
+.ttag-clear:hover{background:rgba(0,0,0,.28);}
+.timer-tag.forecast.warn .ttag-clear,.timer-tag.forecast.expired .ttag-clear{background:#1a3a7a;color:#aed4ff;}
+.timer-tag.forecast.warn .ttag-clear:hover,.timer-tag.forecast.expired .ttag-clear:hover{background:#1e4fa0;color:#cce3ff;}
+
+.successor-hint{margin-top:.55rem;padding:.4rem .65rem;background:rgba(0,201,122,.06);border:1px solid rgba(0,201,122,.2);border-radius:7px;font-family:'DM Mono',monospace;font-size:.62rem;color:var(--success);line-height:1.5;}
+.successor-hint .sh-label{opacity:.7;font-size:.58rem;display:block;margin-bottom:.2rem;}
+
+.tmodal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);z-index:600;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s;}
+.tmodal-overlay.open{opacity:1;pointer-events:all;}
+.tmodal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:1.6rem;width:min(440px,90vw);transform:translateY(18px);transition:transform .26s;box-shadow:0 24px 60px rgba(0,0,0,.25);}
+.tmodal-overlay.open .tmodal{transform:translateY(0);}
+.tmodal h3{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.05em;color:var(--accent);margin-bottom:1.1rem;}
+.tmodal-section{margin-bottom:1.1rem;}
+.tmodal-section label{display:block;font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem;}
+.tmodal-row{display:flex;gap:.5rem;align-items:center;}
+.tmodal-input{flex:1;padding:.55rem .75rem;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:.82rem;outline:none;transition:border-color .2s;}
+.tmodal-input:focus{border-color:var(--accent);}
+.tmodal-acts{display:flex;gap:.6rem;margin-top:1.1rem;}
+.tmodal-btn{flex:1;padding:.5rem;border:none;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;transition:all .15s;}
+.tmodal-btn.ok{background:var(--btn-grd);color:#fff;}
+.tmodal-btn.cancel{background:var(--card2);border:1px solid var(--border);color:var(--muted);}
+.tmodal-btn.cancel:hover{border-color:var(--accent);color:var(--accent);}
+.tmodal-clear{padding:.35rem .65rem;background:transparent;border:1px solid rgba(255,34,68,.3);border-radius:7px;color:var(--danger);font-family:'DM Mono',monospace;font-size:.67rem;cursor:pointer;}
+.tmodal-clear:hover{background:rgba(255,34,68,.08);}
+
+.empty-state{text-align:center;padding:3.5rem 2rem;color:var(--muted);}
+.empty-state .big{font-size:3rem;margin-bottom:.5rem;}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--success);color:#060d1f;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.84rem;padding:.72rem 1.4rem;border-radius:10px;transform:translateY(100px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:999;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@keyframes fade-up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+header    {animation:fade-up .4s ease both;}
+.container{animation:fade-up .4s .08s ease both;}
+
+.area-tag.highlight{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+
+body.compact-mode .tech-card{padding:.65rem .85rem;}
+body.compact-mode .areas-tags{display:none;}
+body.compact-mode .data-row{display:none;}
+body.compact-mode .card-comment{display:none;}
+body.compact-mode .timer-row{display:none;}
+body.compact-mode .successor-hint{display:none;}
+body.compact-mode .tech-full-name{display:none;}
+body.compact-mode .obs-tag{display:none;}
+body.compact-mode .cards-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.5rem;}
+body.compact-mode .card-top{margin-bottom:.25rem;}
+body.compact-mode .tech-name{font-size:.82rem;}
+
+.comment-log{margin-top:.6rem;}
+.comment-log-entry{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted);padding:.2rem 0;border-bottom:1px solid var(--border);line-height:1.4;}
+.comment-log-entry:last-child{border-bottom:none;}
+.comment-log-entry .cl-ts{color:var(--accent);font-weight:600;margin-right:.4rem;}
+.comment-log-input-row{display:flex;gap:.4rem;margin-top:.5rem;align-items:flex-end;}
+.comment-log-input{flex:1;padding:.38rem .6rem;background:var(--tag-bg);border:1px solid var(--border);border-radius:7px;color:var(--muted);font-family:'DM Mono',monospace;font-size:.68rem;outline:none;transition:border-color .2s;resize:none;min-height:28px;line-height:1.4;}
+.comment-log-input:focus{border-color:var(--accent);color:var(--text);}
+.comment-log-input::placeholder{color:var(--muted);opacity:.55;}
+.comment-log-send{padding:.3rem .6rem;background:var(--btn-grd);border:none;border-radius:6px;color:#fff;font-family:'DM Mono',monospace;font-size:.65rem;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 1px 6px var(--glow);}
+.comment-log-send:hover{filter:brightness(1.1);}
+.comment-log-clear{padding:.28rem .55rem;border:1px solid rgba(255,34,68,.28);background:transparent;border-radius:6px;color:var(--danger);font-family:'DM Mono',monospace;font-size:.62rem;cursor:pointer;}
+.comment-log-clear:hover{background:rgba(255,34,68,.07);}
+
+.status-filter-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem;}
+
+.kbd-hint{position:fixed;bottom:5.5rem;right:2rem;z-index:990;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:.65rem .9rem;font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted);box-shadow:0 8px 28px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .22s;}
+.kbd-hint.show{opacity:1;}
+.kbd-hint kbd{display:inline-block;background:var(--card2);border:1px solid var(--border2);border-radius:4px;padding:.1rem .35rem;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--text);margin:0 .1rem;}
+
+/* ══════════════════════════════════════════════════════════════
+   MAPA INTEGRADO (LEAFLET + OPENSTREETMAP)
+   ══════════════════════════════════════════════════════════════ */
+.map-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.map-modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.map-modal {
+  background: var(--surface);
+  border: 2px solid var(--border2);
+  border-radius: 20px;
+  width: min(95vw, 1400px);
+  height: min(90vh, 900px);
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.9);
+  transition: transform 0.3s;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.map-modal-overlay.open .map-modal {
+  transform: scale(1);
+}
+
+.map-header {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: var(--card);
+}
+
+.map-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map-close-btn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.map-close-btn:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: rgba(255, 34, 68, 0.06);
+}
+
+.map-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.map-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  min-width: 200px;
+}
+
+.map-search-box input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+}
+
+.map-search-box input::placeholder {
+  color: var(--muted);
+}
+
+.map-filter-btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.map-filter-btn:hover {
+  border-color: var(--border2);
+  background: var(--card2);
+}
+
+.map-filter-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--tag-bg);
+}
+
+.map-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+#leafletMap {
+  width: 100%;
+  height: 100%;
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-width: 280px;
+  z-index: 1000;
+}
+
+.map-legend-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.map-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text2);
+}
+
+.map-legend-item:last-child {
+  margin-bottom: 0;
+}
+
+.map-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.map-info-card {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-width: 320px;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+
+.map-info-card.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.map-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+
+.map-info-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.map-info-close {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.map-info-close:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.map-info-status {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  margin-bottom: 0.5rem;
+}
+
+.map-info-areas {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-bottom: 0.6rem;
+}
+
+.map-info-btn {
+  width: 100%;
+  padding: 0.45rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--btn-grd);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.map-info-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  header{padding:0 1.25rem;height:auto;padding-top:.75rem;padding-bottom:.75rem;}
+  .container{padding:1.25rem;}
+  .toolbar-row{flex-wrap:wrap;}
+  .search-wrap{min-width:100%!important;}
+  .toolbar-sep{display:none;}
+  .cards-grid{grid-template-columns:1fr;}
+  .theme-palette-panel{width:90vw;right:auto;left:0;}
+  
+  .map-modal {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .map-legend,
+  .map-info-card {
+    max-width: calc(100vw - 40px);
+  }
+
+  .map-controls {
+    width: 100%;
+  }
+
+  .map-search-box {
+    flex: 1;
+    min-width: 0;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">
+    <div class="logo-badge"><span>RJ</span></div>
+    <div class="logo-text">
+      <h1>Técnicos por Área</h1>
+      <p>Rio de Janeiro · Telecom Field Team</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <a href="index.html" class="btn-home">⌂ Início</a>
+    <div class="theme-wrap" style="position:relative;display:flex;align-items:center;gap:.3rem;">
+      <button class="theme-toggle-btn" id="themeToggleBtn">
+        <span class="theme-dot"></span>
+        <span id="themeToggleLabel">☀️ Modo Dia</span>
+      </button>
+      <button class="theme-palette-btn" id="themePaletteBtn" title="Personalizar cores">🎨</button>
+      <div class="theme-palette-panel" id="themePalettePanel">
+        <div class="tpp-header">
+          <span class="tpp-title">🎨 Cores dos Temas</span>
+          <button class="tpp-reset" id="tppReset">↺ Resetar</button>
+        </div>
+        <div id="tppBody"></div>
+      </div>
+    </div>
+    <div class="shift-pill" id="shiftBadge">
+      <span class="shift-icon" id="shiftIcon">☀️</span>
+      <div>
+        <div class="shift-label" id="shiftLabel">Turno Diurno</div>
+        <div class="shift-clock" id="shiftClock"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="shift-warn day" id="shiftWarn">
+    <span id="shiftWarnIcon">🌙</span><span id="shiftWarnText"></span>
+  </div>
+  <div class="busy-panel" id="busyPanel">
+    <div class="panel-label">⚠ Status alterado</div>
+    <div class="busy-chips" id="busyList"></div>
+  </div>
+  <div class="forecast-alert" id="forecastAlert">
+    <span>⚠</span>
+    <div>
+      <div style="font-weight:700;margin-bottom:.25rem;">Previsões vencendo / vencidas:</div>
+      <div class="forecast-alert-list" id="forecastAlertList"></div>
+    </div>
+  </div>
+  <div class="weekend-panel" id="weekendPanel">
+    <div class="weekend-panel-header" id="weekendPanelHdr">
+      <div class="weekend-panel-title">
+        <span>📅</span> Plantão Sábado &amp; Domingo
+        <span class="weekend-count" id="wkCount"></span>
+      </div>
+      <div class="wk-btn-row">
+        <button class="tbtn" id="plantaoFilterBtn" style="font-size:.68rem;padding:.3rem .7rem;">📅 Somente plantão</button>
+        <button class="tbtn tbtn-warn" id="clearPlantaoBtn" style="font-size:.68rem;padding:.3rem .7rem;">✕ Limpar plantão</button>
+        <em class="weekend-panel-chevron">▾</em>
+      </div>
+    </div>
+    <div class="weekend-body" id="weekendBody"><div id="weekendSlots"></div></div>
+  </div>
+  <div class="toolbar">
+    <div class="toolbar-row">
+      <div class="search-wrap" style="flex:1;min-width:160px;">
+        <span class="s-ico">🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar técnico ou área... (/)">
+      </div>
+      <div class="toolbar-sep"></div>
+      <button class="tbtn" id="areaToggleBtn"><span>🗺 Áreas</span><em class="chevron">▾</em></button>
+      <span class="area-badge-pill" id="activeAreaBadge">Todas</span>
+      <button class="tbtn" id="clearAreasBtn" style="display:none">✕ Limpar</button>
+      <div class="toolbar-sep"></div>
+      <button class="tbtn" id="filterOnlineBtn" title="Ver só online">🟢 Online</button>
+      <button class="tbtn" id="filterForecastBtn" title="Ver só com previsão">📋 Previsões</button>
+      <div class="toolbar-sep"></div>
+      <button class="tbtn" id="regFilterBtn" data-reg="">🗂 Região: Todas</button>
+    </div>
+    <div class="toolbar-row">
+      <button class="tbtn" id="expandAllBtn" title="Expandir/colapsar regiões (E)">⊞ Expandir</button>
+      <button class="tbtn" id="compactBtn" title="Modo compacto (C)">⊡ Compacto</button>
+      <button class="tbtn" id="openMapBtn" title="Abrir mapa de cobertura (M)">🗺️ Mapa</button>
+      <div class="toolbar-sep"></div>
+      <button class="tbtn" id="sortBtn" title="Alternar ordenação">🔃 A→Z</button>
+      <button class="tbtn" id="exportBtn" title="Exportar relatório .txt">⬇ Exportar</button>
+      <button class="tbtn tbtn-primary" id="copyAllBtn">⧉ Copiar visíveis</button>
+    </div>
+  </div>
+  <div class="areas-panel" id="areasPanel">
+    <div class="areas-scroll" id="areasBtns"></div>
+  </div>
+  <div class="results-header">
+    <div class="results-count">Exibindo <span id="countDisplay">0</span> técnico(s)</div>
+  </div>
+  <div id="mainContent"></div>
+</div>
+
+<!-- MODAL DO MAPA -->
+<div class="map-modal-overlay" id="mapModal">
+  <div class="map-modal">
+    <div class="map-header">
+      <div class="map-title">
+        <span>🗺️</span>
+        <span>Mapa de Cobertura — Rio de Janeiro</span>
+      </div>
+      <div class="map-controls">
+        <div class="map-search-box">
+          <span style="font-size:0.8rem;">🔍</span>
+          <input type="text" id="mapSearchInput" placeholder="Buscar bairro...">
+        </div>
+        <button class="map-filter-btn" id="mapFilterOnline">🟢 Online</button>
+        <button class="map-filter-btn" id="mapFilterRegion" data-reg="">Todas regiões</button>
+        <button class="map-close-btn" id="mapCloseBtn">✕ Fechar</button>
+      </div>
+    </div>
+    <div class="map-container">
+      <div id="leafletMap"></div>
+      <div class="map-legend">
+        <div class="map-legend-title">📍 Legenda</div>
+        <div class="map-legend-item">
+          <div class="map-legend-dot" style="background:#00C97A;"></div>
+          <span>Online / Disponível</span>
+        </div>
+        <div class="map-legend-item">
+          <div class="map-legend-dot" style="background:#FF8800;"></div>
+          <span>Ocupado</span>
+        </div>
+        <div class="map-legend-item">
+          <div class="map-legend-dot" style="background:#FF2244;"></div>
+          <span>Offline / Indisponível</span>
+        </div>
+        <div class="map-legend-item">
+          <div class="map-legend-dot" style="background:#1E64FF;"></div>
+          <span>Turno Noturno</span>
+        </div>
+        <div class="map-legend-item">
+          <div class="map-legend-dot" style="background:#9333EA;"></div>
+          <span>Turno Madrugada</span>
+        </div>
+      </div>
+      <div class="map-info-card" id="mapInfoCard">
+        <div class="map-info-header">
+          <div class="map-info-name" id="mapInfoName"></div>
+          <button class="map-info-close" id="mapInfoClose">✕</button>
+        </div>
+        <div class="map-info-status" id="mapInfoStatus"></div>
+        <div class="map-info-areas" id="mapInfoAreas"></div>
+        <button class="map-info-btn" id="mapInfoGoToCard">Ver detalhes do técnico</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tmodal-overlay" id="timerModal">
+  <div class="tmodal">
+    <h3 id="timerModalTitle">Horários do Técnico</h3>
+    <div class="tmodal-section">
+      <label>⛔ Indisponível até (HH:MM)</label>
+      <div class="tmodal-row">
+        <input type="time" class="tmodal-input" id="tmUnavailInput">
+        <button class="tmodal-clear" id="tmUnavailClear">✕ Remover</button>
+      </div>
+      <input type="text" class="tmodal-input" id="tmUnavailReason" placeholder="Motivo da indisponibilidade..." style="margin-top:.45rem;">
+      <div style="font-size:.62rem;font-family:'DM Mono',monospace;color:var(--muted);margin-top:.4rem;">Tag desaparece automaticamente após o horário.</div>
+    </div>
+    <div class="tmodal-section">
+      <label>📋 Previsão de normalização (HH:MM)</label>
+      <div class="tmodal-row">
+        <input type="time" class="tmodal-input" id="tmForecastInput">
+        <button class="tmodal-clear" id="tmForecastClear">✕ Remover</button>
+      </div>
+      <input type="text" class="tmodal-input" id="tmForecastReason" placeholder="O que está sendo previsto?" style="margin-top:.45rem;">
+      <div style="font-size:.62rem;font-family:'DM Mono',monospace;color:var(--muted);margin-top:.4rem;">Pisca vermelho ≤15min. Clique no alerta para ir ao card.</div>
+    </div>
+    <div class="tmodal-acts">
+      <button class="tmodal-btn cancel" id="timerModalCancel">Cancelar</button>
+      <button class="tmodal-btn ok" id="timerModalSave">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const T_DIA=7,T_NOITE=15,T_DIA_END=17,T_MAD=23;
+
+let manualTheme=null;
+const THEME_META={
+  dia:       {label:"☀️ Modo Dia",      next:"noite",     classes:[]},
+  noite:     {label:"🌙 Modo Noite",     next:"madrugada", classes:["theme-night"]},
+  madrugada: {label:"🌃 Modo Madrugada", next:"especial",  classes:["theme-dawn"]},
+  especial:  {label:"🌿 Modo Especial",  next:"dia",       classes:["theme-especial"]},
+};
+
+function getTurnoAtual(){const h=new Date().getHours();if(h>=T_DIA&&h<T_NOITE)return"dia";if(h>=T_NOITE&&h<T_MAD)return"noite";return"madrugada";}
+function isOverlap(){const h=new Date().getHours();return h>=T_NOITE&&h<T_DIA_END;}
+function turnoAtivoAgora(turno){const h=new Date().getHours();if(turno==="dia")return h>=T_DIA&&h<T_DIA_END;if(turno==="noite")return h>=T_NOITE&&h<T_MAD;if(turno==="madrugada")return h>=T_MAD||h<T_DIA;return false;}
+function estaOnline(t){if(offlineState[t.nome])return false;if(onlineForced[t.nome])return true;return turnoAtivoAgora(t.turno);}
+
+const busyState={},offlineState={},onlineForced={},wkState={},commentState={},timerState={};
+let showOnlyPlantao=false;
+let activeAreas=new Set(["Todas"]);
+let filterOnlyOnline=false;
+let filterOnlyForecast=false;
+let compactMode=false;
+let sortMode="status";
+let filterRegion="";
+const logState={};
+const REGIOES=[{id:"RJ",label:"Rio de Janeiro / Niterói",color:"var(--rj-color)"},{id:"BXD",label:"Baixada",color:"var(--bxd-color)"},{id:"OESTE",label:"Oeste",color:"var(--oeste-color)"}];
+const collapseState={};
+
+const T=[
+  {nome:"Carlos Miranda",    nc:"CARLOS ALBERTO FIDALGO MIRANDA",   reg:"RJ",    turno:"dia",       tel:null, cpf:"699.675.807-63",rg:"05728184-2",  crea:null,         cargo:"TÉCNICO TELECOM",obs:"Residente",                         areas:["FTS","Central Ana Neri","Rocha","Engenho Novo","Pilares","Méier","Piedade","Encantado","Riachuelo"]},
+  {nome:"José Duque",        nc:"JOSÉ CARLOS DUQUE ESTRADA FILHO",  reg:"RJ",    turno:"dia",       tel:null, cpf:"078.938.447-79",rg:"6775760-9",   crea:"2005105212", cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Cascadura","Madureira","Rocha Miranda","Bento Ribeiro","Vila da Penha","Penha Circular","Brás de Pina","Oswaldo Cruz","Vila Valqueire","Honório Gurgel","Turiaçu","Campinho","Cavalcanti","Coelho Neto","Acari","Deodoro"]},
+  {nome:"Alex Cunha",        nc:"ALEX CORREA DA CUNHA",             reg:"RJ",    turno:"dia",       tel:null, cpf:"108.401.007-01",rg:"122470222",   crea:null,         cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Bento Ribeiro","Madureira","Oswaldo Cruz","Campinho","Colégio","Turiaçu","Honório Gurgel","Cavalcanti","Rocha Miranda","Vila Valqueire"]},
+  {nome:"Adenilson Avelino", nc:"ADENILSON AVELINO DA S. JR",       reg:"RJ",    turno:"dia",       tel:null, cpf:"056.712.747-88",rg:"20.315.099-0",crea:"2011122302", cargo:"TÉCNICO TELECOM",obs:"Chamados FTTH – prioridade",        areas:["Meier","Del Castilho","Cachambi","DDC","Engenho de Dentro","Todos os Santos","Lins","Piedade","Abolição","Rocha","Riachuelo","Jacaré","Encantado"]},
+  {nome:"Gustavo Cabral",    nc:"GUSTAVO CABRAL DOS SANTOS",        reg:"RJ",    turno:"dia",       tel:null, cpf:"138.707.757-00",rg:"262948581",   crea:"2015104645", cargo:"TÉCNICO TELECOM",obs:"Chamados FTTC – prioridade",        areas:["São Cristóvão","Meier","Cachambi","Jacarezinho","DDC","Del Castilho","Engenho de Dentro","Benfica","Manguinhos","Bonsucesso"]},
+  {nome:"Flavio Borges",     nc:"FLÁVIO BORGES GOMES",              reg:"RJ",    turno:"dia",       tel:null, cpf:"088.597.827-75",rg:"128867041",   crea:null,         cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Quintino","São Cristóvão","Benfica","Eng. de Dentro","Lins","Todos os Santos","Abolição","Cachambi","Méier","Riachuelo","Piedade","Rocha","Del Castilho","Jacaré","Encantado","Pilares"]},
+  {nome:"Moises Alves",      nc:"MOISÉS ALVES DA SILVEIRA",         reg:"RJ",    turno:"dia",       tel:null, cpf:"147.179.907-73",rg:"24627910-3",  crea:"2012106328", cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Humaitá","Leblon","Laranjeiras","Jardim Botânico","Lagoa","Zona Sul","Centro","Flamengo","Botafogo","Catete","Glória","Santa Teresa","Lapa","Copacabana","Ipanema","Gávea","Urca","Cosme Velho"]},
+  {nome:"Orlando Ferreira",  nc:"ORLANDO FERREIRA DOS SANTOS JR.",  reg:"RJ",    turno:"dia",       tel:null, cpf:"077.544.197-00",rg:"10814849-5",  crea:"150799465-6",cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Centro","Lapa","Estácio","Santa Teresa","Catumbi","São Gonçalo","Niterói","Fonseca","Alcântara","Pendotiba"]},
+  {nome:"Marcelo Raimundo",  nc:"MARCELO RAIMUNDO DOS SANTOS",      reg:"RJ",    turno:"dia",       tel:null, cpf:"913.166.507-15",rg:"82289562",    crea:null,         cargo:"TÉCNICO TELECOM",obs:"Verificar disponibilidade (Olaria)",areas:["Irajá","Olaria","Colégio","Jardim América","VGE","Ilha do Governador","Penha","Ramos","Bonsucesso","Vigário Geral","Parada de Lucas","Cordovil","Brás de Pina","Higienópolis","Tomás Coelho","Vicente de Carvalho","Galeão"]},
+  {nome:"Francisco Alex",    nc:"FRANCISCO ALEX DE SOUSA SILVA",    reg:"RJ",    turno:"dia",       tel:null, cpf:"098.024.617-25",rg:"125900332",   crea:null,         cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Andaraí","Grajaú","Tijuca","LPD","Vila Isabel","Maracanã","Praça da Bandeira","Alto da Boa Vista","Usina","Muda","Água Santa","Cachambi"]},
+  {nome:"Marcelo G. Rocha",  nc:"MARCELO GOMES DA ROCHA",           reg:"RJ",    turno:"dia",       tel:null, cpf:null,            rg:null,           crea:null,         cargo:"TÉCNICO TELECOM",obs:"Sábado e Domingo",                 areas:["Rocha","Ana Neri","Fonseca Teles"]},
+  {nome:"Bispo",             nc:"LUIZ CLAUDIO BISPO PIRES",         reg:"RJ",    turno:"noite",     tel:null, cpf:"072.154.167-47",rg:"10434530-1",  crea:"2011116337", cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Centro","Botafogo","Zona Sul","Flamengo","Catete","Glória","Lapa","Santa Teresa","Copacabana","Ipanema","Urca","Humaitá","Laranjeiras","Cosme Velho"]},
+  {nome:"Glaucio Hipolito",  nc:"GLAUCIO HIPOLITO GONZAGA",         reg:"RJ",    turno:"noite",     tel:null, cpf:"105.514.857-44",rg:"20309013-9",  crea:"2008148830", cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Tijuca","São Cristóvão","Grajaú","Andaraí","Rio Comprido","Rocha","Riachuelo","Ana Neri","Fonseca Teles","Maracanã","Vila Isabel","Estácio","Engenho Novo","Pilares","Encantado","Praça da Bandeira","Alto da Boa Vista"]},
+  {nome:"Waldir Motta",      nc:"WALDIR MOTTA PRENDA JUNIOR",       reg:"RJ",    turno:"noite",     tel:null, cpf:"143.212.857-47",rg:"257337162",   crea:"2015111941", cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Cascadura","Meier","Engenho de Dentro","Cachambi","Madureira","DDC","Engenho Novo","Todos os Santos","Lins","Abolição","Piedade","Pilares","Del Castilho","Rocha","Campinho","Quintino","Honório Gurgel"]},
+  {nome:"Jorge Luiz",        nc:"JORGE LUIS DA SILVA",              reg:"RJ",    turno:"noite",     tel:null, cpf:"071.784.037-99",rg:"11007505-8",  crea:null,         cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Penha","Irajá","Penha Circular","Ramos","Vila Isabel","Olaria","Bonsucesso","Bento Ribeiro","Brás de Pina","Higienópolis","Cordovil","Parada de Lucas","Vigário Geral","Manguinhos","Maré","Inhaúma","Tomás Coelho","Vicente de Carvalho","Jardim América","Colégio"]},
+  {nome:"Gleisson Fagundes", nc:"GLEISSON ALBINO FAGUNDES",         reg:"RJ",    turno:"madrugada", tel:null, cpf:"059.198.067-37",rg:"215168840",   crea:null,         cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Zona Sul","Centro","Humaitá","Leblon","Laranjeiras","Jardim Botânico","Lagoa","Flamengo","Botafogo","Catete","Glória","Santa Teresa","Lapa","Copacabana","Ipanema","Gávea","Urca","Cosme Velho","Ana Neri","Rocha","FTS"]},
+  {nome:"Renato Lima",       nc:"RENATO SANTOS DE LIMA",            reg:"RJ",    turno:"madrugada", tel:null, cpf:"099.873.447-04",rg:"002050957-6", crea:null,         cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Zona Norte","Tijuca","Vila Isabel","Maracanã","Andaraí","Grajaú","São Cristóvão","Benfica","Manguinhos","Meier","Cachambi","Madureira","Cascadura","Bento Ribeiro","Penha","Ramos","Olaria","Irajá","Inhaúma","Vigário Geral","Cordovil","Brás de Pina"]},
+  {nome:"Michael",           nc:"MICHAEL JOSÉ QUEIROZ DA SILVEIRA", reg:"BXD",   turno:"dia",       tel:null, cpf:"075.593.707-48",rg:"11557141-6",  crea:"2009118823", cargo:"TÉCNICO TELECOM",obs:"Fixa e IHS",                        areas:["Mesquita","Nilópolis","Anchieta","São João de Meriti","Barros Filho","Coelho da Rocha","Guadalupe","Olinda","Pavuna"]},
+  {nome:"Cremildo",          nc:"CREMILDO DELFINO RANGEL",           reg:"BXD",   turno:"dia",       tel:null, cpf:"027.157.057-19",rg:"09086097-4",  crea:null,         cargo:"ASSISTENTE TÉC. TELECOM",obs:"Fixa e IHS",               areas:["Nova Iguaçu","Queimados","Belford Roxo","Japeri","Adjacências"]},
+  {nome:"Vanessa",           nc:"VANESSA CRISTINA SANTOS DA SILVA",  reg:"BXD",   turno:"dia",       tel:null, cpf:"090.416.897-29",rg:"011345390-6", crea:"2006127503", cargo:"TÉCNICO TELECOM",obs:"FTTH – Fixa. NÃO usa escada / NÃO atende MSAN",areas:["Duque de Caxias","Adjacências"]},
+  {nome:"Valter Neves",      nc:"VALTER NEVES JUNIOR",              reg:"BXD",   turno:"dia",       tel:null, cpf:"033.738.017-10",rg:"09946138-6",  crea:null,         cargo:"TÉCNICO TELECOM",obs:"FTTC – Fixa e IHS",                 areas:["Pavuna","Jardim América","Duque de Caxias","Adjacências"]},
+  {nome:"Marcelo Caetano",   nc:"MARCELO CAETANO GOMES",             reg:"BXD",   turno:"dia",       tel:null, cpf:"041.519.837-24",rg:"104202049",   crea:null,         cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Duque de Caxias","Adjacências"]},
+  {nome:"Anderson dos Santos",nc:"ANDERSON DOS SANTOS ILDEFONSO",   reg:"BXD",   turno:"noite",     tel:null, cpf:"114.152.427-98",rg:null,           crea:null,         cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Mesquita","Anchieta","São João de Meriti","Duque de Caxias","Coelho da Rocha","Guadalupe","Olinda","Pavuna","Adjacências"]},
+  {nome:"Tiago Ângelo",      nc:"TIAGO ANGELO PIMENTA RANGEL",      reg:"BXD",   turno:"noite",     tel:null, cpf:"150.960.947-40",rg:"279500300",   crea:null,         cargo:"TÉCNICO TELECOM",obs:null,                                areas:["Nova Iguaçu","Nilópolis","Belford Roxo","Queimados","Japeri","Adjacências"]},
+  {nome:"Agnaldo",           nc:"AGNALDO DA SILVA COSTA",            reg:"OESTE", turno:"dia",       tel:null, cpf:"087.508.387-09",rg:"11647699-5",  crea:"2011100922", cargo:"TÉCNICO TELECOM",obs:"RJCG",                              areas:["Campo Grande","Recreio dos Bandeirantes","Curicica","Adjacências"]},
+  {nome:"Luciano Rocha",     nc:"LUCIANO ROCHA DA SILVA",            reg:"OESTE", turno:"dia",       tel:null, cpf:"073.852.077-23",rg:"10.522.156-8",crea:null,         cargo:"TÉCNICO TELECOM",obs:"RJCG / RJBT / RJBA",               areas:["Campo Grande","Recreio dos Bandeirantes","Barra da Tijuca","Santa Cruz"]},
+  {nome:"Leonardo Paulino",  nc:"LEONARDO PAULINO DO NASCIMENTO",   reg:"OESTE", turno:"dia",       tel:null, cpf:"123.348.977-10",rg:"26.878.145-7",crea:"201670001902",cargo:"TÉCNICO TELECOM",obs:"RJSZ",                              areas:["Santa Cruz","Sepetiba","Paciência","Cosmos","Adjacências"]},
+  {nome:"Eder Luiz",         nc:"EDER LUIZ DA SILVA PINTO",          reg:"OESTE", turno:"dia",       tel:null, cpf:"052.387.647-58",rg:"12989740-1",  crea:null,         cargo:"TÉCNICO TELECOM",obs:"RJBT / RJBA",                      areas:["Barra da Tijuca","Recreio dos Bandeirantes","Vargem Grande","Vargem Pequena","Adjacências"]},
+  {nome:"Danilo Eduardo",    nc:"DANILO EDUARDO",                    reg:"OESTE", turno:"dia",       tel:null, cpf:"054.171.977-77",rg:"110198587",   crea:null,         cargo:"TÉCNICO TELECOM",obs:"RJJP / CUR",                        areas:["Jacarepaguá","Taquara","Tanque","Pechincha","Curicica","Anil","Freguesia","Gardênia Azul","Praça Seca","Rio das Pedras"]},
+  {nome:"Ivson de Jesus",    nc:"IVSON DE JESUS DO ROSÁRIO",         reg:"OESTE", turno:"dia",       tel:null, cpf:"053.651.387-24",rg:"09513041-5",  crea:null,         cargo:"TÉCNICO TELECOM",obs:"RJBG / RJPV / RJMD",               areas:["Bangu","Realengo","Deodoro","Senador Camará","Padre Miguel","Santíssimo","Magalhães Bastos","Adjacências"]},
+  {nome:"Leandro Cardoso",   nc:"LEANDRO DE JESUS CARDOSO",          reg:"OESTE", turno:"noite",     tel:null, cpf:"088.677.657-01",rg:"117938654",   crea:null,         cargo:"TÉCNICO TELECOM",obs:"RJCG / RJSZ",                      areas:["Campo Grande","Santa Cruz","Sepetiba","Paciência","Cosmos","Adjacências"]},
+  {nome:"Francisco Orcino",  nc:"FRANCISCO ORCINO DE SOUSA FILHO",  reg:"OESTE", turno:"noite",     tel:null, cpf:"010.331.297-80",rg:"08537602-8",  crea:null,         cargo:"TÉCNICO TELECOM",obs:"RJBT / RJBA / RJJP / CUR",          areas:["Barra da Tijuca","Pechincha","Recreio dos Bandeirantes","Taquara","Jacarepaguá","Freguesia","Tanque","Curicica","Anil"]},
+];
+
+const busyLabels=["","Pouco ocupado","Ocupado","Bem ocupado","Muito ocupado","Indisponível"];
+
+const LS="rj_state_v2";
+function saveState(){
+  try{
+    const s={
+      busy:busyState,offline:offlineState,online:onlineForced,
+      wk:wkState,comment:commentState,timer:timerState,log:logState
+    };
+    localStorage.setItem(LS,JSON.stringify(s));
+  }catch(e){}
+}
+function loadState(){
+  try{
+    const raw=localStorage.getItem(LS);if(!raw)return;
+    const s=JSON.parse(raw);
+    Object.assign(busyState,s.busy||{});
+    Object.assign(offlineState,s.offline||{});
+    Object.assign(onlineForced,s.online||{});
+    Object.assign(wkState,s.wk||{});
+    Object.assign(commentState,s.comment||{});
+    Object.assign(timerState,s.timer||{});
+    Object.assign(logState,s.log||{});
+  }catch(e){}
+}
+loadState();
+const busyColors=["","var(--busy1)","var(--busy2)","var(--busy3)","var(--busy4)","var(--busy5)"];
+
+const allAreas=["Todas"];
+T.forEach(t=>t.areas.forEach(a=>{if(!allAreas.includes(a))allAreas.push(a);}));
+const areasBtnsEl=document.getElementById("areasBtns");
+allAreas.forEach(area=>{const b=document.createElement("button");b.className="area-btn"+(area==="Todas"?" selected":"");b.textContent=area;b.dataset.area=area;areasBtnsEl.appendChild(b);});
+
+document.getElementById("areaToggleBtn").addEventListener("click",()=>{const p=document.getElementById("areasPanel"),b=document.getElementById("areaToggleBtn");const o=p.classList.toggle("open");b.classList.toggle("open",o);});
+areasBtnsEl.addEventListener("click",e=>{const b=e.target.closest(".area-btn");if(!b)return;const area=b.dataset.area;if(area==="Todas"){activeAreas=new Set(["Todas"]);document.querySelectorAll(".area-btn").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");}else{activeAreas.delete("Todas");if(b.classList.contains("selected")){b.classList.remove("selected");activeAreas.delete(area);if(!activeAreas.size){activeAreas.add("Todas");document.querySelector('.area-btn[data-area="Todas"]').classList.add("selected");}}else{b.classList.add("selected");activeAreas.add(area);document.querySelector('.area-btn[data-area="Todas"]').classList.remove("selected");}}updateAreaBadge();renderAll();});
+document.getElementById("clearAreasBtn").addEventListener("click",()=>{activeAreas=new Set(["Todas"]);document.querySelectorAll(".area-btn").forEach(x=>x.classList.remove("selected"));document.querySelector('.area-btn[data-area="Todas"]').classList.add("selected");updateAreaBadge();renderAll();});
+document.getElementById("searchInput").addEventListener("input",renderAll);
+document.getElementById("copyAllBtn").addEventListener("click",()=>{const vis=T.filter(shouldShow);copyClip(vis.map(cardText).join("\n\n---\n\n"),()=>showToast(vis.length+" técnico(s) copiados!"));});
+document.getElementById("weekendPanelHdr").addEventListener("click",()=>{document.getElementById("weekendPanel").classList.toggle("collapsed");renderWeekendPanel();});
+document.getElementById("mainContent").addEventListener("click",e=>{
+  const cb=e.target.closest(".copy-btn");if(cb){const t=T.find(x=>x.nome===cb.dataset.key);if(!t)return;copyClip(cardText(t),()=>{cb.textContent="✓ Copiado";cb.classList.add("copied");setTimeout(()=>{cb.textContent="⧉ Copiar";cb.classList.remove("copied");},2000);showToast("Dados copiados!");});return;}
+  const mb=e.target.closest(".map-btn");if(mb){openMapModal();const nome=mb.dataset.key;setTimeout(()=>{const marker=allMarkers.find(m=>m.techName===nome);if(marker){leafletMap.setView(marker.getLatLng(),14);marker.fire('click');}},300);return;}
+  const ob=e.target.closest(".offline-btn");if(ob){const k=ob.dataset.key;const t=T.find(x=>x.nome===k);const inShift=t&&turnoAtivoAgora(t.turno);if(inShift){offlineState[k]=!offlineState[k];}else{onlineForced[k]=!onlineForced[k];}renderAll();renderBusyPanel();saveState();return;}
+  const tb=e.target.closest(".timer-btn");if(tb){openTimerModal(tb.dataset.key);return;}
+  const cu=e.target.closest("[data-clear-unavail]");if(cu){const k=cu.dataset.clearUnavail;if(timerState[k]){timerState[k].unavailUntil=null;timerState[k].unavailReason=null;}renderAll();return;}
+  const cf=e.target.closest("[data-clear-forecast]");if(cf){const k=cf.dataset.clearForecast;if(timerState[k]){timerState[k].forecast=null;timerState[k].forecastReason=null;}renderForecastAlert();renderAll();return;}
+  const bb=e.target.closest(".busy-toggle");if(bb){busyState[bb.dataset.key]=((busyState[bb.dataset.key]||0)+1)%6;renderAll();renderBusyPanel();saveState();return;}
+  const wk=e.target.closest(".wk-card-check");if(wk){const k=wk.dataset.key;wkState[k]=!wkState[k];renderAll();renderWeekendPanel();saveState();return;}
+  const rh=e.target.closest(".region-header");if(rh){const id=rh.dataset.regid;collapseState[id]=!collapseState[id];const body=document.getElementById("rb-"+id);const arrow=rh.querySelector(".region-collapse-btn");if(body)body.classList.toggle("collapsed",!!collapseState[id]);if(arrow)arrow.textContent=collapseState[id]?"▶":"▼";return;}
+});
+document.getElementById("mainContent").addEventListener("input",e=>{
+  const ci=e.target.closest(".card-comment");if(ci){commentState[ci.dataset.key]=ci.value;saveState();}
+});
+document.getElementById("mainContent").addEventListener("keydown",e=>{
+  const li=e.target.closest(".comment-log-input");
+  if(li&&(e.key==="Enter"&&!e.shiftKey)){
+    e.preventDefault();
+    const txt=li.value.trim();if(!txt)return;
+    const k=li.dataset.logkey;
+    if(!logState[k])logState[k]=[];
+    const now=new Date();
+    const ts=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+    logState[k].push({ts,text:txt});
+    li.value="";
+    saveState();renderAll();renderBusyPanel();
+  }
+});
+document.getElementById("mainContent").addEventListener("click",e=>{
+  const cl=e.target.closest("[data-clearlog]");
+  if(cl){const k=cl.dataset.clearlog;delete logState[k];saveState();renderAll();}
+});
+document.getElementById("plantaoFilterBtn").addEventListener("click",()=>{showOnlyPlantao=!showOnlyPlantao;const b=document.getElementById("plantaoFilterBtn");b.classList.toggle("active",showOnlyPlantao);b.textContent=showOnlyPlantao?"✕ Mostrar todos":"📅 Somente plantão";renderAll();});
+document.getElementById("clearPlantaoBtn").addEventListener("click",()=>{T.forEach(t=>{wkState[t.nome]=false;});showOnlyPlantao=false;const fb=document.getElementById("plantaoFilterBtn");fb.classList.remove("active");fb.textContent="📅 Somente plantão";renderAll();renderWeekendPanel();saveState();showToast("Plantão limpo.");});
+
+let timerModalTarget=null;
+function openTimerModal(nome){timerModalTarget=nome;document.getElementById("timerModalTitle").textContent="⏱ Horários — "+nome;const ts=timerState[nome]||{};document.getElementById("tmUnavailInput").value=ts.unavailUntil||"";document.getElementById("tmUnavailReason").value=ts.unavailReason||"";document.getElementById("tmForecastInput").value=ts.forecast||"";document.getElementById("tmForecastReason").value=ts.forecastReason||"";document.getElementById("timerModal").classList.add("open");}
+function closeTimerModal(){document.getElementById("timerModal").classList.remove("open");timerModalTarget=null;}
+document.getElementById("timerModal").addEventListener("click",e=>{if(e.target===document.getElementById("timerModal"))closeTimerModal();});
+document.getElementById("timerModalCancel").addEventListener("click",closeTimerModal);
+document.getElementById("tmUnavailClear").addEventListener("click",()=>{document.getElementById("tmUnavailInput").value="";document.getElementById("tmUnavailReason").value="";});
+document.getElementById("tmForecastClear").addEventListener("click",()=>{document.getElementById("tmForecastInput").value="";document.getElementById("tmForecastReason").value="";});
+document.getElementById("timerModalSave").addEventListener("click",()=>{if(!timerModalTarget)return;const u=document.getElementById("tmUnavailInput").value;const ur=document.getElementById("tmUnavailReason").value.trim();const f=document.getElementById("tmForecastInput").value;const fr=document.getElementById("tmForecastReason").value.trim();timerState[timerModalTarget]={unavailUntil:u||null,unavailReason:ur||null,forecast:f||null,forecastReason:fr||null};closeTimerModal();renderAll();saveState();showToast("Horários salvos para "+timerModalTarget);});
+
+function updateAreaBadge(){const badge=document.getElementById("activeAreaBadge"),clearBtn=document.getElementById("clearAreasBtn");if(activeAreas.has("Todas")||!activeAreas.size){badge.textContent="Todas";clearBtn.style.display="none";}else{badge.textContent=activeAreas.size===1?[...activeAreas][0]:activeAreas.size+" áreas";clearBtn.style.display="flex";}}
+function shouldShow(t){
+  if(!activeAreas.has("Todas")&&!t.areas.some(a=>activeAreas.has(a)))return false;
+  const q=document.getElementById("searchInput").value.toLowerCase();
+  if(q&&!t.nome.toLowerCase().includes(q)&&!t.nc.toLowerCase().includes(q)&&!t.areas.some(a=>a.toLowerCase().includes(q)))return false;
+  if(showOnlyPlantao&&!wkState[t.nome])return false;
+  if(filterOnlyOnline&&!estaOnline(t))return false;
+  if(filterOnlyForecast&&!forecastStatus(t.nome))return false;
+  if(filterRegion&&t.reg!==filterRegion)return false;
+  return true;
+}
+function cardText(t){const l=["NOME: "+t.nc];if(t.tel)l.push("TEL: "+t.tel);if(t.cpf)l.push("CPF: "+t.cpf);if(t.rg)l.push("RG/IDENTIDADE: "+t.rg);if(t.crea)l.push("CREA: "+t.crea);return l.join("\n");}
+function copyClip(text,cb){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(cb).catch(()=>fbCopy(text,cb));}else fbCopy(text,cb);}
+function fbCopy(text,cb){const ta=document.createElement("textarea");ta.value=text;ta.style.cssText="position:fixed;top:0;left:0;opacity:0";document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand("copy");cb();}catch(e){}document.body.removeChild(ta);}
+function showToast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2500);}
+function nowMinutes(){const n=new Date();return n.getHours()*60+n.getMinutes();}
+function hmToMinutes(str){if(!str)return null;const[h,m]=str.split(":").map(Number);return h*60+m;}
+function isUnavailActive(nome){const ts=timerState[nome];if(!ts||!ts.unavailUntil)return false;return nowMinutes()<hmToMinutes(ts.unavailUntil);}
+function forecastStatus(nome){const ts=timerState[nome];if(!ts||!ts.forecast)return null;const diff=hmToMinutes(ts.forecast)-nowMinutes();if(diff<0)return"expired";if(diff<=15)return"warn";return"ok";}
+
+function renderForecastAlert(){const alert=document.getElementById("forecastAlert"),list=document.getElementById("forecastAlertList");const warns=T.filter(t=>{const fs=forecastStatus(t.nome);return fs==="warn"||fs==="expired";});if(!warns.length){alert.classList.remove("active");return;}alert.classList.add("active");list.innerHTML=warns.map(t=>{const ts=timerState[t.nome],fs=forecastStatus(t.nome);const col=fs==="expired"?"#cc0000":"#b91c1c",lbl=fs==="expired"?"VENCIDA":"VENCENDO";const reason=ts.forecastReason?' — '+ts.forecastReason:'';return'<span data-scroll="'+t.nome+'" style="cursor:pointer;background:'+col+'22;border:1px solid '+col+'55;border-radius:5px;padding:.15rem .5rem;font-size:.68rem;color:'+col+';" onmouseenter="this.style.filter=\'brightness(1.25)\'" onmouseleave="this.style.filter=\'\'">⤵ '+t.nome+' '+lbl+' ('+ts.forecast+')'+reason+'</span>';}).join('');}
+document.getElementById("forecastAlertList").addEventListener("click",e=>{const chip=e.target.closest("[data-scroll]");if(!chip)return;const btn=document.querySelector('.copy-btn[data-key="'+chip.dataset.scroll+'"]');if(!btn)return;const card=btn.closest(".tech-card");if(!card)return;card.scrollIntoView({behavior:"smooth",block:"center"});card.style.transition="box-shadow .15s";card.style.boxShadow="0 0 0 3px var(--accent),0 0 24px var(--accent)";setTimeout(()=>{card.style.boxShadow="";},1400);});
+
+function renderWeekendPanel(){const slots=document.getElementById("weekendSlots"),panel=document.getElementById("weekendPanel");const wkTechs=T.filter(t=>wkState[t.nome]);document.getElementById("wkCount").textContent=wkTechs.length?"("+wkTechs.length+" confirmado"+(wkTechs.length>1?"s":"")+")" :"";if(!wkTechs.length){slots.innerHTML='<div class="weekend-empty">Nenhum técnico marcado. Marque ✓ no card.</div>';return;}slots.innerHTML=wkTechs.map(t=>'<div class="wk-slot"><div><div class="wk-slot-name">'+t.nome+'</div><div class="wk-slot-area">'+t.areas.slice(0,3).join(" · ")+(t.areas.length>3?" …":"")+'</div></div></div>').join('');const body=document.getElementById("weekendBody");if(!panel.classList.contains("collapsed"))body.style.maxHeight=body.scrollHeight+50+"px";}
+
+function renderBusyPanel(){const panel=document.getElementById("busyPanel"),list=document.getElementById("busyList");const ones=T.filter(t=>(busyState[t.nome]||0)>0||offlineState[t.nome]);if(!ones.length){panel.style.display="none";panel.classList.remove("active");return;}panel.style.display="";panel.classList.add("active");list.innerHTML=ones.map(t=>{const off=offlineState[t.nome],lvl=busyState[t.nome]||0;const col=off?"var(--offline)":busyColors[lvl],lbl=off?"🔴 Offline forçado":(lvl>0?busyLabels[lvl]:"");return'<div class="busy-chip" style="background:'+col+'22;border-color:'+col+';color:'+col+'">'+t.nome+(lbl?' <span style="font-size:.62rem;opacity:.85">'+lbl+'</span>':'')+'</div>';}).join('');}
+
+function updateShiftUI(){
+  const now=new Date(),h=now.getHours(),m=String(now.getMinutes()).padStart(2,"0");
+  const turno=getTurnoAtual(),overlap=isOverlap();
+  if(manualTheme===null){
+    document.body.classList.remove("theme-night","theme-dawn","theme-especial");
+    if(turno==="noite")document.body.classList.add("theme-night");
+    else if(turno==="madrugada")document.body.classList.add("theme-dawn");
+  }
+  const badge=document.getElementById("shiftBadge"),warn=document.getElementById("shiftWarn");
+  if(turno==="dia"){
+    badge.className="shift-pill";document.getElementById("shiftIcon").textContent="☀️";document.getElementById("shiftLabel").textContent="Turno Diurno";document.getElementById("shiftLabel").style.color="var(--accent)";document.getElementById("shiftClock").textContent=h+":"+m+" · noturno entra às 15:00";warn.className="shift-warn day"+(filterOnlyOnline?"":" active");document.getElementById("shiftWarnIcon").textContent="🌙";document.getElementById("shiftWarnText").textContent="Noite e madrugada visíveis mas offline.";
+  }else if(overlap){
+    badge.className="shift-pill overlap";document.getElementById("shiftIcon").textContent="🌗";document.getElementById("shiftLabel").textContent="Overlap Dia + Noite";document.getElementById("shiftLabel").style.color="var(--success)";document.getElementById("shiftClock").textContent=h+":"+m+" · dia encerra às 17:00";warn.className="shift-warn night active";document.getElementById("shiftWarnIcon").textContent="⚡";document.getElementById("shiftWarnText").textContent="Transição 15–17h: dia e noite online simultaneamente.";
+  }else if(turno==="noite"){
+    badge.className="shift-pill";document.getElementById("shiftIcon").textContent="🌙";document.getElementById("shiftLabel").textContent="Turno Noturno";document.getElementById("shiftLabel").style.color="var(--accent)";document.getElementById("shiftClock").textContent=h+":"+m+" · madrugada às 23:00";warn.className="shift-warn night"+(filterOnlyOnline?"":" active");document.getElementById("shiftWarnIcon").textContent="🌃";document.getElementById("shiftWarnText").textContent="Diurno encerrado (17h). Madrugada offline.";
+  }else{
+    badge.className="shift-pill";document.getElementById("shiftIcon").textContent="🌃";document.getElementById("shiftLabel").textContent="Turno Madrugada";document.getElementById("shiftLabel").style.color="var(--accent)";document.getElementById("shiftClock").textContent=h+":"+m+" · diurno às 07:00";warn.className="shift-warn dawn"+(filterOnlyOnline?"":" active");document.getElementById("shiftWarnIcon").textContent="☀️";document.getElementById("shiftWarnText").textContent="Dia e noite offline — só madrugada em plantão.";
+  }
+}
+
+function getNextTurno(t){if(t==="dia")return"noite";if(t==="noite")return"madrugada";return"dia";}
+function minsUntilNextShift(){const h=new Date().getHours(),m=new Date().getMinutes(),nowM=h*60+m;const bounds=[T_DIA*60,T_DIA_END*60,T_MAD*60];for(const b of bounds){if(b>nowM)return b-nowM;}return(24*60+T_DIA*60)-nowM;}
+function buildSuccessorHint(t){const mins=minsUntilNextShift();if(mins>60)return"";const nextTurno=getNextTurno(getTurnoAtual());const overlapping=T.filter(x=>x.turno===nextTurno&&x.nome!==t.nome&&x.areas.some(a=>t.areas.includes(a)));if(!overlapping.length)return"";const label=mins<=15?"⚡ Troca em "+mins+"min":"🔄 Troca em ~"+mins+"min";const names=overlapping.map(x=>{const shared=x.areas.filter(a=>t.areas.includes(a));const preview=shared.slice(0,2).join(", ")+(shared.length>2?" +"+(shared.length-2):"");return'<span style="font-weight:700;">'+x.nome+'</span> <span style="opacity:.6;">('+preview+')</span>';}).join(' · ');return'<div class="successor-hint"><span class="sh-label">'+label+' — próximo plantão cobre as mesmas áreas:</span>'+names+'</div>';}
+
+function makeCard(t){
+  const lvl=busyState[t.nome]||0,online=estaOnline(t),isOff=!online;
+  const isForced=offlineState[t.nome]||false,isForcedOn=onlineForced[t.nome]||false;
+  const inShift=turnoAtivoAgora(t.turno);
+  const offBtnClass="offline-btn"+(isForced?" is-forced":isForcedOn?" is-forced":"");
+  let offBtnLabel=inShift?(isForced?"🟢 Remover offline":"🔴 Forçar offline"):(isForcedOn?"🔴 Remover online":"🟢 Forçar online");
+  const comment=commentState[t.nome]||"";
+  const card=document.createElement("div");
+  let cls="tech-card";if(t.turno==="noite")cls+=" night-card";if(t.turno==="madrugada")cls+=" dawn-card";if(isOff)cls+=" is-offline";else if(lvl>0)cls+=" busy-"+lvl;
+  card.className=cls;card.dataset.region=t.reg;
+  const dots='<div class="busy-dot"></div>'.repeat(5);
+  const blc=lvl>0?"l"+lvl:"",blt=lvl>0?busyLabels[lvl]:"Livre";
+  const showFull=t.nc.trim().toUpperCase()!==t.nome.trim().toUpperCase();
+  const isWk=wkState[t.nome]||false;
+  const stClass=online?"online":"offline",stText=online?"Online":"Offline";
+  let turnoTag="";if(t.turno==="noite")turnoTag='<span class="night-tag">🌙 15:00–23:00</span>';if(t.turno==="madrugada")turnoTag='<span class="dawn-tag">🌃 23:00–07:00</span>';
+  const unavail=isUnavailActive(t.nome),fStatus=forecastStatus(t.nome),ts=timerState[t.nome]||{};
+  let timerHTML='<div class="timer-row">';
+  if(unavail)timerHTML+='<span class="timer-tag unavail">⛔ Indisponível até '+ts.unavailUntil+(ts.unavailReason?' · '+ts.unavailReason:'')+'<button class="ttag-clear" data-clear-unavail="'+t.nome+'" title="Remover">✕</button></span>';
+  if(fStatus==="ok"){
+    const diff=hmToMinutes(ts.forecast)-nowMinutes();
+    const countdown=diff>0?' · em '+diff+'min':'';
+    timerHTML+='<span class="timer-tag forecast">📋 Prev: '+ts.forecast+countdown+(ts.forecastReason?' · '+ts.forecastReason:'')+'<button class="ttag-clear" data-clear-forecast="'+t.nome+'" title="Remover">✕</button></span>';
+  }
+  if(fStatus==="warn"){
+    const diff2=hmToMinutes(ts.forecast)-nowMinutes();
+    const cd2=diff2>0?' · em '+diff2+'min':'';
+    timerHTML+='<span class="timer-tag forecast warn">⚠ Prev: '+ts.forecast+cd2+' — vencendo!'+(ts.forecastReason?' · '+ts.forecastReason:'')+'<button class="ttag-clear" data-clear-forecast="'+t.nome+'" title="Remover">✕</button></span>';
+  }
+  if(fStatus==="expired")timerHTML+='<span class="timer-tag forecast expired">❌ Prev vencida: '+ts.forecast+(ts.forecastReason?' · '+ts.forecastReason:'')+'<button class="ttag-clear" data-clear-forecast="'+t.nome+'" title="Remover">✕</button></span>';
+  timerHTML+='<button class="timer-btn" data-key="'+t.nome+'">⏱ Horários</button></div>';
+  const successorHTML=buildSuccessorHint(t);
+  const telHTML=t.tel
+    ?'<div class="data-row"><span class="data-label">TEL</span><a class="data-val tel-val" href="tel:'+t.tel+'" onclick="event.stopPropagation()">'+t.tel+'</a></div>'
+    :'';
+  card.innerHTML=
+    '<div class="card-top"><div class="card-info">'
+    +'<div class="card-name-row"><div class="status-dot '+stClass+'"></div><div class="tech-name">'+t.nome+'</div><span class="status-text '+stClass+'">'+stText+'</span></div>'
+    +(showFull?'<div class="tech-full-name">'+t.nc+'</div>':'')
+    +'<div class="tech-role">'+t.cargo+'</div>'
+    +'<div class="card-tags">'+turnoTag+(t.obs?'<span class="obs-tag">⚠ '+t.obs+'</span>':'')+'</div>'
+    +'</div>'
+    +'<div class="card-actions">'
+    +'<button class="copy-btn" data-key="'+t.nome+'">⧉ Copiar</button>'
+    +'<button class="map-btn" data-key="'+t.nome+'">🗺 Mapa</button>'
+    +'<button class="'+offBtnClass+'" data-key="'+t.nome+'">'+offBtnLabel+'</button>'
+    +'<div class="wk-card-check'+(isWk?" checked":"")+'" data-key="'+t.nome+'"><div class="wk-box"></div><span class="wk-label">Sáb/Dom</span></div>'
+    +'<div class="busy-row"><button class="busy-toggle" data-level="'+lvl+'" data-key="'+t.nome+'">'+dots+'</button><span class="busy-label '+blc+'">'+blt+'</span></div>'
+    +'</div></div>'
+    +telHTML
+    +(t.cpf?'<div class="data-row"><span class="data-label">CPF</span><span class="data-val">'+t.cpf+'</span></div>':'')
+    +(t.rg ?'<div class="data-row"><span class="data-label">RG</span><span class="data-val">'+t.rg+'</span></div>':'')
+    +(t.crea?'<div class="data-row"><span class="data-label">CREA</span><span class="data-val">'+t.crea+'</span></div>':'')
+    +(()=>{
+    const q=document.getElementById("searchInput").value.toLowerCase().trim();
+    const tags=t.areas.map(a=>{
+      const hl=q&&a.toLowerCase().includes(q);
+      return '<span class="area-tag'+(hl?' highlight':'')+'">'+a+'</span>';
+    }).join('');
+    return '<div class="areas-tags">'+tags+'</div>';
+  })()
+    +timerHTML+successorHTML
+    +(()=>{
+    const log=logState[t.nome]||[];
+    const entries=log.slice(-5).map(e=>'<div class="comment-log-entry"><span class="cl-ts">'+e.ts+'</span>'+e.text+'</div>').join('');
+    const hasLog=log.length>0;
+    return '<div class="comment-log">'
+      +(hasLog?'<div style="max-height:80px;overflow-y:auto;margin-bottom:.3rem;">'+entries+'</div>':'')
+      +'<div class="comment-log-input-row">'
+      +'<textarea class="comment-log-input" data-logkey="'+t.nome+'" placeholder="Registrar... (Enter para salvar)" rows="1"></textarea>'
+      +(hasLog?'<button class="comment-log-clear" data-clearlog="'+t.nome+'" title="Limpar histórico">🗑</button>':'')
+      +'</div></div>';
+  })();
+  return card;
+}
+
+function makeDiv(cls,icon,lbl){const d=document.createElement("div");d.className="turno-divider";d.innerHTML='<div class="turno-divider-line"></div><span class="turno-divider-label '+cls+'">'+icon+' '+lbl+'</span><div class="turno-divider-line"></div>';return d;}
+
+function sortCards(arr){
+  return arr.slice().sort((a,b)=>{
+    if(sortMode==="alpha") return a.nome.localeCompare(b.nome,"pt-BR");
+    const ao=estaOnline(a)?0:1, bo=estaOnline(b)?0:1;
+    if(ao!==bo)return ao-bo;
+    const ab=busyState[a.nome]||0, bb2=busyState[b.nome]||0;
+    return bb2-ab;
+  });
+}
+function renderAll(){
+  updateShiftUI();
+  const content=document.getElementById("mainContent");content.innerHTML="";let total=0;
+  REGIOES.forEach(reg=>{
+    const dia=sortCards(T.filter(t=>t.reg===reg.id&&t.turno==="dia"&&shouldShow(t)));
+    const noite=sortCards(T.filter(t=>t.reg===reg.id&&t.turno==="noite"&&shouldShow(t)));
+    const mad=sortCards(T.filter(t=>t.reg===reg.id&&t.turno==="madrugada"&&shouldShow(t)));
+    if(!dia.length&&!noite.length&&!mad.length)return;
+    total+=dia.length+noite.length+mad.length;
+    const collapsed=!!collapseState[reg.id];
+    const sec=document.createElement("div");sec.className="region-section";
+    const rh=document.createElement("div");rh.className="region-header";rh.dataset.regid=reg.id;
+    rh.innerHTML='<div class="region-dot" style="background:'+reg.color+'"></div><span class="region-title" style="color:'+reg.color+'">'+reg.label+'</span><span class="region-count" style="margin-left:.5rem">'+(dia.length+noite.length+mad.length)+' técnico(s)</span><button class="region-collapse-btn">'+(collapsed?"▶":"▼")+'</button>';
+    sec.appendChild(rh);
+    const body=document.createElement("div");body.className="region-body"+(collapsed?" collapsed":"");body.id="rb-"+reg.id;
+    const grid=document.createElement("div");grid.className="cards-grid";
+    if(dia.length){if(noite.length||mad.length)grid.appendChild(makeDiv("day","☀️","08:00 – 15:00"));dia.forEach(t=>grid.appendChild(makeCard(t)));}
+    if(noite.length){grid.appendChild(makeDiv("night","🌙","15:00 – 23:00"));noite.forEach(t=>grid.appendChild(makeCard(t)));}
+    if(mad.length){grid.appendChild(makeDiv("dawn","🌃","23:00 – 07:00"));mad.forEach(t=>grid.appendChild(makeCard(t)));}
+    body.appendChild(grid);
+    if(!collapsed)requestAnimationFrame(()=>{body.style.maxHeight=body.scrollHeight+20+"px";});else body.style.maxHeight="0";
+    sec.appendChild(body);content.appendChild(sec);
+  });
+  document.getElementById("countDisplay").textContent=total;
+  if(!total)content.innerHTML='<div class="empty-state"><div class="big">🗺️</div><p>Nenhum técnico encontrado.</p></div>';
+  renderForecastAlert();
+}
+
+updateShiftUI();renderAll();renderBusyPanel();renderWeekendPanel();renderForecastAlert();
+setInterval(()=>{renderAll();renderBusyPanel();renderForecastAlert();updateTabBadge();},60000);
+
+function updateTabBadge(){
+  const exp=T.filter(t=>forecastStatus(t.nome)==="expired").length;
+  const wrn=T.filter(t=>forecastStatus(t.nome)==="warn").length;
+  const tot=exp+wrn;
+  document.title=(tot>0?"("+tot+") ":"")+"Técnicos por Área — RJ";
+}
+updateTabBadge();
+
+let allCollapsed=false;
+document.getElementById("expandAllBtn").addEventListener("click",()=>{
+  allCollapsed=!allCollapsed;
+  REGIOES.forEach(reg=>{
+    collapseState[reg.id]=allCollapsed;
+    const body=document.getElementById("rb-"+reg.id);
+    const arrow=document.querySelector('.region-header[data-regid="'+reg.id+'"] .region-collapse-btn');
+    if(body){body.classList.toggle("collapsed",allCollapsed);
+      if(!allCollapsed)requestAnimationFrame(()=>{body.style.maxHeight=body.scrollHeight+20+"px";});else body.style.maxHeight="0";}
+    if(arrow)arrow.textContent=allCollapsed?"▶":"▼";
+  });
+  document.getElementById("expandAllBtn").textContent=allCollapsed?"⊟ Expandir todos":"⊞ Colapsar todos";
+});
+
+function applyManualTheme(){
+  document.body.classList.remove("theme-night","theme-dawn","theme-especial");
+  if(manualTheme===null){
+    const turno=getTurnoAtual();
+    if(turno==="noite")document.body.classList.add("theme-night");
+    else if(turno==="madrugada")document.body.classList.add("theme-dawn");
+  }else{
+    THEME_META[manualTheme].classes.forEach(c=>document.body.classList.add(c));
+  }
+  updateThemeBtn();
+}
+
+function updateThemeBtn(){
+  const btn=document.getElementById("themeToggleBtn");
+  const label=document.getElementById("themeToggleLabel");
+  const current=manualTheme!==null?manualTheme:getTurnoAtual();
+  const nextTheme=THEME_META[current]?THEME_META[current].next:"noite";
+  label.textContent=THEME_META[nextTheme]?THEME_META[nextTheme].label:"☀️ Modo Dia";
+  btn.title="Tema atual: "+(current==="dia"?"Dia ☀️":current==="noite"?"Noite 🌙":current==="madrugada"?"Madrugada 🌃":"Especial 🌿");
+}
+
+document.getElementById("themeToggleBtn").addEventListener("click",()=>{
+  const current=manualTheme!==null?manualTheme:getTurnoAtual();
+  const nextTheme=THEME_META[current]?THEME_META[current].next:"noite";
+  const autoTurno=getTurnoAtual();
+  manualTheme=nextTheme===autoTurno?null:nextTheme;
+  applyManualTheme();
+  const names={dia:"☀️ Modo Dia ativado",noite:"🌙 Modo Noite ativado",madrugada:"🌃 Modo Madrugada ativado",especial:"🌿 Modo Especial ativado"};
+  showToast(names[manualTheme!==null?manualTheme:autoTurno]||"Tema automático");
+});
+applyManualTheme();
+
+const REG_CYCLE=[
+  {id:"",      label:"🗂 Região: Todas", color:""},
+  {id:"RJ",    label:"🔵 Rio / Niterói", color:"var(--rj-color)"},
+  {id:"BXD",   label:"🟣 Baixada",        color:"var(--bxd-color)"},
+  {id:"OESTE", label:"🟢 Oeste",          color:"var(--oeste-color)"},
+];
+document.getElementById("regFilterBtn").addEventListener("click",()=>{
+  const idx=REG_CYCLE.findIndex(r=>r.id===filterRegion);
+  const next=REG_CYCLE[(idx+1)%REG_CYCLE.length];
+  filterRegion=next.id;
+  const btn=document.getElementById("regFilterBtn");
+  btn.textContent=next.label;
+  btn.classList.toggle("active",filterRegion!=="");
+  renderAll();
+  showToast(next.label);
+});
+
+document.getElementById("sortBtn").addEventListener("click",()=>{
+  sortMode=sortMode==="status"?"alpha":"status";
+  const btn=document.getElementById("sortBtn");
+  btn.classList.toggle("active",sortMode==="alpha");
+  btn.textContent=sortMode==="alpha"?"🔃 Status":"🔃 A→Z";
+  btn.title=sortMode==="alpha"?"Ordenar por status (online→busy→offline)":"Ordenar alfabeticamente";
+  renderAll();
+  showToast(sortMode==="alpha"?"Ordem: A → Z":"Ordem: Status");
+});
+
+document.getElementById("filterOnlineBtn").addEventListener("click",()=>{
+  filterOnlyOnline=!filterOnlyOnline;
+  if(filterOnlyOnline)filterOnlyForecast=false;
+  document.getElementById("filterOnlineBtn").classList.toggle("active",filterOnlyOnline);
+  document.getElementById("copyAllBtn").style.display=filterOnlyOnline?"none":"";
+  document.getElementById("filterForecastBtn").classList.remove("active");
+  renderAll();
+});
+document.getElementById("filterForecastBtn").addEventListener("click",()=>{
+  filterOnlyForecast=!filterOnlyForecast;
+  if(filterOnlyForecast)filterOnlyOnline=false;
+  document.getElementById("filterForecastBtn").classList.toggle("active",filterOnlyForecast);
+  document.getElementById("filterOnlineBtn").classList.remove("active");
+  renderAll();
+});
+
+document.getElementById("compactBtn").addEventListener("click",()=>{
+  compactMode=!compactMode;
+  document.body.classList.toggle("compact-mode",compactMode);
+  document.getElementById("compactBtn").classList.toggle("active",compactMode);
+  document.getElementById("compactBtn").textContent=compactMode?"⊠ Compacto":"⊡ Compacto";
+});
+
+document.getElementById("exportBtn").addEventListener("click",()=>{
+  const now=new Date();
+  const ts=now.toLocaleDateString("pt-BR")+" "+now.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  const lines=["RELATÓRIO DE EQUIPE — "+ts,"=".repeat(50),""];
+  const vis=T.filter(shouldShow);
+  const online=vis.filter(t=>estaOnline(t));
+  const offline=vis.filter(t=>!estaOnline(t));
+  lines.push("ONLINE ("+online.length+"):");
+  online.forEach(t=>{
+    const lvl=busyState[t.nome]||0;
+    const busy=lvl>0?" ["+busyLabels[lvl]+"]":"";
+    const fs=forecastStatus(t.nome);
+    const fstr=fs?" [Prev:"+timerState[t.nome].forecast+"]":"";
+    lines.push("  ✓ "+t.nome+" — "+t.reg+busy+fstr);
+  });
+  lines.push("");
+  lines.push("OFFLINE ("+offline.length+"):");
+  offline.forEach(t=>{lines.push("  ✗ "+t.nome+" — "+t.reg);});
+  lines.push("");
+  const forecasts=vis.filter(t=>forecastStatus(t.nome));
+  if(forecasts.length){
+    lines.push("PREVISÕES ATIVAS:");
+    forecasts.forEach(t=>{
+      const fs=forecastStatus(t.nome),ts2=timerState[t.nome];
+      lines.push("  "+t.nome+" — "+ts2.forecast+" ("+fs+")"+(ts2.forecastReason?" · "+ts2.forecastReason:""));
+    });
+    lines.push("");
+  }
+  const blob=new Blob([lines.join("\n")],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="equipe_rj_"+now.toISOString().slice(0,16).replace("T","_").replace(":","h")+".txt";
+  a.click();URL.revokeObjectURL(a.href);
+  showToast("Relatório exportado!");
+});
+
+document.addEventListener("keydown",e=>{
+  const tag=document.activeElement.tagName.toLowerCase();
+  const isInput=tag==="input"||tag==="textarea";
+  if(e.key==="/"&&!isInput){e.preventDefault();document.getElementById("searchInput").focus();return;}
+  if(e.key==="Escape"){
+    if(document.getElementById("timerModal").classList.contains("open")){closeTimerModal();return;}
+    if(document.getElementById("mapModal").classList.contains("open")){closeMapModal();return;}
+    if(document.getElementById("searchInput").value){document.getElementById("searchInput").value="";renderAll();return;}
+    if(isInput){document.activeElement.blur();return;}
+  }
+  if((e.key==="e"||e.key==="E")&&!isInput){
+    document.getElementById("expandAllBtn").click();return;
+  }
+  if((e.key==="c"||e.key==="C")&&!isInput){
+    document.getElementById("compactBtn").click();return;
+  }
+  if((e.key==="m"||e.key==="M")&&!isInput){
+    openMapModal();return;
+  }
+  if(e.key==="?"&&!isInput){
+    const hint=document.getElementById("kbdHint");
+    hint.classList.toggle("show");
+    clearTimeout(kbdHintTimer);
+    if(hint.classList.contains("show"))kbdHintTimer=setTimeout(()=>hint.classList.remove("show"),4000);
+    return;
+  }
+});
+
+const THEME_DEFAULTS={
+  dia:      {accent:"#FF4500",accent2:"#FF8800",label:"☀️ Dia"},
+  noite:    {accent:"#1E64FF",accent2:"#22B8FF",label:"🌙 Noite"},
+  madrugada:{accent:"#7C3AED",accent2:"#C084FC",label:"🌃 Madrugada"},
+  especial: {accent:"#00E664",accent2:"#00FFB2",label:"🌿 Especial"},
+};
+const THEME_SWATCHES={
+  dia:      ["#FF4500","#FF6B00","#E63946","#FF0080","#FF9500","#E07B39","#B5451B","#CC2200"],
+  noite:    ["#1E64FF","#0047AB","#00BFFF","#7B2FBE","#4361EE","#4CC9F0","#023E8A","#0077B6"],
+  madrugada:["#7C3AED","#9333EA","#A855F7","#6D28D9","#4C1D95","#DB2777","#BE185D","#5B21B6"],
+  especial: ["#00E664","#00C957","#00FFB2","#22C55E","#16A34A","#84CC16","#65A30D","#15803D"],
+};
+let themeCustomColors={};
+try{const s=localStorage.getItem("rj_themeColors");if(s)themeCustomColors=JSON.parse(s);}catch(e){}
+function saveColors(){try{localStorage.setItem("rj_themeColors",JSON.stringify(themeCustomColors));}catch(e){}}
+function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return r+","+g+","+b;}
+function lightenHex(hex,f=0.32){let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f);return"#"+[r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function applyThemeColor(theme,color){
+  themeCustomColors[theme]=color;saveColors();
+  const rgb=hexToRgb(color),light=lightenHex(color),lrgb=hexToRgb(light);
+  let el=document.getElementById("custom-color-"+theme);
+  if(!el){el=document.createElement("style");el.id="custom-color-"+theme;document.head.appendChild(el);}
+  const sel=theme==="dia"?":root":theme==="noite"?"body.theme-night":theme==="madrugada"?"body.theme-dawn":"body.theme-especial";
+  el.textContent=sel+`{--accent:${color};--accent2:${light};--logo-grd:linear-gradient(135deg,${color},${light});--btn-grd:linear-gradient(135deg,${color},${light});--glow:rgba(${rgb},0.18);--glow2:rgba(${lrgb},0.09);--border:rgba(${rgb},0.14);--border2:rgba(${rgb},0.32);--tag-bg:rgba(${rgb},0.07);--rj-color:${color};}`;
+}
+Object.entries(themeCustomColors).forEach(([t,c])=>applyThemeColor(t,c));
+
+function buildPalettePanel(){
+  const body=document.getElementById("tppBody");body.innerHTML="";
+  Object.entries(THEME_DEFAULTS).forEach(([key,meta])=>{
+    const cur=themeCustomColors[key]||meta.accent;
+    const row=document.createElement("div");row.className="tpp-theme-row";
+    const lbl=document.createElement("div");lbl.className="tpp-row-label";
+    lbl.innerHTML='<span class="tpp-label-dot" style="background:'+cur+'"></span>'+meta.label;
+    row.appendChild(lbl);
+    const sw=document.createElement("div");sw.className="tpp-swatches";
+    THEME_SWATCHES[key].forEach(hex=>{
+      const s=document.createElement("div");s.className="tpp-swatch"+(cur===hex?" active":"");
+      s.style.background=hex;s.title=hex;
+      s.addEventListener("click",()=>{applyThemeColor(key,hex);buildPalettePanel();showToast("Cor aplicada ao tema "+meta.label);});
+      sw.appendChild(s);
+    });
+    const inp=document.createElement("input");inp.type="color";inp.className="tpp-color-input";inp.value=cur;inp.title="Cor personalizada";
+    inp.addEventListener("input",()=>{applyThemeColor(key,inp.value);lbl.querySelector(".tpp-label-dot").style.background=inp.value;});
+    inp.addEventListener("change",()=>{buildPalettePanel();showToast("Cor personalizada aplicada!");});
+    sw.appendChild(inp);row.appendChild(sw);body.appendChild(row);
+  });
+}
+
+const paletteBtn=document.getElementById("themePaletteBtn");
+const palettePanel=document.getElementById("themePalettePanel");
+paletteBtn.addEventListener("click",e=>{e.stopPropagation();const open=palettePanel.classList.toggle("open");paletteBtn.classList.toggle("open",open);if(open)buildPalettePanel();});
+document.addEventListener("click",e=>{if(!palettePanel.contains(e.target)&&e.target!==paletteBtn){palettePanel.classList.remove("open");paletteBtn.classList.remove("open");}});
+document.getElementById("tppReset").addEventListener("click",()=>{themeCustomColors={};saveColors();document.querySelectorAll("[id^='custom-color-']").forEach(el=>el.remove());buildPalettePanel();showToast("Cores resetadas para o padrão!");});
+
+/* ══════════════════════════════════════════════════════════════
+   MAPA INTEGRADO — LEAFLET + OPENSTREETMAP
+   ══════════════════════════════════════════════════════════════ */
+
+const BAIRRO_COORDS = {
+  "Copacabana": [-22.9711, -43.1822], "Ipanema": [-22.9838, -43.2044], "Leblon": [-22.9844, -43.2253],
+  "Botafogo": [-22.9519, -43.1828], "Flamengo": [-22.9322, -43.1758], "Laranjeiras": [-22.9364, -43.1881],
+  "Catete": [-22.9258, -43.1775], "Glória": [-22.9197, -43.1764], "Urca": [-22.9533, -43.1656],
+  "Humaitá": [-22.9547, -43.1958], "Lagoa": [-22.9711, -43.2050], "Jardim Botânico": [-22.9661, -43.2231],
+  "Gávea": [-22.9794, -43.2344], "Cosme Velho": [-22.9428, -43.1989], "Centro": [-22.9068, -43.1729],
+  "Lapa": [-22.9133, -43.1797], "Santa Teresa": [-22.9197, -43.1886], "Estácio": [-22.9108, -43.2069],
+  "Catumbi": [-22.9186, -43.1997], "Tijuca": [-22.9322, -43.2403], "Vila Isabel": [-22.9169, -43.2467],
+  "Andaraí": [-22.9289, -43.2539], "Grajaú": [-22.9197, -43.2644], "Maracanã": [-22.9122, -43.2303],
+  "São Cristóvão": [-22.8997, -43.2236], "Benfica": [-22.8944, -43.2386], "Meier": [-22.9019, -43.2781],
+  "Cachambi": [-22.8933, -43.2694], "Engenho de Dentro": [-22.9039, -43.2958], "Engenho Novo": [-22.9050, -43.2694],
+  "Todos os Santos": [-22.9078, -43.2847], "Pilares": [-22.8828, -43.2997], "Abolição": [-22.8886, -43.2886],
+  "Piedade": [-22.8989, -43.2997], "Rocha": [-22.9197, -43.2428], "Riachuelo": [-22.9050, -43.2619],
+  "Encantado": [-22.8933, -43.2847], "Jacaré": [-22.8886, -43.2539], "Del Castilho": [-22.8828, -43.2781],
+  "Quintino": [-22.8933, -43.3181], "Cascadura": [-22.8828, -43.3306], "Madureira": [-22.8719, -43.3361],
+  "Campinho": [-22.8828, -43.3472], "Bento Ribeiro": [-22.8661, -43.3639], "Oswaldo Cruz": [-22.8550, -43.3472],
+  "Rocha Miranda": [-22.8550, -43.3639], "Turiaçu": [-22.8550, -43.3306], "Cavalcanti": [-22.8661, -43.3181],
+  "Honório Gurgel": [-22.8550, -43.3472], "Coelho Neto": [-22.8328, -43.3639], "Acari": [-22.8219, -43.3472],
+  "Vila Valqueire": [-22.8828, -43.3639], "Penha": [-22.8428, -43.2781], "Penha Circular": [-22.8328, -43.2886],
+  "Brás de Pina": [-22.8328, -43.2781], "Ramos": [-22.8428, -43.2539], "Olaria": [-22.8550, -43.2694],
+  "Bonsucesso": [-22.8661, -43.2539], "Manguinhos": [-22.8719, -43.2428], "Irajá": [-22.8328, -43.3181],
+  "Vila da Penha": [-22.8428, -43.3056], "Vigário Geral": [-22.8219, -43.3056], "Parada de Lucas": [-22.8108, -43.2997],
+  "Cordovil": [-22.8328, -43.2997], "Higienópolis": [-22.8108, -43.3181], "Tomás Coelho": [-22.8108, -43.2886],
+  "Vicente de Carvalho": [-22.8550, -43.3056], "Jardim América": [-22.8108, -43.2781], "Colégio": [-22.8219, -43.2886],
+  "Inhaúma": [-22.8828, -43.2886], "Ilha do Governador": [-22.8108, -43.2050], "Galeão": [-22.8050, -43.2428],
+  "Duque de Caxias": [-22.7858, -43.3056], "Nova Iguaçu": [-22.7594, -43.4511], "Nilópolis": [-22.8078, -43.4144],
+  "São João de Meriti": [-22.8039, -43.3722], "Mesquita": [-22.7828, -43.4311], "Belford Roxo": [-22.7642, -43.3994],
+  "Queimados": [-22.7136, -43.5528], "Japeri": [-22.6428, -43.6533], "Pavuna": [-22.8108, -43.3556],
+  "Anchieta": [-22.8219, -43.4056], "Guadalupe": [-22.8428, -43.3722], "Coelho da Rocha": [-22.7828, -43.3889],
+  "Olinda": [-22.8328, -43.3889], "Campo Grande": [-22.9019, -43.5611], "Santa Cruz": [-22.9197, -43.6833],
+  "Sepetiba": [-22.9711, -43.7000], "Paciência": [-22.8828, -43.6667], "Cosmos": [-22.9019, -43.6000],
+  "Bangu": [-22.8719, -43.4678], "Realengo": [-22.8828, -43.4344], "Deodoro": [-22.8550, -43.3889],
+  "Senador Camará": [-22.8719, -43.4978], "Padre Miguel": [-22.8719, -43.4511], "Santíssimo": [-22.8828, -43.4844],
+  "Magalhães Bastos": [-22.8828, -43.4178], "Barra da Tijuca": [-23.0050, -43.3650], "Recreio dos Bandeirantes": [-23.0197, -43.4678],
+  "Jacarepaguá": [-22.9289, -43.3639], "Taquara": [-22.9197, -43.3806], "Tanque": [-22.9108, -43.3556],
+  "Pechincha": [-22.9197, -43.3472], "Curicica": [-22.9289, -43.3556], "Anil": [-22.9461, -43.3389],
+  "Freguesia": [-22.9461, -43.3306], "Gardênia Azul": [-22.9289, -43.3389], "Praça Seca": [-22.9019, -43.3472],
+  "Vargem Grande": [-23.0197, -43.5028], "Vargem Pequena": [-23.0050, -43.4844], "Niterói": [-22.8833, -43.1036],
+  "São Gonçalo": [-22.8267, -43.0536], "Fonseca": [-22.8833, -43.0869], "Alcântara": [-22.8667, -43.0869],
+  "Pendotiba": [-22.9167, -43.0203], "FTS": [-22.9068, -43.1729], "Central Ana Neri": [-22.9197, -43.2428],
+  "Fonseca Teles": [-22.9197, -43.2428], "DDC": [-22.8933, -43.2694], "LPD": [-22.9322, -43.2403],
+  "VGE": [-22.8108, -43.2781], "Maré": [-22.8661, -43.2428], "Jacarezinho": [-22.8886, -43.2539],
+  "Rio Comprido": [-22.9258, -43.2050], "Alto da Boa Vista": [-22.9594, -43.2781], "Usina": [-22.9322, -43.2539],
+  "Muda": [-22.9322, -43.2539], "Água Santa": [-22.9108, -43.2781], "Praça da Bandeira": [-22.9108, -43.2236],
+  "Rio das Pedras": [-22.9289, -43.3556], "Adjacências": [-22.9068, -43.1729], "Zona Sul": [-22.9711, -43.1822],
+  "Zona Norte": [-22.9019, -43.2781], "Ana Neri": [-22.9197, -43.2428], "Barros Filho": [-22.8328, -43.3722],
+  "Eng. de Dentro": [-22.9039, -43.2958], "Lins": [-22.9078, -43.2847], "Méier": [-22.9019, -43.2781]
+};
+
+let leafletMap = null;
+let allMarkers = [];
+let mapFilterOnlineOnly = false;
+let mapFilterRegion = "";
+let selectedMarkerTech = null;
+
+function getMarkerColor(tech) {
+  const online = estaOnline(tech);
+  const busy = busyState[tech.nome] || 0;
+  
+  if (!online) return "#FF2244";
+  if (busy >= 3) return "#FF8800";
+  if (tech.turno === "noite") return "#1E64FF";
+  if (tech.turno === "madrugada") return "#9333EA";
+  return "#00C97A";
+}
+
+function initLeafletMap() {
+  if (leafletMap) return;
+  
+  leafletMap = L.map('leafletMap').setView([-22.9068, -43.1729], 11);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 18
+  }).addTo(leafletMap);
+  
+  updateMapMarkers();
+}
+
+function updateMapMarkers() {
+  if (!leafletMap) return;
+  
+  allMarkers.forEach(m => leafletMap.removeLayer(m));
+  allMarkers = [];
+  
+  const techs = T.filter(t => {
+    if (mapFilterOnlineOnly && !estaOnline(t)) return false;
+    if (mapFilterRegion && t.reg !== mapFilterRegion) return false;
+    return true;
+  });
+  
+  techs.forEach(tech => {
+    const area = tech.areas.find(a => BAIRRO_COORDS[a]);
+    if (!area) return;
+    
+    const coords = BAIRRO_COORDS[area];
+    const color = getMarkerColor(tech);
+    
+    const marker = L.circleMarker(coords, {
+      radius: 8,
+      fillColor: color,
+      color: "#fff",
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.9
+    }).addTo(leafletMap);
+    
+    marker.techName = tech.nome;
+    
+    marker.on('click', () => {
+      showMarkerInfo(tech);
+      selectedMarkerTech = tech.nome;
+      leafletMap.setView(coords, 14);
+    });
+    
+    allMarkers.push(marker);
+  });
+  
+  if (allMarkers.length > 0) {
+    const group = L.featureGroup(allMarkers);
+    leafletMap.fitBounds(group.getBounds().pad(0.1));
+  }
+}
+
+function showMarkerInfo(tech) {
+  const card = document.getElementById("mapInfoCard");
+  const online = estaOnline(tech);
+  const busy = busyState[tech.nome] || 0;
+  
+  document.getElementById("mapInfoName").textContent = tech.nome;
+  
+  const statusHTML = `
+    <div class="status-dot ${online ? 'online' : 'offline'}"></div>
+    <span class="status-text ${online ? 'online' : 'offline'}">${online ? 'Online' : 'Offline'}</span>
+    ${busy > 0 ? `<span style="margin-left:0.5rem;color:var(--warn);">• ${busyLabels[busy]}</span>` : ''}
+  `;
+  document.getElementById("mapInfoStatus").innerHTML = statusHTML;
+  
+  const areasText = tech.areas.slice(0, 8).join(" · ") + (tech.areas.length > 8 ? " ..." : "");
+  document.getElementById("mapInfoAreas").textContent = "📍 " + areasText;
+  
+  card.classList.add("show");
+}
+
+document.getElementById("mapInfoClose").addEventListener("click", () => {
+  document.getElementById("mapInfoCard").classList.remove("show");
+  selectedMarkerTech = null;
+});
+
+document.getElementById("mapInfoGoToCard").addEventListener("click", () => {
+  if (!selectedMarkerTech) return;
+  
+  closeMapModal();
+  
+  setTimeout(() => {
+    const btn = document.querySelector('.copy-btn[data-key="' + selectedMarkerTech + '"]');
+    if (!btn) return;
+    
+    const card = btn.closest(".tech-card");
+    if (!card) return;
+    
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    card.style.transition = "box-shadow .15s";
+    card.style.boxShadow = "0 0 0 3px var(--accent), 0 0 24px var(--accent)";
+    
+    setTimeout(() => {
+      card.style.boxShadow = "";
+    }, 1400);
+  }, 300);
+});
+
+let searchTimeout = null;
+document.getElementById("mapSearchInput").addEventListener("input", (e) => {
+  clearTimeout(searchTimeout);
+  const query = e.target.value.trim().toLowerCase();
+  
+  if (!query || query.length < 3) return;
+  
+  searchTimeout = setTimeout(() => {
+    const found = Object.entries(BAIRRO_COORDS).find(([name]) => 
+      name.toLowerCase().includes(query)
+    );
+    
+    if (found) {
+      const [name, coords] = found;
+      leafletMap.setView(coords, 14);
+      
+      const tempMarker = L.circleMarker(coords, {
+        radius: 10,
+        fillColor: "#FFD700",
+        color: "#fff",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.8
+      }).addTo(leafletMap);
+      
+      setTimeout(() => leafletMap.removeLayer(tempMarker), 3000);
+      showToast("📍 " + name);
+    }
+  }, 500);
+});
+
+document.getElementById("mapFilterOnline").addEventListener("click", () => {
+  mapFilterOnlineOnly = !mapFilterOnlineOnly;
+  document.getElementById("mapFilterOnline").classList.toggle("active", mapFilterOnlineOnly);
+  updateMapMarkers();
+});
+
+document.getElementById("mapFilterRegion").addEventListener("click", () => {
+  const regions = ["", "RJ", "BXD", "OESTE"];
+  const currentIdx = regions.indexOf(mapFilterRegion);
+  mapFilterRegion = regions[(currentIdx + 1) % regions.length];
+  
+  const labels = {
+    "": "Todas regiões",
+    "RJ": "🔵 Rio / Niterói",
+    "BXD": "🟣 Baixada",
+    "OESTE": "🟢 Oeste"
+  };
+  
+  const btn = document.getElementById("mapFilterRegion");
+  btn.textContent = labels[mapFilterRegion];
+  btn.classList.toggle("active", mapFilterRegion !== "");
+  
+  updateMapMarkers();
+});
+
+function openMapModal() {
+  document.getElementById("mapModal").classList.add("open");
+  
+  if (!leafletMap) {
+    setTimeout(() => {
+      initLeafletMap();
+    }, 100);
+  } else {
+    updateMapMarkers();
+    setTimeout(() => {
+      leafletMap.invalidateSize();
+    }, 100);
+  }
+}
+
+function closeMapModal() {
+  document.getElementById("mapModal").classList.remove("open");
+  document.getElementById("mapInfoCard").classList.remove("show");
+}
+
+document.getElementById("mapCloseBtn").addEventListener("click", closeMapModal);
+document.getElementById("openMapBtn").addEventListener("click", openMapModal);
+
+document.getElementById("mapModal").addEventListener("click", (e) => {
+  if (e.target === document.getElementById("mapModal")) {
+    closeMapModal();
+  }
+});
+</script>
+
+<div class="kbd-hint" id="kbdHint">
+  <kbd>/</kbd> buscar &nbsp; <kbd>Esc</kbd> limpar &nbsp; <kbd>E</kbd> expandir &nbsp; <kbd>C</kbd> compacto &nbsp; <kbd>M</kbd> mapa &nbsp; <kbd>?</kbd> ocultar
+</div>
+
+</body>
+</html>
