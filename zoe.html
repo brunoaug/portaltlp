@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Técnicos – Zona Oeste RJ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root {
+    --bg:      #0d0f14;
+    --surface: #161920;
+    --surface2:#1c2030;
+    --border:  #252830;
+    --text:    #e8eaf0;
+    --muted:   #6b7080;
+    --accent:  #f0c040;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: 420px;
+    min-width: 240px;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-x: hidden;
+    overflow-y: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  /* drag handle */
+  #resize-handle {
+    position: absolute;
+    top: 0; right: 0;
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 100;
+    background: transparent;
+    transition: background .15s;
+  }
+  #resize-handle:hover, #resize-handle.dragging {
+    background: var(--accent);
+    opacity: .5;
+  }
+
+  #sidebar-header {
+    padding: 20px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  #sidebar-header .label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 4px;
+  }
+  #sidebar-header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+  #sidebar-header p {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── SEARCH ── */
+  #search-wrap {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  #search-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 36px 9px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color .2s;
+  }
+  #search-input::placeholder { color: var(--muted); }
+  #search-input:focus { border-color: var(--accent); }
+  #search-clear {
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    display: none;
+  }
+  #search-clear.visible { display: block; }
+
+  /* autocomplete dropdown */
+  #search-dropdown {
+    position: absolute;
+    top: calc(100% - 2px);
+    left: 12px;
+    right: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    z-index: 9999;
+    overflow: hidden;
+    display: none;
+  }
+  #search-dropdown.open { display: block; }
+  .drop-item {
+    padding: 7px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background .15s;
+  }
+  .drop-item:hover, .drop-item.focused { background: var(--border); }
+  .drop-item .di-name { flex: 1; color: var(--text); }
+  .drop-item .di-dots { display: flex; gap: 3px; }
+  .drop-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* ── CONTROLS ── */
+  #controls {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 7px;
+  }
+  .ctrl-btn {
+    flex: 1;
+    padding: 8px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── CARD LIST ── */
+  #tech-list {
+    flex: 1;
+    overflow-y: scroll;
+    padding: 12px 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    scrollbar-width: auto;
+    scrollbar-color: #4a5068 #1a1d27;
+  }
+  #tech-list::-webkit-scrollbar { width: 10px; }
+  #tech-list::-webkit-scrollbar-track { background: #1a1d27; border-left: 1px solid var(--border); }
+  #tech-list::-webkit-scrollbar-thumb { background: #4a5068; border-radius: 6px; border: 2px solid #1a1d27; }
+  #tech-list::-webkit-scrollbar-thumb:hover { background: #6b7490; }
+
+  /* ── TECH CARD ── */
+  .tech-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface2);
+    transition: border-color .2s;
+  }
+  .tech-card.layer-on { border-color: var(--card-color); }
+
+  /* top strip */
+  .card-strip {
+    height: 3px;
+    background: var(--card-color, var(--border));
+    opacity: .6;
+    transition: opacity .2s;
+  }
+  .tech-card.layer-on .card-strip { opacity: 1; }
+
+  /* header row */
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .color-dot {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--card-color, var(--muted));
+    transition: box-shadow .3s;
+  }
+  .tech-card.layer-on .color-dot {
+    box-shadow: 0 0 10px var(--card-color, transparent);
+  }
+  .tech-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+
+  /* toggle eye button */
+  .vis-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    width: 30px; height: 24px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    color: var(--muted);
+    transition: all .2s;
+    flex-shrink: 0;
+  }
+  .vis-btn:hover { border-color: var(--card-color); color: var(--card-color); }
+  .tech-card.layer-on .vis-btn { border-color: var(--card-color); color: var(--card-color); }
+
+  /* expand arrow */
+  .exp-btn {
+    background: none; border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 11px;
+    padding: 0 2px;
+    transition: transform .2s, color .2s;
+    flex-shrink: 0;
+  }
+  .exp-btn.open { transform: rotate(180deg); color: var(--text); }
+
+  /* collapsible body */
+  .card-body {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .3s ease;
+  }
+  .card-body.open { max-height: 160px; }
+
+  .card-inner {
+    padding: 4px 8px 10px 12px;
+    height: 148px;
+    overflow-y: scroll;
+    scrollbar-width: auto;
+    scrollbar-color: #4a5068 #1a1d27;
+  }
+  .card-inner::-webkit-scrollbar { width: 8px; }
+  .card-inner::-webkit-scrollbar-track { background: #1a1d27; }
+  .card-inner::-webkit-scrollbar-thumb { background: #4a5068; border-radius: 6px; border: 2px solid #1a1d27; }
+  .card-inner::-webkit-scrollbar-thumb:hover { background: #6b7490; }
+  .divider { height: 1px; background: var(--border); margin: 7px 0; }
+
+  .badge-row { display: flex; flex-wrap: wrap; gap: 4px; }
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--card-color, var(--border));
+    color: var(--card-color, var(--text));
+    background: color-mix(in srgb, var(--card-color, transparent) 10%, transparent);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .badge:hover { background: color-mix(in srgb, var(--card-color, transparent) 25%, transparent); }
+  .badge.note {
+    border-color: var(--border);
+    color: var(--muted);
+    background: transparent;
+    font-style: italic;
+    cursor: default;
+    font-size: 10px;
+  }
+
+  /* ── MAP AREA ── */
+  #map-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  #map-bar {
+    padding: 8px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 36px;
+  }
+  #active-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    flex: 1;
+  }
+  #map { flex: 1; }
+
+  /* leaflet overrides */
+  .leaflet-container { background: #0d1117; }
+  .leaflet-popup-content-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    box-shadow: 0 8px 32px rgba(0,0,0,.7);
+  }
+  .leaflet-popup-tip { background: var(--surface); }
+  .leaflet-popup-content { font-size: 12px; line-height: 1.6; margin: 10px 14px; }
+  .leaflet-popup-content strong { color: var(--accent); font-size: 13px; }
+  .leaflet-popup-content .pop-tech { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 3px; }
+  .pop-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    border: 1px solid;
+    margin-top: 3px;
+  }
+
+  /* ── TABS ── */
+  #tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+    margin-bottom: -1px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .tab-panel.active { display: flex; }
+
+  /* ── STATUS PANEL ── */
+  #status-list {
+    flex: 1;
+    overflow-y: scroll;
+    padding: 12px 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    scrollbar-width: auto;
+    scrollbar-color: #4a5068 #1a1d27;
+  }
+  #status-list::-webkit-scrollbar { width: 10px; }
+  #status-list::-webkit-scrollbar-track { background: #1a1d27; border-left: 1px solid var(--border); }
+  #status-list::-webkit-scrollbar-thumb { background: #4a5068; border-radius: 6px; border: 2px solid #1a1d27; }
+  #status-list::-webkit-scrollbar-thumb:hover { background: #6b7490; }
+
+  .status-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .status-card .sc-dot {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .status-card .sc-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .status-card .sc-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .status-card .sc-info { flex: 1; }
+
+  /* status selector */
+  .status-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 28px 5px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text);
+    cursor: pointer;
+    outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7080'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: border-color .2s;
+    flex-shrink: 0;
+  }
+  .status-select:hover { border-color: var(--accent); }
+  .status-select option { background: #1c2030; }
+
+  /* status color indicators */
+  .status-select[data-status="disponivel"] { border-color: #34D399; color: #34D399; }
+  .status-select[data-status="ocupado"]    { border-color: #FBBF24; color: #FBBF24; }
+  .status-select[data-status="sobrecarregado"] { border-color: #FF6B6B; color: #FF6B6B; }
+
+  /* status summary bar */
+  #status-summary {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .sum-pill {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 5px 0;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .sum-pill .sum-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .sum-pill .sum-count { font-weight: 700; font-size: 13px; }
+
+  /* pulsing dot for overloaded */
+  @keyframes blink { 0%,100%{ opacity:1 } 50%{ opacity:.3 } }
+  .blink { animation: blink 1.2s infinite; }
+  .pulse-ring {
+    border: 3px solid var(--accent);
+    border-radius: 50%;
+    width: 20px; height: 20px;
+    animation: pulse-anim 1.2s infinite;
+    background: color-mix(in srgb, #f0c040 30%, transparent);
+  }
+  @keyframes pulse-anim {
+    0%   { transform: scale(1);   opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+
+  /* legend */
+  #legend {
+    position: absolute;
+    bottom: 20px; right: 10px;
+    z-index: 800;
+    background: rgba(22,25,32,.92);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 12px;
+    pointer-events: none;
+    backdrop-filter: blur(4px);
+  }
+  .leg-title {
+    font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 6px;
+  }
+  .leg-row {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 3px; opacity: .35; transition: opacity .3s;
+  }
+  .leg-row.on { opacity: 1; }
+  .leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .leg-name { font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+
+  @media (max-width: 800px) {
+    body { flex-direction: column; }
+    #sidebar { width: 100%; min-width: unset; max-height: 50vh; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div id="resize-handle" title="Arraste para redimensionar"></div>
+  <div id="sidebar-header">
+    <div class="label">Zona Oeste · RJ</div>
+    <h1>Mapa de Atendimento</h1>
+    <p>8 técnicos de campo</p>
+  </div>
+
+  <!-- TABS -->
+  <div id="tabs">
+    <button class="tab-btn active" onclick="switchTab('mapa')">🗺 Mapa</button>
+    <button class="tab-btn" onclick="switchTab('status')">📊 Status</button>
+  </div>
+
+  <!-- TAB: MAPA -->
+  <div id="panel-mapa" class="tab-panel active">
+    <!-- SEARCH -->
+    <div id="search-wrap">
+      <input id="search-input" type="text" placeholder="🔍  Pesquisar bairro..." autocomplete="off"/>
+      <button id="search-clear">✕</button>
+      <div id="search-dropdown"></div>
+    </div>
+    <!-- CONTROLS -->
+    <div id="controls">
+      <button class="ctrl-btn" onclick="toggleAll(true)">Exibir todos</button>
+      <button class="ctrl-btn" onclick="toggleAll(false)">Ocultar todos</button>
+      <button class="ctrl-btn" onclick="resetView()">Centralizar</button>
+    </div>
+    <div id="tech-list"></div>
+  </div>
+
+  <!-- TAB: STATUS -->
+  <div id="panel-status" class="tab-panel">
+    <div id="status-summary">
+      <div class="sum-pill">
+        <div class="sum-dot" style="background:#34D399"></div>
+        <span class="sum-count" id="count-disp">0</span>
+        <span>Disp.</span>
+      </div>
+      <div class="sum-pill">
+        <div class="sum-dot" style="background:#FBBF24"></div>
+        <span class="sum-count" id="count-ocup">0</span>
+        <span>Ocupado</span>
+      </div>
+      <div class="sum-pill">
+        <div class="sum-dot blink" style="background:#FF6B6B"></div>
+        <span class="sum-count" id="count-sobre">0</span>
+        <span>Sobrecarg.</span>
+      </div>
+    </div>
+    <div id="status-list"></div>
+  </div>
+</div>
+
+<div id="map-wrap">
+  <div id="map-bar">
+    <span id="active-info">Todos os técnicos visíveis · clique nos bairros para detalhes</span>
+  </div>
+  <div id="map"></div>
+  <div id="legend">
+    <div class="leg-title">Legenda</div>
+    <div id="leg-rows"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   DATA
+══════════════════════════════════════ */
+const COLORS = ['#FF6B6B','#4DD9AC','#F97316','#A78BFA','#38BDF8','#FB7185','#34D399','#FBBF24'];
+
+const NBHDS = {
+  'Jacarepaguá':     [-22.930, -43.380],
+  'Barra da Tijuca': [-23.000, -43.370],
+  'Bangu':           [-22.883, -43.467],
+  'Campo Grande':    [-22.900, -43.560],
+  'Santa Cruz':      [-22.920, -43.680],
+  'Pavuna':          [-22.818, -43.367],
+  'Seropédica':      [-22.740, -43.710],
+  'Itaguaí':         [-22.860, -43.790],
+  'Recreio':         [-23.015, -43.450],
+  'Vargem Grande':   [-22.985, -43.460],
+  'Sulacap':         [-22.885, -43.415],
+  'Realengo':        [-22.874, -43.435],
+  'Guaratiba':       [-23.020, -43.610],
+  'Sepetiba':        [-22.977, -43.697],
+};
+
+const TECHNICIANS = [
+  { name:'Cristiano Amorim', nbhds:['Jacarepaguá','Barra da Tijuca','Recreio','Vargem Grande'],
+    note:'Jacarepaguá · Barra da Tijuca e adjacências' },
+  { name:'Henry', nbhds:['Bangu','Campo Grande','Santa Cruz','Pavuna','Seropédica','Itaguaí'],
+    note:'Toda a extensão oeste' },
+  { name:'Cristiano Coutinho', nbhds:['Santa Cruz','Bangu','Campo Grande','Seropédica','Itaguaí','Guaratiba','Sepetiba','Realengo'],
+    note:'Toda a ZOE · foco em área com gerador' },
+  { name:'Genival', nbhds:['Jacarepaguá','Barra da Tijuca','Recreio'],
+    note:'Jacarepaguá · Barra da Tijuca e adjacências' },
+  { name:'Ricardo Mulque', nbhds:['Bangu','Campo Grande','Seropédica','Itaguaí','Santa Cruz'],
+    note:'Eixo central da Zona Oeste' },
+  { name:'Marcello Alves', nbhds:['Jacarepaguá','Barra da Tijuca','Recreio','Vargem Grande','Sulacap','Realengo','Bangu'],
+    note:'Área acima de Genival + toda cobertura dele' },
+  { name:'Fabricio França', nbhds:['Bangu','Campo Grande','Pavuna','Santa Cruz','Seropédica','Itaguaí'],
+    note:'Bangu · C.Grande · Pavuna · Santa Cruz (+ Seropédica/Itaguaí se necessário)' },
+  { name:'Leandro Viana', nbhds:['Jacarepaguá','Barra da Tijuca'],
+    note:'Jacarepaguá · Barra da Tijuca' },
+];
+
+/* index: bairro → técnicos */
+const NBHD_TECHS = {};
+TECHNICIANS.forEach((t, i) => {
+  t.nbhds.forEach(nb => {
+    if (!NBHD_TECHS[nb]) NBHD_TECHS[nb] = [];
+    NBHD_TECHS[nb].push(i);
+  });
+});
+
+/* ══════════════════════════════════════
+   MAP
+══════════════════════════════════════ */
+const map = L.map('map', { zoomControl: false }).setView([-22.9, -43.52], 11);
+L.control.zoom({ position: 'topleft' }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  { attribution:'© OpenStreetMap © CARTO', maxZoom:19 }).addTo(map);
+
+/* ══════════════════════════════════════
+   LAYERS  (radius 6 km)
+══════════════════════════════════════ */
+const RADIUS = 6000;
+const techLayers = [];
+
+TECHNICIANS.forEach((t, i) => {
+  t.color = COLORS[i];
+  const circles = t.nbhds.map(nb => {
+    const c = NBHDS[nb];
+    if (!c) return null;
+    const techsHere = (NBHD_TECHS[nb] || []).map(ti => TECHNICIANS[ti]);
+    const techBadges = techsHere.map(tt =>
+      `<span class="pop-badge" style="border-color:${tt.color};color:${tt.color};background:color-mix(in srgb,${tt.color} 12%,transparent)">${tt.name}</span>`
+    ).join('');
+    return L.circle(c, {
+      radius: RADIUS,
+      color: t.color, weight: 1.5,
+      fillColor: t.color, fillOpacity: 0.18, opacity: 0.8,
+    }).bindPopup(`
+      <strong>📍 ${nb}</strong>
+      <div class="pop-tech">${techBadges}</div>
+    `);
+  }).filter(Boolean);
+  techLayers.push({ circles, on: true, color: t.color, name: t.name });
+  circles.forEach(c => c.addTo(map));
+});
+
+/* ══════════════════════════════════════
+   NEIGHBOURHOOD LABELS
+══════════════════════════════════════ */
+Object.entries(NBHDS).forEach(([name, coords]) => {
+  L.marker(coords, {
+    icon: L.divIcon({
+      className:'',
+      html:`<div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#e8eaf077;white-space:nowrap;text-shadow:0 1px 4px #000;pointer-events:none;letter-spacing:.6px">${name.toUpperCase()}</div>`,
+      iconAnchor:[0,0],
+    }),
+    interactive: false,
+  }).addTo(map);
+});
+
+/* ══════════════════════════════════════
+   SIDEBAR CARDS
+══════════════════════════════════════ */
+const techList = document.getElementById('tech-list');
+const activeInfo = document.getElementById('active-info');
+
+TECHNICIANS.forEach((t, i) => {
+  const card = document.createElement('div');
+  card.className = 'tech-card layer-on';
+  card.style.setProperty('--card-color', t.color);
+  card.dataset.idx = i;
+
+  card.innerHTML = `
+    <div class="card-strip"></div>
+    <div class="card-header">
+      <div class="color-dot"></div>
+      <span class="tech-name">${t.name}</span>
+      <button class="vis-btn" title="Mostrar/ocultar no mapa" data-action="toggle">👁</button>
+      <button class="exp-btn open" data-action="expand">▼</button>
+    </div>
+    <div class="card-body open">
+      <div class="card-inner">
+        <div class="badge-row">
+          ${t.nbhds.map(nb => `<span class="badge" onclick="goToNeighbourhood('${nb}')" title="Ir para ${nb}">${nb}</span>`).join('')}
+        </div>
+        <div class="divider"></div>
+        <div class="badge-row">
+          <span class="badge note">${t.note}</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  card.addEventListener('click', e => {
+    const action = e.target.closest('[data-action]')?.dataset.action;
+    if (action === 'toggle') {
+      e.stopPropagation();
+      toggleLayer(i, card);
+    } else if (action === 'expand') {
+      const body = card.querySelector('.card-body');
+      const btn  = card.querySelector('.exp-btn');
+      body.classList.toggle('open');
+      btn.classList.toggle('open');
+    }
+  });
+
+  techList.appendChild(card);
+});
+
+/* ══════════════════════════════════════
+   LEGEND
+══════════════════════════════════════ */
+const legRows = document.getElementById('leg-rows');
+TECHNICIANS.forEach((t, i) => {
+  const row = document.createElement('div');
+  row.className = 'leg-row on';
+  row.id = `leg-${i}`;
+  row.innerHTML = `<div class="leg-dot" style="background:${t.color}"></div><span class="leg-name">${t.name.split(' ')[0]}</span>`;
+  legRows.appendChild(row);
+});
+
+/* ══════════════════════════════════════
+   LAYER TOGGLE
+══════════════════════════════════════ */
+function toggleLayer(i, card) {
+  const layer = techLayers[i];
+  layer.on = !layer.on;
+  if (layer.on) {
+    card.classList.add('layer-on');
+    layer.circles.forEach(c => c.addTo(map));
+    document.getElementById(`leg-${i}`).classList.add('on');
+  } else {
+    card.classList.remove('layer-on');
+    layer.circles.forEach(c => map.removeLayer(c));
+    document.getElementById(`leg-${i}`).classList.remove('on');
+  }
+  updateInfo();
+}
+
+function toggleAll(state) {
+  document.querySelectorAll('.tech-card').forEach((card, i) => {
+    const layer = techLayers[i];
+    layer.on = state;
+    card.classList.toggle('layer-on', state);
+    layer.circles.forEach(c => state ? c.addTo(map) : map.removeLayer(c));
+    document.getElementById(`leg-${i}`).classList.toggle('on', state);
+  });
+  updateInfo();
+}
+
+function updateInfo() {
+  const n = techLayers.filter(l => l.on).length;
+  activeInfo.textContent = n === TECHNICIANS.length ? 'Todos os técnicos visíveis'
+    : n === 0 ? 'Nenhum técnico selecionado'
+    : `${n} técnico(s) visível(is)`;
+}
+
+function resetView() { map.setView([-22.9, -43.52], 11); }
+
+/* ══════════════════════════════════════
+   SEARCH
+══════════════════════════════════════ */
+const searchInput    = document.getElementById('search-input');
+const searchClear    = document.getElementById('search-clear');
+const searchDropdown = document.getElementById('search-dropdown');
+let searchMarker = null;
+let focusIdx = -1;
+
+const ALL_NBHDS = Object.keys(NBHDS);
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  searchClear.classList.toggle('visible', q.length > 0);
+  focusIdx = -1;
+  if (!q) { closeDropdown(); return; }
+
+  const matches = ALL_NBHDS.filter(n => n.toLowerCase().includes(q));
+  if (!matches.length) { closeDropdown(); return; }
+
+  searchDropdown.innerHTML = matches.map((nb, idx) => {
+    const techsHere = (NBHD_TECHS[nb] || []);
+    const dots = techsHere.map(ti =>
+      `<div class="drop-dot" style="background:${COLORS[ti]}"></div>`
+    ).join('');
+    return `<div class="drop-item" data-nb="${nb}">
+      <span class="di-name">${nb}</span>
+      <span class="di-dots">${dots}</span>
+    </div>`;
+  }).join('');
+
+  searchDropdown.querySelectorAll('.drop-item').forEach(el => {
+    el.addEventListener('click', () => selectNeighbourhood(el.dataset.nb));
+  });
+
+  searchDropdown.classList.add('open');
+});
+
+searchInput.addEventListener('keydown', e => {
+  const items = searchDropdown.querySelectorAll('.drop-item');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    focusIdx = Math.min(focusIdx + 1, items.length - 1);
+    updateFocus(items);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    focusIdx = Math.max(focusIdx - 1, 0);
+    updateFocus(items);
+  } else if (e.key === 'Enter') {
+    if (focusIdx >= 0 && items[focusIdx]) selectNeighbourhood(items[focusIdx].dataset.nb);
+    else if (items[0]) selectNeighbourhood(items[0].dataset.nb);
+  } else if (e.key === 'Escape') {
+    closeDropdown();
+  }
+});
+
+function updateFocus(items) {
+  items.forEach((el, i) => el.classList.toggle('focused', i === focusIdx));
+}
+
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  searchClear.classList.remove('visible');
+  closeDropdown();
+  if (searchMarker) { map.removeLayer(searchMarker); searchMarker = null; }
+  activeInfo.textContent = 'Todos os técnicos visíveis · clique nos bairros para detalhes';
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#search-wrap')) closeDropdown();
+});
+
+function closeDropdown() { searchDropdown.classList.remove('open'); }
+
+function selectNeighbourhood(nb) {
+  searchInput.value = nb;
+  searchClear.classList.add('visible');
+  closeDropdown();
+  goToNeighbourhood(nb);
+}
+
+function goToNeighbourhood(nb) {
+  const coords = NBHDS[nb];
+  if (!coords) return;
+  map.flyTo(coords, 13, { duration: 1 });
+  if (searchMarker) map.removeLayer(searchMarker);
+  searchMarker = L.marker(coords, {
+    icon: L.divIcon({
+      className: '',
+      html: `<div class="pulse-ring"></div>`,
+      iconSize: [20, 20],
+      iconAnchor: [10, 10],
+    })
+  }).addTo(map);
+
+  const techsHere = (NBHD_TECHS[nb] || []).map(ti => TECHNICIANS[ti]);
+  if (techsHere.length) {
+    const names = techsHere.map(t => `<span style="color:${t.color}">${t.name}</span>`).join(', ');
+    activeInfo.innerHTML = `📍 <strong style="color:var(--accent)">${nb}</strong> → ${names}`;
+  } else {
+    activeInfo.innerHTML = `📍 <strong style="color:var(--accent)">${nb}</strong> — sem técnico mapeado`;
+  }
+}
+
+/* ══════════════════════════════════════
+   TABS
+══════════════════════════════════════ */
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['mapa','status'][i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.toggle('active', p.id === `panel-${name}`);
+  });
+  if (name === 'mapa') map.invalidateSize();
+}
+
+/* ══════════════════════════════════════
+   STATUS PANEL
+══════════════════════════════════════ */
+const STATUS_OPTS = [
+  { value: 'disponivel',    label: '🟢 Disponível',     color: '#34D399' },
+  { value: 'ocupado',       label: '🟡 Ocupado',         color: '#FBBF24' },
+  { value: 'sobrecarregado',label: '🔴 Sobrecarregado',  color: '#FF6B6B' },
+];
+
+const techStatus = TECHNICIANS.map(() => 'disponivel');
+
+const statusList = document.getElementById('status-list');
+
+TECHNICIANS.forEach((t, i) => {
+  const card = document.createElement('div');
+  card.className = 'status-card';
+  card.id = `sc-${i}`;
+
+  const opts = STATUS_OPTS.map(o =>
+    `<option value="${o.value}" ${o.value === 'disponivel' ? 'selected' : ''}>${o.label}</option>`
+  ).join('');
+
+  card.innerHTML = `
+    <div class="sc-dot" style="background:${t.color}"></div>
+    <div class="sc-info">
+      <div class="sc-name">${t.name}</div>
+    </div>
+    <select class="status-select" data-status="disponivel" data-idx="${i}">
+      ${opts}
+    </select>
+  `;
+
+  card.querySelector('select').addEventListener('change', e => {
+    const val = e.target.value;
+    techStatus[i] = val;
+    e.target.dataset.status = val;
+    updateSummary();
+    updateStatusCardBorder(i, val);
+  });
+
+  statusList.appendChild(card);
+});
+
+function updateStatusCardBorder(i, status) {
+  const colors = { disponivel:'#34D399', ocupado:'#FBBF24', sobrecarregado:'#FF6B6B' };
+  const card = document.getElementById(`sc-${i}`);
+  card.style.borderColor = colors[status] || 'var(--border)';
+}
+
+function updateSummary() {
+  const counts = { disponivel: 0, ocupado: 0, sobrecarregado: 0 };
+  techStatus.forEach(s => counts[s]++);
+  document.getElementById('count-disp').textContent  = counts.disponivel;
+  document.getElementById('count-ocup').textContent  = counts.ocupado;
+  document.getElementById('count-sobre').textContent = counts.sobrecarregado;
+}
+
+updateSummary();
+
+/* ══════════════════════════════════════
+   SIDEBAR RESIZE
+══════════════════════════════════════ */
+const sidebar      = document.getElementById('sidebar');
+const resizeHandle = document.getElementById('resize-handle');
+let isResizing = false;
+
+resizeHandle.addEventListener('mousedown', e => {
+  isResizing = true;
+  resizeHandle.classList.add('dragging');
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', e => {
+  if (!isResizing) return;
+  const newWidth = e.clientX;
+  const clamped  = Math.min(Math.max(newWidth, 240), 600);
+  sidebar.style.width    = clamped + 'px';
+  sidebar.style.minWidth = clamped + 'px';
+  map.invalidateSize();
+});
+
+document.addEventListener('mouseup', () => {
+  if (!isResizing) return;
+  isResizing = false;
+  resizeHandle.classList.remove('dragging');
+  document.body.style.cursor = '';
+  document.body.style.userSelect = '';
+  map.invalidateSize();
+});
+</script>
+</body>
+</html>
