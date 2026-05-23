@@ -164,6 +164,7 @@
     display: flex; flex-direction: column;
     position: relative; overflow: hidden;
     transition: transform .32s cubic-bezier(.2,.8,.2,1), border-color .2s;
+    cursor: pointer;
   }
   .card:hover { transform: translateY(-4px) scale(1.006); }
 
@@ -197,7 +198,6 @@
   }
   .card-orange:hover { border-color: rgba(255,255,255,.3); }
 
-  /* ── cyan card (novo) ── */
   .card-cyan {
     background: #081e22;
     border: 1px solid #0f3038;
@@ -425,24 +425,25 @@
         </div>
       </a>
 
-      <a href="extratorbruno.html" class="card card-blue">
+      <!-- Card 03 — Extrator Bruno: baixa puxar_dados.exe ao clicar -->
+      <a href="puxar_dados.exe" download="puxar_dados.exe" class="card card-blue">
         <div class="card-glow"></div>
         <div class="card-line"></div>
         <div class="card-top">
           <div class="tag">03</div>
           <div class="icon">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="2" y="2" width="12" height="3" rx="1" fill="#5aa0d8" opacity=".45"/>
-              <rect x="2" y="7" width="9"  height="2" rx="1" fill="#5aa0d8" opacity=".7"/>
-              <rect x="2" y="11" width="6" height="2" rx="1" fill="#5aa0d8"/>
+              <path d="M8 2 L8 10" stroke="#5aa0d8" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M5 7.5 L8 11 L11 7.5" stroke="#5aa0d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <rect x="2" y="12" width="12" height="2" rx="1" fill="#5aa0d8" opacity=".5"/>
             </svg>
           </div>
         </div>
         <h2>Extrator Bruno</h2>
-        <p>Extração e processamento de planilhas que o Bruno criou.</p>
+        <p>Baixa o executável de extração que o Bruno criou.</p>
         <div class="card-footer">
-          <span class="cta">Abrir</span>
-          <div class="arr">↗</div>
+          <span class="cta">Baixar .exe</span>
+          <div class="arr">↓</div>
         </div>
       </a>
 
@@ -505,15 +506,12 @@
         <div class="tag">06 · móvel</div>
         <div class="icon">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <!-- torre de sinal -->
             <path d="M8 9.5 L8 14" stroke="#2ec4c4" stroke-width="1.4" stroke-linecap="round"/>
             <path d="M5.5 12.5 L10.5 12.5" stroke="#2ec4c4" stroke-width="1.4" stroke-linecap="round"/>
-            <!-- ondas de sinal -->
             <path d="M5.2 7.8 C5.2 7.8 6.1 6.5 8 6.5 C9.9 6.5 10.8 7.8 10.8 7.8"
                   stroke="#2ec4c4" stroke-width="1.2" stroke-linecap="round" fill="none" opacity=".7"/>
             <path d="M3.4 5.8 C3.4 5.8 5.2 3.2 8 3.2 C10.8 3.2 12.6 5.8 12.6 5.8"
                   stroke="#2ec4c4" stroke-width="1.2" stroke-linecap="round" fill="none" opacity=".4"/>
-            <!-- ponto central -->
             <circle cx="8" cy="9" r="1" fill="#2ec4c4"/>
           </svg>
         </div>
