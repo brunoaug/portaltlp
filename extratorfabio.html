@@ -144,7 +144,75 @@ body.dark .color-modal{background:var(--white);border:1px solid var(--border)}
 body.dark td{border-bottom-color:#232738}
 /* obs-dropdown dark → ver bloco dark mode complementos acima */
 
-/* ── DARK TOGGLE ── */
+/* ── TOPBAR — Colar ID button ── */
+.topbar-colar-btn{
+  display:flex;align-items:center;gap:7px;cursor:pointer;
+  padding:6px 13px;border-radius:20px;
+  border:1.5px solid rgba(99,102,241,.6);
+  background:linear-gradient(155deg,rgba(99,102,241,.28),rgba(79,70,229,.18));
+  backdrop-filter:blur(8px);
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);
+  user-select:none;flex-shrink:0;
+  box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 2px 10px rgba(79,70,229,.22);
+}
+.topbar-colar-btn:hover{
+  background:linear-gradient(155deg,rgba(129,140,248,.45),rgba(99,102,241,.32));
+  border-color:rgba(165,180,252,.8);
+  transform:translateY(-1px) scale(1.03);
+  box-shadow:0 1px 0 rgba(255,255,255,.22) inset,0 5px 18px rgba(79,70,229,.35);
+}
+.topbar-colar-btn:active{transform:scale(.95);transition-duration:.07s}
+.topbar-colar-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.92);letter-spacing:.2px}
+
+/* ── TOPBAR — Menu wrap + dropdown ── */
+.topbar-menu-wrap{position:relative;flex-shrink:0}
+.topbar-menu-arrow{
+  font-size:9px;color:rgba(255,255,255,.55);margin-left:2px;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+  display:inline-block;
+}
+.topbar-menu-wrap.open .topbar-menu-arrow{transform:rotate(180deg)}
+.topbar-dropdown{
+  position:absolute;top:calc(100% + 10px);right:0;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:14px;padding:6px;
+  box-shadow:0 12px 40px rgba(15,23,42,.18),0 4px 12px rgba(15,23,42,.1);
+  min-width:190px;z-index:9500;
+  opacity:0;pointer-events:none;transform:translateY(-8px) scale(.96);
+  transition:all .22s cubic-bezier(.34,1.56,.64,1);
+}
+.topbar-menu-wrap.open .topbar-dropdown{
+  opacity:1;pointer-events:all;transform:translateY(0) scale(1);
+}
+.topbar-dd-item{
+  display:flex;align-items:center;gap:9px;width:100%;
+  padding:9px 12px;border-radius:9px;border:none;
+  background:transparent;color:var(--text2);font-size:12px;font-weight:600;
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all .15s;text-align:left;
+}
+.topbar-dd-item:hover{background:var(--accent-light);color:var(--accent)}
+.topbar-dd-item.topbar-dd-danger:hover{background:var(--red-light);color:var(--red)}
+.topbar-dd-sep{height:1px;background:var(--border);margin:4px 0}
+body.dark .topbar-dropdown{background:var(--white);border-color:var(--border)}
+body.dark .topbar-dd-item{color:var(--text2)}
+body.dark .topbar-dd-item:hover{background:var(--accent-light);color:var(--accent)}
+body.dark .topbar-dd-item.topbar-dd-danger:hover{background:var(--red-light);color:var(--red)}
+body.dark .topbar-dd-sep{background:var(--border)}
+
+/* ── SLOT — enhanced remove button ── */
+.slot-x{
+  flex-shrink:0;background:none;border:none;
+  color:rgba(255,255,255,.0);cursor:pointer;
+  font-size:13px;padding:3px 6px;border-radius:6px;
+  transition:all .18s cubic-bezier(.34,1.56,.64,1);line-height:1;
+  position:absolute;top:7px;right:7px;
+  width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+}
+.slot.loaded:hover .slot-x{color:rgba(248,113,113,.65)}
+.slot-x:hover{color:#f87171 !important;background:rgba(248,113,113,.22);transform:scale(1.15)}
+.slot-x:active{transform:scale(.9);background:rgba(248,113,113,.35)}
+
 .dark-toggle{display:flex;align-items:center;gap:7px;cursor:pointer;padding:5px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);transition:all .2s;user-select:none;flex-shrink:0}
 .dark-toggle:hover{background:rgba(255,255,255,.15)}
 .dark-toggle-track{width:30px;height:16px;border-radius:8px;background:rgba(255,255,255,.25);position:relative;transition:background .3s;flex-shrink:0}
@@ -172,7 +240,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .topbar::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;
   background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;pointer-events:none}
 .topbar-logo{display:flex;align-items:center;gap:12px;color:#fff;font-weight:800;font-size:17px;letter-spacing:-.4px;position:relative}
-.logo-icon{width:38px;height:38px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;backdrop-filter:blur(2px)}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.28);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;backdrop-filter:blur(4px);box-shadow:0 2px 10px rgba(0,0,0,.2),0 1px 0 rgba(255,255,255,.2) inset}
 .logo-text{}
 .logo-sub{font-size:9.5px;color:rgba(255,255,255,.45);font-weight:500;margin-top:2px;letter-spacing:.4px}
 .topbar-divider{width:1px;height:28px;background:rgba(255,255,255,.18)}
@@ -389,15 +457,74 @@ body:not(.dark) .slot.loaded{
   color:rgba(255,255,255,.3);
 }
 
-/* Remove button */
-.slot-x{
-  flex-shrink:0;background:none;border:none;
-  color:rgba(255,255,255,.25);cursor:pointer;
-  font-size:11px;padding:2px 5px;border-radius:4px;
-  transition:all .15s;line-height:1;
-  position:absolute;top:8px;right:8px;
+/* Remove button — ver definição completa no bloco de estilos do topbar acima */
+
+/* Clear All Files Button */
+.slot-clear-all-btn{
+  padding:3px 9px;border-radius:8px;border:1px solid rgba(248,113,113,.4);
+  background:rgba(248,113,113,.12);color:#f87171;
+  font-size:9.5px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;margin-left:4px;
 }
-.slot-x:hover{color:#f87171;background:rgba(248,113,113,.15)}
+.slot-clear-all-btn:hover{
+  background:rgba(220,38,38,.25);border-color:#f87171;
+  transform:scale(1.04);
+}
+body:not(.dark) .slot-clear-all-btn{
+  border-color:rgba(220,38,38,.3);background:rgba(254,226,226,.7);color:#dc2626;
+}
+body:not(.dark) .slot-clear-all-btn:hover{background:#fee2e2;border-color:#f87171}
+
+/* Quick Paste Popup (⚡ Colar ID) */
+.sf-quick-popup{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) scale(.9);
+  background:var(--white);border:1px solid var(--border);border-radius:16px;
+  padding:16px 18px;width:380px;
+  box-shadow:0 20px 50px rgba(15,23,42,.18),0 4px 12px rgba(15,23,42,.1);
+  z-index:8800;opacity:0;pointer-events:none;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.sf-quick-popup.show{
+  opacity:1;pointer-events:all;
+  transform:translateX(-50%) scale(1) translateY(-4px);
+}
+.sf-quick-popup-title{
+  font-size:11px;font-weight:800;color:var(--text);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;
+  display:flex;align-items:center;gap:7px;
+}
+.sf-quick-popup-sub{
+  font-size:10px;color:var(--muted);margin-bottom:10px;line-height:1.5;
+}
+.sf-quick-popup textarea{
+  width:100%;height:90px;border:2px dashed var(--border2);border-radius:10px;
+  padding:9px;font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--text);resize:none;outline:none;
+  background:var(--bg);transition:all .2s;line-height:1.5;
+}
+.sf-quick-popup textarea:focus{border-color:var(--accent);background:var(--white);border-style:solid;box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+.sf-quick-popup textarea::placeholder{color:var(--subtle)}
+.sf-quick-popup-actions{display:flex;gap:8px;margin-top:10px}
+.sf-qp-btn{
+  flex:1;padding:9px 12px;border-radius:10px;font-size:12px;font-weight:700;
+  cursor:pointer;font-family:'Inter',sans-serif;border:none;transition:all .2s;
+}
+.sf-qp-btn.go{
+  background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;
+  box-shadow:0 4px 14px rgba(79,70,229,.35);
+}
+.sf-qp-btn.go:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.sf-qp-btn.cancel{
+  background:var(--bg);color:var(--muted);border:1.5px solid var(--border2);
+}
+.sf-qp-btn.cancel:hover{background:var(--red-light);color:var(--red);border-color:var(--red)}
+body.dark .sf-quick-popup{background:var(--white);border-color:var(--border)}
+body.dark .sf-quick-popup textarea{background:var(--bg);color:var(--text);border-color:var(--border2)}
+body.dark .sf-quick-popup textarea:focus{background:var(--white)}
+body.dark .sf-quick-popup textarea::placeholder{color:var(--subtle)}
+body.dark .sf-qp-btn.cancel{background:var(--surface);border-color:var(--border2)}
+body.dark .sf-qp-btn.cancel:hover{background:var(--red-light);color:var(--red)}
 
 /* Indicator dot (mantido para JS de SLA) */
 .slot-indicator{display:none}
@@ -1687,6 +1814,438 @@ body.dark ::-webkit-scrollbar-track { background: var(--bg); }
 body.dark ::-webkit-scrollbar-thumb { background: var(--border2); }
 body.dark ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
+/* ══════════════════════════════════════════════════════════════
+   PAINEL DE TURNO
+   ══════════════════════════════════════════════════════════════ */
+.turno-fab {
+  position:relative; bottom:auto; right:auto; z-index:auto;
+  width:52px; height:52px; border-radius:50%;
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  border:none; cursor:pointer; color:#fff; font-size:22px;
+  box-shadow:0 4px 20px rgba(79,70,229,.45),0 2px 6px rgba(0,0,0,.2);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
+}
+.turno-fab:hover { transform:scale(1.1) translateY(-2px); box-shadow:0 8px 28px rgba(79,70,229,.55); }
+.turno-fab:active { transform:scale(.93); }
+.turno-fab .fab-badge {
+  position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;
+  border-radius:10px;font-size:9px;font-weight:800;padding:1px 5px;
+  font-family:'JetBrains Mono',monospace;border:2px solid var(--bg);
+  min-width:18px;text-align:center;line-height:14px;
+  display:none;
+}
+.turno-fab .fab-badge.show { display:block; }
+
+.turno-overlay {
+  position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:9100;
+  display:none;align-items:flex-end;justify-content:flex-end;
+  backdrop-filter:blur(3px);padding:0 0 16px 0;
+}
+.turno-overlay.open { display:flex; }
+
+.turno-panel {
+  width:420px;max-height:calc(100vh - 90px);
+  background:var(--white);border:1px solid var(--border);
+  border-radius:16px 16px 16px 16px;
+  box-shadow:0 20px 60px rgba(15,23,42,.22),0 4px 12px rgba(15,23,42,.1);
+  display:flex;flex-direction:column;overflow:hidden;
+  margin-right:24px;margin-bottom:90px;
+  animation:turno-slide-in .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes turno-slide-in {
+  from { opacity:0; transform:translateY(30px) scale(.96); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+body.dark .turno-panel { background:var(--white); border-color:var(--border); }
+
+.turno-header {
+  padding:16px 20px 14px;
+  background:linear-gradient(135deg,#1e1b4b,#4f46e5);
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.turno-header-icon { font-size:22px; }
+.turno-header-info { flex:1 }
+.turno-header-title {
+  font-size:13px;font-weight:800;color:#fff;letter-spacing:-.2px;
+}
+.turno-header-sub {
+  font-size:10px;color:rgba(255,255,255,.55);font-family:'JetBrains Mono',monospace;
+  margin-top:2px;
+}
+.turno-close-btn {
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:8px;color:rgba(255,255,255,.7);font-size:12px;cursor:pointer;
+  padding:5px 10px;font-weight:700;font-family:'Inter',sans-serif;
+  transition:all .15s;
+}
+.turno-close-btn:hover { background:rgba(255,255,255,.22);color:#fff; }
+
+.turno-kpi-row {
+  display:flex;padding:14px 16px;gap:8px;border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.turno-kpi {
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:10px 12px;text-align:center;
+}
+.turno-kpi-val {
+  font-size:24px;font-weight:800;font-family:'JetBrains Mono',monospace;
+  color:var(--text);line-height:1;
+}
+.turno-kpi.k-tratadas .turno-kpi-val { color:var(--accent); }
+.turno-kpi.k-norm     .turno-kpi-val { color:var(--green-btn); }
+.turno-kpi.k-tempo    .turno-kpi-val { color:var(--orange); font-size:18px; }
+.turno-kpi-lbl {
+  font-size:8.5px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.7px;font-weight:600;margin-top:4px;
+}
+
+.turno-timer-row {
+  display:flex;align-items:center;gap:10px;padding:10px 16px;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+  background:var(--surface);
+}
+.turno-clock {
+  font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;
+  color:var(--text);letter-spacing:2px;flex:1;
+}
+.turno-clock.running { color:var(--accent); }
+.turno-timer-btn {
+  padding:7px 14px;border-radius:8px;font-size:11px;font-weight:700;
+  cursor:pointer;border:1.5px solid;font-family:'Inter',sans-serif;
+  transition:all .15s;
+}
+.turno-timer-btn.start {
+  background:linear-gradient(175deg,#f0fdf4,#dcfce7);
+  border-color:#86efac;color:#15803d;
+}
+.turno-timer-btn.start:hover { background:linear-gradient(175deg,#22c55e,#16a34a);color:#fff;border-color:#16a34a; }
+.turno-timer-btn.stop {
+  background:linear-gradient(175deg,#fef2f2,#fee2e2);
+  border-color:#fca5a5;color:#b91c1c;
+}
+.turno-timer-btn.stop:hover { background:linear-gradient(175deg,#f87171,#dc2626);color:#fff;border-color:#dc2626; }
+.turno-timer-btn.reset {
+  background:var(--bg);border-color:var(--border2);color:var(--muted);
+}
+.turno-timer-btn.reset:hover { border-color:var(--accent);color:var(--accent);background:var(--accent-light); }
+
+.turno-actions-row {
+  display:flex;gap:6px;padding:10px 16px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.turno-action-btn {
+  flex:1;padding:8px 6px;border-radius:8px;font-size:10.5px;font-weight:700;
+  cursor:pointer;border:1.5px solid var(--border2);
+  background:var(--bg);color:var(--text2);font-family:'Inter',sans-serif;
+  transition:all .18s cubic-bezier(.34,1.56,.64,1);
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.turno-action-btn:hover {
+  background:var(--accent-light);border-color:var(--accent);color:var(--accent);
+  transform:translateY(-1px);
+}
+.turno-action-btn.danger:hover { background:var(--red-light);border-color:var(--red);color:var(--red); }
+
+.turno-feed {
+  flex:1;overflow-y:auto;padding:10px 16px;display:flex;flex-direction:column;gap:4px;
+  min-height:120px;max-height:320px;
+}
+.turno-feed-empty {
+  color:var(--subtle);font-size:11px;font-style:italic;
+  text-align:center;padding:24px 0;
+}
+.turno-event {
+  display:flex;align-items:flex-start;gap:8px;
+  padding:7px 10px;border-radius:8px;
+  background:var(--surface);border:1px solid var(--border);
+  transition:all .15s;
+}
+.turno-event:hover { border-color:var(--border2); }
+.turno-event-time {
+  font-size:9px;font-family:'JetBrains Mono',monospace;
+  color:var(--subtle);white-space:nowrap;margin-top:1px;flex-shrink:0;
+}
+.turno-event-icon { font-size:14px;flex-shrink:0;line-height:1.3; }
+.turno-event-body { flex:1;min-width:0; }
+.turno-event-label {
+  font-size:11px;font-weight:600;color:var(--text2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.turno-event-sub {
+  font-size:9.5px;color:var(--muted);margin-top:1px;
+  font-family:'JetBrains Mono',monospace;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.turno-event.ev-tratada .turno-event-icon { filter:none; }
+.turno-event.ev-normalizado { background:var(--green-light);border-color:#bbf7d0; }
+.turno-event.ev-normalizado .turno-event-label { color:var(--green); }
+.turno-event.ev-obs { background:var(--accent-light);border-color:var(--accent-mid); }
+.turno-event.ev-info { background:var(--yellow-light);border-color:#fde68a; }
+body.dark .turno-event { background:var(--surface);border-color:var(--border); }
+body.dark .turno-event.ev-normalizado { background:#0d2218;border-color:#1a4030; }
+body.dark .turno-event.ev-obs { background:var(--accent-light);border-color:var(--accent-mid); }
+body.dark .turno-event.ev-info { background:#211700;border-color:#713f12; }
+
+.turno-footer {
+  padding:10px 16px;border-top:1px solid var(--border);
+  display:flex;gap:8px;align-items:center;flex-shrink:0;
+}
+.turno-export-btn {
+  flex:1;padding:9px;border-radius:8px;font-size:11px;font-weight:700;
+  cursor:pointer;border:1.5px solid #86efac;
+  background:linear-gradient(175deg,#f0fdf4,#dcfce7);color:#15803d;
+  font-family:'Inter',sans-serif;transition:all .15s;
+}
+.turno-export-btn:hover {
+  background:linear-gradient(175deg,#22c55e,#16a34a);color:#fff;border-color:#16a34a;
+}
+.turno-clear-btn {
+  padding:9px 14px;border-radius:8px;font-size:11px;font-weight:700;
+  cursor:pointer;border:1.5px solid var(--border2);
+  background:var(--bg);color:var(--muted);font-family:'Inter',sans-serif;transition:all .15s;
+}
+.turno-clear-btn:hover { border-color:var(--red);color:var(--red);background:var(--red-light); }
+
+/* ══════════════════════════════════════════════════════════════
+   NAVEGAÇÃO TURBINADA — JUMP BAR + FOCUS MODE + PINS
+   ══════════════════════════════════════════════════════════════ */
+
+/* Jump Bar — barra de atalho rápido */
+.jump-bar {
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px;background:var(--white);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:var(--sh-xs);flex-wrap:wrap;
+  transition:all .2s;
+}
+.jump-bar-label {
+  font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--subtle);white-space:nowrap;flex-shrink:0;margin-right:4px;
+}
+.jump-btn {
+  padding:4px 11px;border-radius:20px;font-size:10.5px;font-weight:700;
+  border:1.5px solid var(--border2);background:var(--bg);color:var(--muted);
+  cursor:pointer;font-family:'JetBrains Mono',monospace;
+  transition:all .15s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;
+}
+.jump-btn:hover {
+  border-color:var(--accent);color:var(--accent);background:var(--accent-light);
+  transform:translateY(-1px);
+}
+.jump-btn.active { background:var(--accent);border-color:var(--accent);color:#fff; }
+.jump-btn.j-sla-v { border-color:#fca5a5;color:#b91c1c;background:#fef2f2; }
+.jump-btn.j-sla-v:hover,.jump-btn.j-sla-v.active { background:#dc2626;border-color:#dc2626;color:#fff; }
+.jump-btn.j-sla-a { border-color:#fde68a;color:#92400e;background:#fffbeb; }
+.jump-btn.j-sla-a:hover,.jump-btn.j-sla-a.active { background:#d97706;border-color:#d97706;color:#fff; }
+.jump-btn.j-pin { border-color:#c4b5fd;color:#7c3aed;background:#f5f3ff; }
+.jump-btn.j-pin:hover,.jump-btn.j-pin.active { background:#7c3aed;border-color:#7c3aed;color:#fff; }
+body.dark .jump-btn { background:var(--surface);border-color:var(--border2);color:var(--muted); }
+body.dark .jump-btn.j-sla-v { background:var(--red-light);border-color:#7f1d1d;color:var(--red); }
+body.dark .jump-btn.j-sla-a { background:var(--yellow-light);border-color:#713f12;color:var(--yellow); }
+body.dark .jump-btn.j-pin { background:var(--accent-light);border-color:var(--accent-mid);color:var(--accent); }
+.jump-sep { width:1px;height:16px;background:var(--border);flex-shrink:0;margin:0 2px; }
+
+/* Focus mode */
+body.focus-mode .tscroll tr:not(.row-pinned):not(.row-expanded):not(.row-detail-panel) {
+  opacity:.32;transition:opacity .2s;
+}
+body.focus-mode .tscroll tr.row-pinned,
+body.focus-mode .tscroll tr.row-pinned + .row-detail-panel { opacity:1; }
+body.focus-mode .tscroll tr:hover { opacity:1 !important; }
+.focus-mode-toggle {
+  padding:5px 12px;border-radius:20px;font-size:10.5px;font-weight:700;
+  border:1.5px solid var(--border2);background:var(--bg);color:var(--muted);
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap;
+}
+.focus-mode-toggle:hover { border-color:var(--accent);color:var(--accent);background:var(--accent-light); }
+.focus-mode-toggle.on { background:var(--accent);border-color:var(--accent);color:#fff; }
+body.dark .focus-mode-toggle { background:var(--surface);border-color:var(--border2);color:var(--muted); }
+
+/* Pin Row */
+.pin-btn {
+  padding:2px 8px;border-radius:4px;border:1px solid var(--border2);
+  background:var(--bg);color:var(--subtle);font-size:11px;cursor:pointer;
+  transition:all .15s;line-height:1.4;font-family:'Inter',sans-serif;
+}
+.pin-btn:hover { border-color:#7c3aed;color:#7c3aed;background:#f5f3ff; }
+.pin-btn.pinned { border-color:#7c3aed;color:#7c3aed;background:#f5f3ff;font-weight:700; }
+body.dark .pin-btn { background:var(--surface);border-color:var(--border2);color:var(--subtle); }
+body.dark .pin-btn.pinned { background:var(--accent-light);border-color:var(--accent-mid);color:var(--accent); }
+tr.row-pinned td { box-shadow:inset 3px 0 0 #7c3aed; }
+
+/* Keyboard shortcut HUD */
+.kbd-hud {
+  position:fixed;bottom:100px;left:24px;z-index:8400;
+  background:var(--white);border:1px solid var(--border);border-radius:12px;
+  box-shadow:var(--sh-lg);padding:14px 16px;min-width:220px;
+  display:none;
+  animation:turno-slide-in .25s cubic-bezier(.34,1.56,.64,1);
+}
+.kbd-hud.show { display:block; }
+body.dark .kbd-hud { background:var(--white);border-color:var(--border); }
+.kbd-hud-title {
+  font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--subtle);margin-bottom:10px;
+}
+.kbd-row {
+  display:flex;align-items:center;gap:8px;padding:3px 0;
+}
+.kbd-key {
+  font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:700;
+  background:var(--surface);border:1.5px solid var(--border2);
+  border-radius:4px;padding:2px 6px;color:var(--text);
+  box-shadow:0 1px 0 var(--border2);white-space:nowrap;flex-shrink:0;
+}
+.kbd-desc {
+  font-size:10px;color:var(--muted);flex:1;
+}
+body.dark .kbd-key { background:var(--surface);border-color:var(--border2); }
+
+/* ══════════════════════════════════════════════════════════════
+   FAB MULTI-MENU (Turno + Colar ID)
+   ══════════════════════════════════════════════════════════════ */
+.fab-wrap {
+  position:fixed; bottom:24px; right:24px; z-index:8500;
+  display:flex; flex-direction:column; align-items:flex-end; gap:10px;
+}
+
+/* Mini-menu popup */
+.fab-menu {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:16px; width:310px;
+  box-shadow:0 20px 50px rgba(15,23,42,.18),0 4px 12px rgba(15,23,42,.1);
+  overflow:hidden;
+  opacity:0; pointer-events:none;
+  transform:translateY(10px) scale(.96);
+  transform-origin:bottom right;
+  transition:all .28s cubic-bezier(.34,1.56,.64,1);
+}
+.fab-menu.open {
+  opacity:1; pointer-events:all;
+  transform:translateY(0) scale(1);
+}
+body.dark .fab-menu { background:var(--white); border-color:var(--border); }
+
+/* Tabs row */
+.fab-menu-tabs {
+  display:flex; border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+body.dark .fab-menu-tabs { background:var(--surface); border-color:var(--border); }
+
+.fab-tab {
+  flex:1; padding:10px 8px; border:none; background:transparent;
+  font-size:11px; font-weight:700; cursor:pointer;
+  color:var(--muted); font-family:'Inter',sans-serif;
+  border-bottom:2px solid transparent; margin-bottom:-1px;
+  transition:all .18s; letter-spacing:.1px;
+}
+.fab-tab:hover { color:var(--text2); background:rgba(99,102,241,.06); }
+.fab-tab.active { color:var(--accent); border-bottom-color:var(--accent); background:var(--white); }
+body.dark .fab-tab.active { background:var(--white); }
+
+/* Panes */
+.fab-pane { display:none; padding:14px; }
+.fab-pane.active { display:block; }
+
+/* Turno pane */
+.fab-pane-action {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:10px;
+  border:1px solid var(--border); background:var(--surface);
+  cursor:pointer; transition:all .15s; margin-bottom:10px;
+}
+.fab-pane-action:hover { border-color:var(--accent); background:var(--accent-light); }
+.fab-pane-icon { font-size:20px; flex-shrink:0; }
+.fab-pane-title { font-size:12px; font-weight:700; color:var(--text2); }
+.fab-pane-sub { font-size:10px; color:var(--muted); margin-top:2px; }
+.fab-pane-arrow { margin-left:auto; font-size:18px; color:var(--subtle); font-weight:300; }
+.fab-pane-action:hover .fab-pane-arrow { color:var(--accent); }
+
+.fab-pane-kpi {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:10px;
+  background:var(--accent-light); border:1px solid var(--accent-mid);
+}
+.fab-pane-kpi-val {
+  font-size:22px; font-weight:800; color:var(--accent);
+  font-family:'JetBrains Mono',monospace; line-height:1;
+}
+.fab-pane-kpi-lbl {
+  font-size:10px; color:var(--accent); font-weight:600;
+  text-transform:uppercase; letter-spacing:.5px;
+}
+body.dark .fab-pane-action { background:var(--surface); border-color:var(--border); }
+body.dark .fab-pane-action:hover { background:var(--accent-light); border-color:var(--accent); }
+body.dark .fab-pane-title { color:var(--text2); }
+
+/* Colar ID pane */
+.fab-pane-sub-title {
+  font-size:11px; font-weight:800; color:var(--text);
+  text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;
+}
+.fab-pane-sub-desc {
+  font-size:10px; color:var(--muted); margin-bottom:10px; line-height:1.5;
+}
+.fab-colar-textarea {
+  width:100%; height:80px;
+  border:2px dashed var(--border2); border-radius:10px;
+  padding:8px 10px; font-family:'JetBrains Mono',monospace; font-size:11px;
+  color:var(--text); resize:none; outline:none;
+  background:var(--bg); transition:all .2s; line-height:1.5;
+}
+.fab-colar-textarea:focus {
+  border-color:var(--accent); background:var(--white);
+  border-style:solid; box-shadow:0 0 0 3px rgba(79,70,229,.08);
+}
+.fab-colar-textarea::placeholder { color:var(--subtle); }
+.fab-colar-actions { display:flex; gap:8px; margin-top:10px; }
+.fab-colar-btn {
+  flex:1; padding:8px 10px; border-radius:9px;
+  font-size:11px; font-weight:700; cursor:pointer;
+  font-family:'Inter',sans-serif; border:none; transition:all .18s;
+}
+.fab-colar-btn.go {
+  background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff;
+  box-shadow:0 4px 14px rgba(79,70,229,.35);
+}
+.fab-colar-btn.go:hover { filter:brightness(1.08); transform:translateY(-1px); }
+.fab-colar-btn.cancel {
+  background:var(--bg); color:var(--muted); border:1.5px solid var(--border2);
+  flex:0 0 40px;
+}
+.fab-colar-btn.cancel:hover { background:var(--red-light); color:var(--red); border-color:var(--red); }
+body.dark .fab-colar-textarea { background:var(--bg); color:var(--text); border-color:var(--border2); }
+body.dark .fab-colar-textarea:focus { background:var(--white); }
+body.dark .fab-colar-btn.cancel { background:var(--surface); border-color:var(--border2); }
+body.dark .fab-colar-btn.cancel:hover { background:var(--red-light); }
+
+/* Row counter badge on jump btns */
+.jump-count {
+  display:inline-block;background:rgba(0,0,0,.1);
+  border-radius:10px;padding:0 5px;font-size:8.5px;margin-left:3px;
+}
+.jump-btn.j-sla-v .jump-count { background:rgba(220,38,38,.15); }
+.jump-btn.j-sla-a .jump-count { background:rgba(217,119,6,.15); }
+
+/* ══════════════════════════════════════════════════════════════
+   BARRA DE PROGRESSO DO TURNO (top)
+   ══════════════════════════════════════════════════════════════ */
+.turno-topbar-chip {
+  display:flex;align-items:center;gap:6px;padding:4px 10px;
+  border-radius:20px;border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.08);cursor:pointer;
+  transition:all .2s;flex-shrink:0;
+}
+.turno-topbar-chip:hover { background:rgba(255,255,255,.15); }
+.turno-topbar-num {
+  font-size:11px;font-weight:800;color:#fff;
+  font-family:'JetBrains Mono',monospace;
+}
+.turno-topbar-lbl {
+  font-size:9px;color:rgba(255,255,255,.55);font-weight:600;letter-spacing:.3px;
+}
 
 </style>
 </head>
@@ -1711,6 +2270,24 @@ body.dark ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
     <span class="live-label">Online</span>
   </div>
   <div class="topbar-right">
+    <!-- Menu de ações — Painel de Turno + mais -->
+    <div class="topbar-menu-wrap" id="topbarMenuWrap">
+      <div class="turno-topbar-chip" onclick="toggleTopbarMenu()" id="topbarMenuBtn" title="Mais ações">
+        <span style="font-size:14px">📊</span>
+        <span class="turno-topbar-num" id="topbarTurnoCount">0</span>
+        <span class="turno-topbar-lbl">no turno</span>
+        <span class="topbar-menu-arrow" id="topbarMenuArrow">▾</span>
+      </div>
+      <div class="topbar-dropdown" id="topbarDropdown">
+        <button class="topbar-dd-item" onclick="openTurnoPanel();closeTopbarMenu()" title="Painel de Turno (T)">
+          <span>📊</span> Painel de Turno
+        </button>
+        <div class="topbar-dd-sep"></div>
+        <button class="topbar-dd-item topbar-dd-danger" onclick="removeAllAreasFromTopbar();closeTopbarMenu()" title="Remover todos os arquivos carregados" id="topbarRemoveAllBtn">
+          <span>🗑️</span> Remover arquivos
+        </button>
+      </div>
+    </div>
     <div class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Alternar modo escuro">
       <div class="dark-toggle-track" id="darkTrack"><div class="dark-toggle-thumb"></div></div>
       <span class="dark-toggle-lbl" id="darkLbl">🌙</span>
@@ -1743,7 +2320,24 @@ body.dark ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
         <div class="slot-zone-icon">📂</div>
         <div class="sec-label" style="margin-bottom:0">Arquivos por Área</div>
         <span class="slot-load-count" id="slotLoadCount"><strong>0</strong>/6</span>
+        <button class="slot-clear-all-btn" id="slotClearAllBtn" onclick="removeAllAreas()" title="Remover todos os arquivos carregados" style="display:none">🗑️ Limpar</button>
       </div>
+      <!-- SMART AUTO-DETECT DROP ZONE -->
+      <div id="smartDropZone"
+        style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:2px dashed var(--accent-mid);background:var(--accent-light);cursor:pointer;margin-bottom:10px;transition:all .2s"
+        onclick="document.getElementById('fi-auto').click()"
+        ondragover="event.preventDefault();this.style.borderColor='var(--accent)';this.style.background='var(--accent-light)'"
+        ondragleave="this.style.borderColor='var(--accent-mid)'"
+        ondrop="_handleAutoDrop(event)"
+        title="Solte qualquer planilha aqui — a área será detectada automaticamente pelas filas">
+        <div style="font-size:18px">🎯</div>
+        <div>
+          <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:-.1px">Upload inteligente</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:1px">Detecta a área automaticamente pelas filas</div>
+        </div>
+        <div style="margin-left:auto;font-size:9px;font-family:'DM Mono',monospace;color:var(--subtle)">arraste aqui</div>
+      </div>
+      <input type="file" id="fi-auto" accept=".xlsx,.xls" style="display:none" onchange="_handleAutoFile(event)">
       <div class="slots">
         <div class="slot B" id="slot-B" onclick="triggerUpload('B')" ondragover="handleDragOver(event,'B')" ondragleave="handleDragLeave(event,'B')" ondrop="handleDrop(event,'B')">
           <div class="slot-glow"></div>
@@ -1855,6 +2449,22 @@ body.dark ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
     <!-- ── TAB TABELA ── -->
     <div class="tab-panel active" id="panel-tabela">
+      <!-- JUMP BAR -->
+      <div class="jump-bar" id="jumpBar" style="display:none">
+        <span class="jump-bar-label">⚡ Ir para</span>
+        <button class="jump-btn j-sla-v" onclick="jumpToSla('vencido')" id="jbSlaV" title="Ir para o 1º SLA vencido">🔴 SLA Vencido <span class="jump-count" id="jcSlaV">0</span></button>
+        <button class="jump-btn j-sla-a" onclick="jumpToSla('alerta')"  id="jbSlaA" title="Ir para o 1º SLA em alerta">🟡 Alerta <span class="jump-count" id="jcSlaA">0</span></button>
+        <button class="jump-btn j-pin"   onclick="jumpToPin()"          id="jbPin"  title="Ir para a linha fixada">📌 Fixada</button>
+        <div class="jump-sep"></div>
+        <button class="jump-btn" onclick="jumpToArea('B')" id="jb-B" title="Ir para Baixada">BAI</button>
+        <button class="jump-btn" onclick="jumpToArea('O')" id="jb-O" title="Ir para Oeste">OES</button>
+        <button class="jump-btn" onclick="jumpToArea('G')" id="jb-G" title="Ir para Grande RJ">GRJ</button>
+        <button class="jump-btn" onclick="jumpToArea('I')" id="jb-I" title="Ir para Interior">INT</button>
+        <button class="jump-btn" onclick="jumpToArea('E')" id="jb-E" title="Ir para Espírito Santo">ES</button>
+        <div class="jump-sep"></div>
+        <button class="focus-mode-toggle" id="focusModeBtn" onclick="toggleFocusMode()" title="Modo foco: destaca linhas fixadas">🎯 Foco</button>
+        <button class="jump-btn" onclick="toggleKbdHud()" title="Atalhos de teclado" style="margin-left:auto">⌨️</button>
+      </div>
       <div class="search-bar">
         <span class="search-icon">🔍</span>
         <input type="text" id="searchInput" placeholder="Buscar NE-ID, END-ID, TSK ou qualquer campo…" oninput="onSearch()">
@@ -1893,7 +2503,7 @@ body.dark ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
           <div class="empty">
             <div class="empty-ico">📂</div>
             <h3>Nenhum arquivo carregado</h3>
-            <p>Carregue os arquivos de cada área na barra lateral.<br>Os filtros de <strong>REGRA USUÁRIO CRIADOR</strong> serão detectados automaticamente.</p>
+            <p>Carregue os arquivos de cada área na barra lateral.<br>Os filtros serão detectados automaticamente utilizando o campo <strong>CM</strong> da planilha.</p>
           </div>
         </div>
       </div>
@@ -2086,6 +2696,116 @@ body.dark ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </div>
 </div>
 
+<!-- ── FAB Multi-Menu ── -->
+<div class="fab-wrap" id="fabWrap">
+  <!-- Mini-menu popup -->
+  <div class="fab-menu" id="fabMenu">
+    <div class="fab-menu-tabs">
+      <button class="fab-tab active" id="fabTabTurno" onclick="fabSwitchTab('turno')">📊 Turno</button>
+      <button class="fab-tab" id="fabTabColar" onclick="fabSwitchTab('colar')">⚡ Colar ID</button>
+    </div>
+    <!-- Painel Turno -->
+    <div class="fab-pane active" id="fabPaneTurno">
+      <div class="fab-pane-action" onclick="openTurnoPanel();closeFabMenu()">
+        <span class="fab-pane-icon">📊</span>
+        <div>
+          <div class="fab-pane-title">Abrir Painel de Turno</div>
+          <div class="fab-pane-sub">Histórico, timer e KPIs do turno</div>
+        </div>
+        <span class="fab-pane-arrow">›</span>
+      </div>
+      <div class="fab-pane-kpi">
+        <span class="fab-pane-kpi-val" id="fabMenuTurnoCount">0</span>
+        <span class="fab-pane-kpi-lbl">OS no turno</span>
+      </div>
+    </div>
+    <!-- Painel Colar ID -->
+    <div class="fab-pane" id="fabPaneColar">
+      <div class="fab-pane-sub-title">⚡ Atalho — Sites Fora</div>
+      <div class="fab-pane-sub-desc">Cole os IDs de site e vá direto para a aba <strong>Sites Fora</strong> com END-ID selecionado automaticamente.</div>
+      <textarea id="fabColarInput" class="fab-colar-textarea" placeholder="Cole os IDs aqui (CTRL+V)&#10;Ex: MIPE07, RJPH08…"></textarea>
+      <div class="fab-colar-actions">
+        <button class="fab-colar-btn go" onclick="applyFabColarPaste()">🔴 Ir para Sites Fora</button>
+        <button class="fab-colar-btn cancel" onclick="closeFabMenu()">✕</button>
+      </div>
+    </div>
+  </div>
+  <!-- FAB button -->
+  <button class="turno-fab" id="turnoFab" onclick="toggleFabMenu()" title="Painel de Turno / Colar ID">
+    <span id="fabIcon">📊</span><span class="fab-badge" id="fabBadge">0</span>
+  </button>
+</div>
+
+<!-- ── KBD HUD ── -->
+<div class="kbd-hud" id="kbdHud">
+  <div class="kbd-title" style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--subtle);margin-bottom:10px">⌨️ Atalhos de Teclado</div>
+  <div class="kbd-row"><span class="kbd-key">T</span><span class="kbd-desc">Abrir painel de turno</span></div>
+  <div class="kbd-row"><span class="kbd-key">F</span><span class="kbd-desc">Modo foco (linhas fixadas)</span></div>
+  <div class="kbd-row"><span class="kbd-key">↑ ↓</span><span class="kbd-desc">Navegar entre linhas</span></div>
+  <div class="kbd-row"><span class="kbd-key">P</span><span class="kbd-desc">Fixar / desafixar linha ativa</span></div>
+  <div class="kbd-row"><span class="kbd-key">V</span><span class="kbd-desc">Ir para 1º SLA vencido</span></div>
+  <div class="kbd-row"><span class="kbd-key">A</span><span class="kbd-desc">Ir para 1º SLA em alerta</span></div>
+  <div class="kbd-row"><span class="kbd-key">Esc</span><span class="kbd-desc">Fechar painéis / limpar foco</span></div>
+  <div class="kbd-row"><span class="kbd-key">Ctrl+F</span><span class="kbd-desc">Focar na busca</span></div>
+  <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:9px;color:var(--subtle)">Pressione <span class="kbd-key" style="font-size:8px">?</span> para abrir/fechar</div>
+</div>
+
+<!-- ── PAINEL DE TURNO ── -->
+<div class="turno-overlay" id="turnoOverlay" onclick="closeTurnoIfOverlay(event)">
+  <div class="turno-panel" id="turnoPanel">
+    <div class="turno-header">
+      <span class="turno-header-icon">📊</span>
+      <div class="turno-header-info">
+        <div class="turno-header-title">Painel de Turno</div>
+        <div class="turno-header-sub" id="turnoHeaderSub">Turno iniciado em —</div>
+      </div>
+      <button class="turno-close-btn" onclick="closeTurnoPanel()">✕ Fechar</button>
+    </div>
+
+    <div class="turno-kpi-row">
+      <div class="turno-kpi k-tratadas">
+        <div class="turno-kpi-val" id="tkTratadas">0</div>
+        <div class="turno-kpi-lbl">OS Tratadas</div>
+      </div>
+      <div class="turno-kpi k-norm">
+        <div class="turno-kpi-val" id="tkNorm">0</div>
+        <div class="turno-kpi-lbl">Normalizadas</div>
+      </div>
+      <div class="turno-kpi k-tempo">
+        <div class="turno-kpi-val" id="tkTempo">—</div>
+        <div class="turno-kpi-lbl">Tempo médio</div>
+      </div>
+    </div>
+
+    <div class="turno-timer-row">
+      <div class="turno-clock" id="turnoClock">00:00:00</div>
+      <button class="turno-timer-btn start" id="turnoTimerStartBtn" onclick="turnoTimerToggle()">▶ Iniciar</button>
+      <button class="turno-timer-btn reset" onclick="turnoTimerReset()">↺</button>
+    </div>
+
+    <div class="turno-actions-row">
+      <button class="turno-action-btn" onclick="turnoRegistrarManual()" title="Registrar tratamento manual de uma OS">
+        ➕ Registrar OS
+      </button>
+      <button class="turno-action-btn" onclick="turnoRegistrarInfo()" title="Adicionar nota rápida ao turno">
+        📝 Nota rápida
+      </button>
+      <button class="turno-action-btn danger" onclick="turnoConfirmClear()" title="Zerar painel">
+        🗑️ Zerar
+      </button>
+    </div>
+
+    <div class="turno-feed" id="turnoFeed">
+      <div class="turno-feed-empty" id="turnoFeedEmpty">Nenhuma atividade registrada ainda.<br>As ações de OBS são capturadas automaticamente.</div>
+    </div>
+
+    <div class="turno-footer">
+      <button class="turno-export-btn" onclick="turnoExport()">⬇ Exportar resumo do turno</button>
+      <button class="turno-clear-btn"  onclick="turnoConfirmClear()">Zerar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <div class="obs-dropdown" id="obsDropdownMenu"></div>
 <div class="undo-toast" id="undoToast">
@@ -2122,6 +2842,64 @@ const AREA_LABELS   = { B: 'BAIXADA', O: 'OESTE', G: 'GRANDE RJ', N: 'NITERÓI',
 const ALL_AREAS     = ['B','O','G','N','I','E'];
 const EXPORT_COLORS = { B: '0052CC', O: '006644', G: '6554C0', N: '7C3AED', I: 'B85C00', E: '006B75' };
 const SHEET_NAMES   = { B: 'BAIXADA', O: 'OESTE', G: 'GRANDE RJ', N: 'NITEROI', I: 'INTERIOR', E: 'ESPIRITO SANTO' };
+
+// ─── Mapeamento de Filas → Área ──────────────────────────────────
+// Padrão: TRJ-XX-YYYYY-ZZZZZ
+// As regras abaixo são verificadas em ordem de prioridade (mais específica primeiro)
+const FILA_AREA_RULES = [
+  // ESPÍRITO SANTO: prefixo TRJ-ES- ou filas específicas de ES
+  { area: 'E', test: q => /TRJ-ES-/i.test(q) },
+  // NITERÓI: sufixos NIT
+  { area: 'N', test: q => /[-_]NIT\d*/i.test(q) },
+  // BAIXADA: sufixos BXD
+  { area: 'B', test: q => /[-_]BXD\d*/i.test(q) },
+  // ZONA OESTE / OESTE: sufixos ZNO ou ZOE
+  { area: 'O', test: q => /[-_](ZNO|ZOE)\d*/i.test(q) },
+  // GRANDE RIO: sufixos GRD ou ZSL
+  { area: 'G', test: q => /[-_](GRD|ZSL)\d*/i.test(q) },
+  // INTERIOR: prefixo INT ou sufixos ANG, CBF, NFB, PET, VRD, CPS e outros municípios do interior
+  { area: 'I', test: q => /[-_]INT\d*/i.test(q) || /TRJ-RJ-INT\d*/i.test(q) || /[-_](ANG|CBF|NFB|PET|VRD|CPS)\d*/i.test(q) },
+  // ESPÍRITO SANTO extra: EPS, SMT, VIT, CIM
+  { area: 'E', test: q => /[-_](EPS|SMT|VIT|CIM)\d*/i.test(q) },
+];
+
+/**
+ * detectAreaFromRows: analisa as filas presentes nas linhas da planilha
+ * e retorna o código de área mais votado ('B','O','G','N','I','E') ou null.
+ */
+function detectAreaFromRows(rows) {
+  const votes = { B: 0, O: 0, G: 0, N: 0, I: 0, E: 0 };
+
+  rows.forEach(row => {
+    // Prioriza CM para identificação automática
+    const cm = String(row['CM'] || '').trim().toUpperCase();
+
+    // Fallback para fila caso CM não exista
+    const origem = cm || normFila(row[REGRA_COL] || row['FILA EM QUE ESTÁ'] || '');
+
+    if (!origem) return;
+
+    for (const rule of FILA_AREA_RULES) {
+      if (rule.test(origem)) {
+        votes[rule.area]++;
+        break;
+      }
+    }
+  });
+
+  // Retorna a área mais encontrada
+  let best = null;
+  let bestCount = 0;
+
+  for (const [area, count] of Object.entries(votes)) {
+    if (count > bestCount) {
+      bestCount = count;
+      best = area;
+    }
+  }
+
+  return bestCount > 0 ? best : null;
+}
 
 const DISPLAY_COLS = [
   'FILA EM QUE ESTÁ','TSK','Estado','Fim SLA',
@@ -2345,9 +3123,16 @@ function closeObsDropdown() {
 }
 
 function selectObs(tsk, value) {
+  const prevObs = obsMap[tsk] || '';
   if (value === '') { delete obsMap[tsk]; }
   else              { obsMap[tsk] = value; }
   closeObsDropdown();
+  // ── Registrar no Turno automaticamente ──
+  if (value && value !== prevObs) {
+    const evType = value === 'Normalizado' ? 'ev-normalizado' : 'ev-obs';
+    const icon   = value === 'Normalizado' ? '✅' : '📝';
+    turnoAddEvent({ type: evType, icon, label: `OBS: ${value}`, sub: tsk || '—', tsk, counted: true });
+  }
   renderTable(); // re-renderiza para atualizar botão e cor da linha
 }
 
@@ -2481,10 +3266,150 @@ function handleDrop(e, area) {
 }
 
 // ─── Upload ────────────────────────────────────────────────────
+// ─── Remove All Areas ─────────────────────────────────────────
+function removeAllAreas() {
+  const loaded = ALL_AREAS.filter(a => areaData[a]);
+  if (!loaded.length) return;
+  if (!confirm(`Remover todos os ${loaded.length} arquivo(s) carregados?`)) return;
+  loaded.forEach(a => {
+    areaData[a] = null;
+    _restoreEmptySlot(a);
+  });
+  rebuildFilas();
+  _updateSlotLoadCount();
+  toast(`🗑️ ${loaded.length} arquivo(s) removido(s)`, 'ok');
+}
+
+function _updateSlotClearAllBtn() {
+  const btn = document.getElementById('slotClearAllBtn');
+  if (!btn) return;
+  const n = ALL_AREAS.filter(a => areaData[a]).length;
+  btn.style.display = n >= 1 ? '' : 'none';
+}
+
+// ─── Topbar dropdown menu ─────────────────────────────────────
+function toggleTopbarMenu() {
+  const wrap = document.getElementById('topbarMenuWrap');
+  if (!wrap) return;
+  const isOpen = wrap.classList.contains('open');
+  if (isOpen) closeTopbarMenu();
+  else {
+    wrap.classList.add('open');
+    setTimeout(() => {
+      document.addEventListener('mousedown', _topbarMenuOutside, { once: true });
+    }, 10);
+  }
+}
+function closeTopbarMenu() {
+  const wrap = document.getElementById('topbarMenuWrap');
+  if (wrap) wrap.classList.remove('open');
+}
+function _topbarMenuOutside(e) {
+  const wrap = document.getElementById('topbarMenuWrap');
+  if (wrap && !wrap.contains(e.target)) closeTopbarMenu();
+}
+
+function removeAllAreasFromTopbar() {
+  const loaded = ALL_AREAS.filter(a => areaData[a]);
+  if (!loaded.length) { toast('⚠️ Nenhum arquivo carregado', 'inf'); return; }
+  if (!confirm(`Remover todos os ${loaded.length} arquivo(s) carregados?`)) return;
+  loaded.forEach(a => {
+    areaData[a] = null;
+    _restoreEmptySlot(a);
+  });
+  rebuildFilas();
+  _updateSlotLoadCount();
+  toast(`🗑️ ${loaded.length} arquivo(s) removido(s)`, 'ok');
+}
+
+
+let _sfQuickPopupOpen = false;
+
+function toggleSfQuickPaste() {
+  if (_sfQuickPopupOpen) { closeSfQuickPaste(); return; }
+  let popup = document.getElementById('sfQuickPopup');
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'sfQuickPopup';
+    popup.className = 'sf-quick-popup';
+    popup.innerHTML = `
+      <div class="sf-quick-popup-title"><span>⚡</span> Atalho — Sites Fora</div>
+      <div class="sf-quick-popup-sub">Cole os IDs de site aqui e vá direto para a aba <strong>Sites Fora</strong> com END-ID selecionado automaticamente.</div>
+      <textarea id="sfQuickInput" placeholder="Cole os IDs aqui (CTRL+V)&#10;Ex: MIPE07, RJPH08…"></textarea>
+      <div class="sf-quick-popup-actions">
+        <button class="sf-qp-btn go" onclick="applyQuickPaste()">🔴 Ir para Sites Fora</button>
+        <button class="sf-qp-btn cancel" onclick="closeSfQuickPaste()">✕ Cancelar</button>
+      </div>`;
+    document.body.appendChild(popup);
+    // close on outside click
+    document.addEventListener('mousedown', function _sfOutside(e) {
+      const colarBtn = document.getElementById('fabWrap');
+      if (!popup.contains(e.target) && !(colarBtn && colarBtn.contains(e.target))) {
+        closeSfQuickPaste();
+        document.removeEventListener('mousedown', _sfOutside);
+      }
+    });
+  }
+  popup.classList.add('show');
+  _sfQuickPopupOpen = true;
+  setTimeout(() => { const ta = document.getElementById('sfQuickInput'); if (ta) ta.focus(); }, 120);
+}
+
+function closeSfQuickPaste() {
+  const popup = document.getElementById('sfQuickPopup');
+  if (popup) popup.classList.remove('show');
+  _sfQuickPopupOpen = false;
+}
+
+function applyQuickPaste() {
+  const ta = document.getElementById('sfQuickInput');
+  const val = ta ? ta.value.trim() : '';
+  closeSfQuickPaste();
+
+  // Navigate to Sites Fora tab
+  floatSwitch('sitesfora');
+
+  if (val) {
+    // Paste into the sites fora textarea
+    const sfTA = document.getElementById('sfPasteArea');
+    if (sfTA) {
+      sfTA.value = val;
+      parsePaste();
+    }
+    // Select END-ID column automatically
+    setTimeout(() => {
+      const chips = document.querySelectorAll('#sfColChips .sf-col-chip');
+      let found = null;
+      chips.forEach(c => {
+        if (c.textContent.toUpperCase().includes('END') || c.textContent.toUpperCase().includes('END_ID') || c.textContent.toUpperCase().includes('END-ID')) {
+          found = c;
+        }
+      });
+      if (!found && chips.length > 0) {
+        // fallback: pick first chip that looks like an ID column
+        chips.forEach(c => {
+          const t = c.textContent.toUpperCase();
+          if (!found && (t.includes('ID') || t.includes('NE') || t.includes('SITE') || t.includes('CM'))) found = c;
+        });
+      }
+      if (!found && chips.length > 0) found = chips[0];
+      if (found && !found.classList.contains('on')) {
+        found.click();
+      }
+      // Also trigger comparison if xlsx col select exists
+      const sfXlsxCol = document.getElementById('sfXlsxCol');
+      if (sfXlsxCol && sfXlsxCol.value) runComparison();
+    }, 150);
+  }
+}
+
+// Patch _updateSlotLoadCount to also update the clear all btn
+const _origUpdateSlotLoadCount = _updateSlotLoadCount;
 function _updateSlotLoadCount() {
   const n = ALL_AREAS.filter(a => areaData[a]).length;
   const el = document.getElementById('slotLoadCount');
   if (el) el.innerHTML = `<strong>${n}</strong>/6`;
+  _updateSlotClearAllBtn();
 }
 function triggerUpload(area) {
   if (areaData[area]) return;
@@ -2512,6 +3437,131 @@ function normalizeRow(row) {
   return out;
 }
 
+// ─── Helpers de slot ───────────────────────────────────────────
+function _handleAutoFile(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  ev.target.value = '';
+  _autoDetectAndLoad(file);
+}
+function _handleAutoDrop(ev) {
+  ev.preventDefault();
+  const zone = document.getElementById('smartDropZone');
+  if (zone) zone.style.borderColor = 'var(--accent-mid)';
+  const file = ev.dataTransfer.files[0];
+  if (file) _autoDetectAndLoad(file);
+}
+function _autoDetectAndLoad(file) {
+  const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel'];
+  const validExts  = /\.(xlsx|xls)$/i;
+  if (!validTypes.includes(file.type) && !validExts.test(file.name)) {
+    toast(`❌ Arquivo inválido. Envie um .xlsx ou .xls`, 'err'); return;
+  }
+  // Lê rapidamente as primeiras linhas para detectar área
+  showProgress(true, 'Detectando área…', 30);
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'binary', cellDates: true });
+      let rows = null, foundSheet = null;
+      for (const sn of wb.SheetNames) {
+        const c = XLSX.utils.sheet_to_json(wb.Sheets[sn], { defval: '' });
+        if (c.length && c[0].hasOwnProperty(REGRA_COL)) { rows = c; foundSheet = sn; break; }
+      }
+      if (!rows) {
+        foundSheet = wb.SheetNames[0];
+        rows = XLSX.utils.sheet_to_json(wb.Sheets[foundSheet], { defval: '' });
+      }
+      const detected = detectAreaFromRows(rows.map(normalizeRow));
+      showProgress(false);
+      if (!detected) {
+        toast(`⚠️ Não foi possível detectar a área automaticamente. Escolha o slot manualmente.`, 'err');
+        return;
+      }
+      if (areaData[detected]) {
+        // Área já tem arquivo — mostrar confirmação
+        document.__autoAreaFile = file;
+        const overlay = document.createElement('div');
+        overlay.id = 'autoAreaConfirm';
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+        overlay.innerHTML = `
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(15,23,42,.25);font-family:'Inter',sans-serif">
+            <div style="font-size:22px;margin-bottom:10px">🎯 Área detectada: <strong style="color:var(--accent)">${AREA_LABELS[detected]}</strong></div>
+            <div style="font-size:12px;color:var(--red);background:var(--red-light);border:1px solid #fecaca;border-radius:8px;padding:10px 14px;margin:10px 0">
+              ⚠️ O slot <strong>${AREA_LABELS[detected]}</strong> já possui um arquivo carregado.<br>Deseja <strong>substituir</strong>?
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px">
+              <button onclick="document.getElementById('autoAreaConfirm').remove();areaData['${detected}']=null;processFile(document.__autoAreaFile,'${detected}')"
+                style="flex:1;padding:11px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer">✅ Substituir</button>
+              <button onclick="document.getElementById('autoAreaConfirm').remove()"
+                style="flex:1;padding:11px;border-radius:10px;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);font-size:13px;font-weight:600;cursor:pointer">Cancelar</button>
+            </div>
+          </div>`;
+        document.body.appendChild(overlay);
+      } else {
+        toast(`🎯 Área detectada: <strong>${AREA_LABELS[detected]}</strong> — carregando…`, 'ok');
+        processFile(file, detected);
+      }
+    } catch(err) {
+      showProgress(false);
+      toast(`❌ Erro ao detectar área: ${err.message}`, 'err');
+    }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function _restoreEmptySlot(area) {
+  const slot = document.getElementById('slot-' + area);
+  if (!slot) return;
+  const areaCodes2 = {B:'01 · BAI',O:'02 · OES',G:'03 · GRJ',N:'03b · NIT',I:'04 · INT',E:'05 · ES'};
+  const ownerMap2  = {B:'👤 Vinicius Cortes',O:'👤 Alan do Vale',G:'👤 Jackeline Costa',N:'👤 Matheus Palmeira',I:'👤 Jesse James',E:'👤 Merielem Santos'};
+  const titleTxt2  = area === 'N' ? '↳ Niterói' : AREA_LABELS[area].charAt(0) + AREA_LABELS[area].slice(1).toLowerCase().replace(' rj',' RJ');
+  slot.className = 'slot ' + area;
+  slot.onclick = () => triggerUpload(area);
+  slot.ondragover  = e => handleDragOver(e, area);
+  slot.ondragleave = e => handleDragLeave(e, area);
+  slot.ondrop      = e => handleDrop(e, area);
+  slot.innerHTML = `
+    <div class="slot-glow"></div>
+    <div class="slot-indicator"></div>
+    <div class="slot-area-code">${areaCodes2[area]||area}</div>
+    <div class="slot-title">${titleTxt2}</div>
+    <div class="slot-sub" id="sub-${area}">${ownerMap2[area]||''}</div>
+    <div class="slot-upload-row"><div class="slot-upload-icon">📄</div><span class="slot-upload-text">Clique ou arraste</span></div>`;
+}
+
+// Confirmação quando área detectada já está ocupada
+function _confirmAreaSwitch(file, originalArea, targetArea, _rows) {
+  // Cria overlay de confirmação inline
+  const overlay = document.createElement('div');
+  overlay.id = 'autoAreaConfirm';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+  overlay.innerHTML = `
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(15,23,42,.25);font-family:'Inter',sans-serif">
+      <div style="font-size:22px;margin-bottom:10px">🎯 Área detectada automaticamente</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:6px">
+        O arquivo <strong>${esc(file.name)}</strong> foi identificado como:<br>
+        <span style="font-size:16px;font-weight:800;color:var(--accent)">${AREA_LABELS[targetArea]}</span>
+      </div>
+      <div style="font-size:12px;color:var(--red);background:var(--red-light);border:1px solid #fecaca;border-radius:8px;padding:10px 14px;margin:14px 0">
+        ⚠️ O slot <strong>${AREA_LABELS[targetArea]}</strong> já possui um arquivo carregado.<br>
+        Deseja <strong>substituir</strong> o arquivo existente?
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button onclick="document.getElementById('autoAreaConfirm').remove();processFile(document.__autoAreaFile,'${targetArea}')"
+          style="flex:1;padding:11px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer">
+          ✅ Sim, substituir ${AREA_LABELS[targetArea]}
+        </button>
+        <button onclick="document.getElementById('autoAreaConfirm').remove();processFile(document.__autoAreaFile,'${originalArea}')"
+          style="flex:1;padding:11px;border-radius:10px;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);font-size:13px;font-weight:600;cursor:pointer">
+          Manter em ${AREA_LABELS[originalArea]}
+        </button>
+      </div>
+    </div>`;
+  document.__autoAreaFile = file;
+  document.body.appendChild(overlay);
+}
+
 function processFile(file, area) {
   const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel'];
   const validExts  = /\.(xlsx|xls)$/i;
@@ -2522,7 +3572,7 @@ function processFile(file, area) {
     toast(`❌ Arquivo muito grande (máx 50 MB)`, 'err'); return;
   }
 
-  // MELHORIA 4 — Skeleton loading
+  // Skeleton loading no slot original enquanto detecta
   const slotEl = document.getElementById('slot-' + area);
   slotEl.className = 'slot loading ' + area;
   slotEl.onclick = null;
@@ -2552,6 +3602,36 @@ function processFile(file, area) {
         rows = XLSX.utils.sheet_to_json(wb.Sheets[foundSheet], { defval: '' });
       }
       rows = rows.map(normalizeRow);
+
+      // ── DETECÇÃO AUTOMÁTICA DE ÁREA ─────────────────────────
+      const detectedArea = detectAreaFromRows(rows);
+      if (detectedArea && detectedArea !== area) {
+        // Restaura o slot original (que estava em skeleton)
+        _restoreEmptySlot(area);
+
+        if (areaData[detectedArea]) {
+          // Área detectada já está ocupada — perguntar se deseja substituir
+          showProgress(false);
+          _confirmAreaSwitch(file, area, detectedArea, rows);
+          return;
+        }
+        // Redireciona silenciosamente para a área correta
+        area = detectedArea;
+        const newSlot = document.getElementById('slot-' + area);
+        newSlot.className = 'slot loading ' + area;
+        newSlot.onclick = null;
+        newSlot.innerHTML = `
+          <div class="slot-glow"></div>
+          <div class="slot-indicator"></div>
+          <div class="slot-skeleton">
+            <div class="sk-line title"></div>
+            <div class="sk-line sub"></div>
+            <div class="sk-line time"></div>
+            <div class="sk-line bar"></div>
+          </div>`;
+        toast(`🎯 Área detectada automaticamente: <strong>${AREA_LABELS[area]}</strong>`, 'ok');
+      }
+      // ── /DETECÇÃO AUTOMÁTICA ─────────────────────────────────
       const uploadTime = new Date();
       areaData[area] = { rows, fileName: file.name, sheetName: foundSheet, uploadTime };
 
@@ -2831,6 +3911,7 @@ function applyAndRender() {
 
   renderTable();
   updateStats();
+  updateJumpBar();
   document.getElementById('btnExport').disabled  = !filteredRows.length;
   document.getElementById('btnInverse').disabled = !getInverseRows().length;
   const btnCopyAll = document.getElementById('btnCopyAll');
@@ -2938,6 +4019,7 @@ function renderTable() {
       <thead><tr>
         <th onclick="setSort('#')">&#35; <span class="sort-arrow">${sortArrow('#')}</span></th>
         <th style="width:28px"></th>
+        <th style="width:28px" title="Fixar linha">📌</th>
         <th>ÁREA</th>
         <th>SITE</th>
         <th class="th-obs">OBS</th>
@@ -2953,6 +4035,9 @@ function renderTable() {
           const obs  = obsMap[tsk] || '';
           const isNorm = obs === 'Normalizado';
           let cls = isNorm ? 'row-normalizado' : (sf ? 'site-fora' : (sl === 'vencido' ? 'sla-vencido' : sl === 'alerta' ? 'sla-alerta' : ''));
+          const isPinned = pinnedRows.has(tsk || `${area}-${i}`);
+          if (isPinned) cls += ' row-pinned';
+          const pinKey = esc(tsk || `${area}-${i}`);
           const obsBtnCls = isNorm ? 'obs-btn obs-normalizado' : (obs ? 'obs-btn has-obs' : 'obs-btn');
           const obsBtnLbl = obs ? obs : '+ OBS';
           const xlsxColVal = document.getElementById('sfXlsxCol')?.value || 'NE ID';
@@ -2972,9 +4057,10 @@ function renderTable() {
             return `<div class="detail-field"><div class="detail-field-label">${esc(c)}</div><div class="detail-field-val ${valCls}" title="${esc(v)}">${esc(v)||'—'}</div></div>`;
           }).join('');
 
-          return `<tr class="${cls}" id="${rowId}">
+          return `<tr class="${cls}" id="${rowId}" data-row-idx="${i}" data-area="${area}" tabindex="-1">
             <td class="num-cell">${i+1}</td>
             <td class="expand-cell" onclick="toggleRowDetail('${rowId}')" title="Ver detalhes inline">▶<span class="expand-indicator"></span></td>
+            <td style="text-align:center;padding:4px 6px"><button class="pin-btn ${isPinned?'pinned':''}" onclick="togglePin('${pinKey}','${rowId}')" title="${isPinned?'Desafixar':'Fixar esta linha'}">${isPinned?'📌':'·'}</button></td>
             <td><span class="area-cell ${area}">${AREA_LABELS[area]}</span></td>
             <td>${sf ? '<span class="site-fora-tag">🔴 FORA</span>' : '<span class="site-ok-tag">✅</span>'}</td>
             <td><button type="button" class="${obsBtnCls} obs-open-btn" data-tsk="${esc(tsk)}" title="${esc(obs)}">${esc(obsBtnLbl)}</button></td>
@@ -2989,7 +4075,7 @@ function renderTable() {
             }).join('')}
           </tr>
           <tr class="row-detail-panel" id="${rowId}-detail">
-            <td colspan="${cols.length + 7}" style="padding:0">
+            <td colspan="${cols.length + 8}" style="padding:0">
               <div class="detail-panel-inner">
                 <div class="detail-panel-header">
                   <span class="detail-panel-title">📋 OS #${i+1} — ${esc(tsk||'—')} ${sl?`<span class="sla-tag ${sl}" style="font-size:9px;padding:1px 7px">${sl.toUpperCase()}</span>`:''}</span>
@@ -4266,7 +5352,497 @@ function executeUndo() {
   fn();
 }
 
+// ══════════════════════════════════════════════════════════════
+// PAINEL DE TURNO
+// ══════════════════════════════════════════════════════════════
+const TURNO_KEY = 'csm_turno_v1';
+let turnoEvents    = [];  // { id, time, type, icon, label, sub, tsk, counted }
+let turnoStartedAt = null; // Date quando o turno foi iniciado
+let _turnoTimerInterval = null;
+let _turnoTimerRunning  = false;
+let _turnoTimerSeconds  = 0;
+let _turnoTimerStart    = null; // timestamp when last started
+
+// Carrega do localStorage
+(function() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(TURNO_KEY) || '{}');
+    turnoEvents    = saved.events    || [];
+    _turnoTimerSeconds = saved.timerSec  || 0;
+    if (saved.startedAt) turnoStartedAt = new Date(saved.startedAt);
+    if (saved.timerRunning && saved.timerPausedAt) {
+      // estava rodando — continua do ponto
+      _turnoTimerStart    = Date.now() - (_turnoTimerSeconds * 1000);
+      _turnoTimerRunning  = true;
+      _startTimerInterval();
+    }
+  } catch(e) {}
+})();
+
+function _saveTurno() {
+  try {
+    localStorage.setItem(TURNO_KEY, JSON.stringify({
+      events:    turnoEvents,
+      timerSec:  _turnoTimerSeconds,
+      timerRunning: _turnoTimerRunning,
+      timerPausedAt: _turnoTimerRunning ? null : Date.now(),
+      startedAt: turnoStartedAt ? turnoStartedAt.toISOString() : null,
+    }));
+  } catch(e){}
+}
+
+function turnoAddEvent(ev) {
+  if (!turnoStartedAt) { turnoStartedAt = new Date(); }
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+  turnoEvents.unshift({ id, time: new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}), ...ev });
+  if (turnoEvents.length > 200) turnoEvents.length = 200;
+  _saveTurno();
+  _renderTurnoFeed();
+  _updateTurnoKpis();
+  _updateTurnoTopbar();
+}
+
+function _renderTurnoFeed() {
+  const feed  = document.getElementById('turnoFeed');
+  const empty = document.getElementById('turnoFeedEmpty');
+  if (!feed) return;
+  if (!turnoEvents.length) {
+    if (empty) empty.style.display = 'block';
+    feed.querySelectorAll('.turno-event').forEach(e => e.remove());
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  feed.innerHTML = turnoEvents.map(ev => `
+    <div class="turno-event ${ev.type||''}">
+      <span class="turno-event-time">${ev.time}</span>
+      <span class="turno-event-icon">${ev.icon||'•'}</span>
+      <div class="turno-event-body">
+        <div class="turno-event-label">${esc(ev.label||'')}</div>
+        ${ev.sub ? `<div class="turno-event-sub">${esc(ev.sub)}</div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function _updateTurnoKpis() {
+  const tratadas = turnoEvents.filter(e => e.counted).length;
+  const norm     = turnoEvents.filter(e => e.type === 'ev-normalizado').length;
+  const tTrat = document.getElementById('tkTratadas');
+  const tNorm = document.getElementById('tkNorm');
+  const tTempo= document.getElementById('tkTempo');
+  if (tTrat) tTrat.textContent = tratadas;
+  if (tNorm) tNorm.textContent = norm;
+  if (tTempo && tratadas > 0 && _turnoTimerSeconds > 0) {
+    const avg = Math.round(_turnoTimerSeconds / tratadas);
+    tTempo.textContent = avg >= 60 ? `${Math.floor(avg/60)}m${String(avg%60).padStart(2,'0')}s` : `${avg}s`;
+  } else if (tTempo) { tTempo.textContent = '—'; }
+}
+
+function _updateTurnoTopbar() {
+  const n = turnoEvents.filter(e => e.counted).length;
+  const chip = document.getElementById('topbarTurnoCount');
+  const badge = document.getElementById('fabBadge');
+  if (chip) chip.textContent = n;
+  if (badge) {
+    badge.textContent = n;
+    badge.classList.toggle('show', n > 0);
+  }
+}
+
+// Timer
+function _startTimerInterval() {
+  if (_turnoTimerInterval) clearInterval(_turnoTimerInterval);
+  _turnoTimerInterval = setInterval(() => {
+    if (!_turnoTimerRunning) return;
+    _turnoTimerSeconds = Math.floor((Date.now() - _turnoTimerStart) / 1000);
+    _renderTimerClock();
+    _updateTurnoKpis();
+  }, 500);
+}
+
+function _renderTimerClock() {
+  const el = document.getElementById('turnoClock');
+  if (!el) return;
+  const s = _turnoTimerSeconds;
+  const h = String(Math.floor(s/3600)).padStart(2,'0');
+  const m = String(Math.floor((s%3600)/60)).padStart(2,'0');
+  const sc= String(s%60).padStart(2,'0');
+  el.textContent = `${h}:${m}:${sc}`;
+  el.classList.toggle('running', _turnoTimerRunning);
+}
+
+function turnoTimerToggle() {
+  const btn = document.getElementById('turnoTimerStartBtn');
+  if (_turnoTimerRunning) {
+    _turnoTimerRunning = false;
+    _turnoTimerSeconds = Math.floor((Date.now() - _turnoTimerStart) / 1000);
+    if (btn) { btn.textContent = '▶ Retomar'; btn.className = 'turno-timer-btn start'; }
+  } else {
+    if (!turnoStartedAt) turnoStartedAt = new Date();
+    _turnoTimerStart   = Date.now() - (_turnoTimerSeconds * 1000);
+    _turnoTimerRunning = true;
+    _startTimerInterval();
+    if (btn) { btn.textContent = '⏸ Pausar'; btn.className = 'turno-timer-btn stop'; }
+    const sub = document.getElementById('turnoHeaderSub');
+    if (sub) sub.textContent = 'Iniciado em ' + turnoStartedAt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  }
+  _renderTimerClock();
+  _saveTurno();
+}
+
+function turnoTimerReset() {
+  if (!confirm('Zerar o cronômetro?')) return;
+  _turnoTimerRunning = false;
+  _turnoTimerSeconds = 0;
+  if (_turnoTimerInterval) clearInterval(_turnoTimerInterval);
+  const btn = document.getElementById('turnoTimerStartBtn');
+  if (btn) { btn.textContent = '▶ Iniciar'; btn.className = 'turno-timer-btn start'; }
+  _renderTimerClock();
+  _updateTurnoKpis();
+  _saveTurno();
+}
+
+function turnoRegistrarManual() {
+  const tsk = prompt('TSK da OS tratada (ou descrição):');
+  if (!tsk) return;
+  turnoAddEvent({ type:'ev-tratada', icon:'🔧', label:`Tratamento manual`, sub: tsk.trim(), counted: true });
+  toast('✅ OS registrada no turno', 'ok');
+}
+
+function turnoRegistrarInfo() {
+  const nota = prompt('Nota rápida para o turno:');
+  if (!nota) return;
+  turnoAddEvent({ type:'ev-info', icon:'📝', label: nota.trim(), counted: false });
+  toast('📝 Nota adicionada ao turno', 'ok');
+}
+
+function turnoConfirmClear() {
+  if (!confirm('Zerar todas as atividades do turno?')) return;
+  turnoEvents    = [];
+  turnoStartedAt = null;
+  _turnoTimerRunning = false;
+  _turnoTimerSeconds = 0;
+  if (_turnoTimerInterval) clearInterval(_turnoTimerInterval);
+  const btn = document.getElementById('turnoTimerStartBtn');
+  if (btn) { btn.textContent = '▶ Iniciar'; btn.className = 'turno-timer-btn start'; }
+  _renderTimerClock();
+  _renderTurnoFeed();
+  _updateTurnoKpis();
+  _updateTurnoTopbar();
+  _saveTurno();
+  toast('🗑️ Painel de turno zerado', 'ok');
+}
+
+function turnoExport() {
+  if (!turnoEvents.length) { toast('⚠️ Nenhuma atividade para exportar', 'inf'); return; }
+  const tratadas = turnoEvents.filter(e => e.counted).length;
+  const norm     = turnoEvents.filter(e => e.type === 'ev-normalizado').length;
+  const h = String(Math.floor(_turnoTimerSeconds/3600)).padStart(2,'0');
+  const m = String(Math.floor((_turnoTimerSeconds%3600)/60)).padStart(2,'0');
+  const sc= String(_turnoTimerSeconds%60).padStart(2,'0');
+  const lines = [
+    `RESUMO DE TURNO — CSM EXTRATOR`,
+    `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
+    `Iniciado em: ${turnoStartedAt ? turnoStartedAt.toLocaleString('pt-BR') : '—'}`,
+    `Tempo ativo: ${h}:${m}:${sc}`,
+    `OS Tratadas: ${tratadas}`,
+    `Normalizadas: ${norm}`,
+    ``,
+    `── ATIVIDADES ──`,
+    ...turnoEvents.map(e => `[${e.time}] ${e.label}${e.sub ? ' — ' + e.sub : ''}`).reverse(),
+  ];
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `turno_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('⬇ Resumo exportado!', 'ok');
+}
+
+function openTurnoPanel() {
+  document.getElementById('turnoOverlay').classList.add('open');
+  _renderTurnoFeed();
+  _updateTurnoKpis();
+  _renderTimerClock();
+  const btn = document.getElementById('turnoTimerStartBtn');
+  if (btn) { btn.textContent = _turnoTimerRunning ? '⏸ Pausar' : '▶ Iniciar'; btn.className = _turnoTimerRunning ? 'turno-timer-btn stop' : 'turno-timer-btn start'; }
+  const sub = document.getElementById('turnoHeaderSub');
+  if (sub) sub.textContent = turnoStartedAt ? 'Iniciado em ' + turnoStartedAt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : 'Turno não iniciado';
+}
+function closeTurnoPanel() { document.getElementById('turnoOverlay').classList.remove('open'); }
+function closeTurnoIfOverlay(e) { if (e.target === document.getElementById('turnoOverlay')) closeTurnoPanel(); }
+
+// Inicializar topbar ao carregar
+document.addEventListener('DOMContentLoaded', () => {
+  _updateTurnoTopbar();
+  _renderTimerClock();
+});
+
+// ══════════════════════════════════════════════════════════════
+// NAVEGAÇÃO TURBINADA — Jump Bar, Pin, Focus Mode, Atalhos
+// ══════════════════════════════════════════════════════════════
+const pinnedRows = new Set(); // set de tsk/keys
+let _focusMode   = false;
+let _kbdHudOpen  = false;
+let _activeRowEl = null; // <tr> atualmente selecionado via teclado
+
+function togglePin(key, rowId) {
+  if (pinnedRows.has(key)) {
+    pinnedRows.delete(key);
+    toast('📌 Linha desafixada', 'inf');
+  } else {
+    pinnedRows.add(key);
+    toast('📌 Linha fixada', 'ok');
+  }
+  // Atualizar só o botão e classe sem re-renderizar tudo
+  const row = document.getElementById(rowId);
+  if (row) {
+    row.classList.toggle('row-pinned', pinnedRows.has(key));
+    const btn = row.querySelector('.pin-btn');
+    if (btn) { btn.classList.toggle('pinned', pinnedRows.has(key)); btn.textContent = pinnedRows.has(key) ? '📌' : '·'; btn.title = pinnedRows.has(key) ? 'Desafixar' : 'Fixar esta linha'; }
+  }
+  updateJumpBar();
+}
+
+function toggleFocusMode() {
+  _focusMode = !_focusMode;
+  document.body.classList.toggle('focus-mode', _focusMode);
+  const btn = document.getElementById('focusModeBtn');
+  if (btn) btn.classList.toggle('on', _focusMode);
+  toast(_focusMode ? '🎯 Modo foco ativado — linhas fixadas em destaque' : '🎯 Modo foco desativado', 'ok');
+}
+
+function updateJumpBar() {
+  const bar = document.getElementById('jumpBar');
+  if (!filteredRows.length) { if (bar) bar.style.display = 'none'; return; }
+  if (bar) bar.style.display = 'flex';
+
+  // Contagem SLA
+  let slaV = 0, slaA = 0;
+  filteredRows.forEach(r => { const s = slaStatus(r); if (s==='vencido') slaV++; else if (s==='alerta') slaA++; });
+  const jcV = document.getElementById('jcSlaV');
+  const jcA = document.getElementById('jcSlaA');
+  if (jcV) jcV.textContent = slaV;
+  if (jcA) jcA.textContent = slaA;
+
+  // Botão pin só se tiver algo fixado
+  const jbPin = document.getElementById('jbPin');
+  if (jbPin) jbPin.style.display = pinnedRows.size ? 'inline-flex' : 'none';
+
+  // Botões de área — só mostra as que têm linhas
+  const areasPresentes = new Set(filteredRows.map(r => r.__area));
+  ['B','O','G','I','E'].forEach(a => {
+    const btn = document.getElementById('jb-'+a);
+    if (btn) btn.style.display = areasPresentes.has(a) ? '' : 'none';
+  });
+}
+
+function jumpToSla(status) {
+  const rows = document.querySelectorAll('#tableContainer tbody tr');
+  for (const tr of rows) {
+    if (tr.classList.contains(`sla-${status}`) && !tr.classList.contains('row-detail-panel')) {
+      tr.scrollIntoView({ behavior:'smooth', block:'center' });
+      _highlightJump(tr);
+      return;
+    }
+  }
+  toast(`⚠️ Nenhuma OS com SLA ${status} visível`, 'inf');
+}
+
+function jumpToPin() {
+  if (!pinnedRows.size) { toast('⚠️ Nenhuma linha fixada', 'inf'); return; }
+  const rows = document.querySelectorAll('#tableContainer tbody tr.row-pinned');
+  if (rows[0]) { rows[0].scrollIntoView({ behavior:'smooth', block:'center' }); _highlightJump(rows[0]); }
+}
+
+function jumpToArea(area) {
+  const rows = document.querySelectorAll(`#tableContainer tbody tr[data-area="${area}"]`);
+  if (rows[0]) { rows[0].scrollIntoView({ behavior:'smooth', block:'start' }); _highlightJump(rows[0]); }
+  else toast(`⚠️ Área ${area} não encontrada`, 'inf');
+}
+
+function _highlightJump(tr) {
+  tr.style.outline = '2.5px solid var(--accent)';
+  tr.style.outlineOffset = '-2px';
+  setTimeout(() => { tr.style.outline = ''; tr.style.outlineOffset = ''; }, 1800);
+  _setActiveRow(tr);
+}
+
+function _setActiveRow(tr) {
+  if (_activeRowEl) _activeRowEl.style.boxShadow = '';
+  _activeRowEl = tr;
+  if (tr) tr.style.boxShadow = 'inset 0 0 0 2px var(--accent-mid)';
+}
+
+function toggleKbdHud() {
+  _kbdHudOpen = !_kbdHudOpen;
+  const hud = document.getElementById('kbdHud');
+  if (hud) hud.classList.toggle('show', _kbdHudOpen);
+}
+
+// ── Navegação por teclado ──
+document.addEventListener('keydown', function(e) {
+  const tag = e.target.tagName.toLowerCase();
+  const isInput = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+
+  // Ctrl+F → focar busca
+  if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+    const inp = document.getElementById('searchInput');
+    if (inp) { e.preventDefault(); inp.focus(); inp.select(); }
+    return;
+  }
+
+  if (isInput) return; // demais atalhos só fora de inputs
+
+  // ? → toggle kbd hud
+  if (e.key === '?') { toggleKbdHud(); return; }
+
+  // Esc → fechar painéis / focus mode
+  if (e.key === 'Escape') {
+    if (_kbdHudOpen) { toggleKbdHud(); return; }
+    if (document.getElementById('turnoOverlay')?.classList.contains('open')) { closeTurnoPanel(); return; }
+    if (_focusMode) { toggleFocusMode(); return; }
+    if (_activeRowEl) { _setActiveRow(null); return; }
+    return;
+  }
+
+  // Só ativa atalhos de navegação se a tab de tabela está ativa
+  const panelTabela = document.getElementById('panel-tabela');
+  if (!panelTabela?.classList.contains('active')) {
+    // T abre turno em qualquer aba
+    if (e.key === 't' || e.key === 'T') { openTurnoPanel(); return; }
+    return;
+  }
+
+  switch(e.key) {
+    case 't': case 'T':
+      openTurnoPanel(); break;
+    case 'f': case 'F':
+      toggleFocusMode(); break;
+    case 'v': case 'V':
+      jumpToSla('vencido'); break;
+    case 'a':
+      // 'a' só se não estiver com modifier (Ctrl+A = selecionar tudo)
+      if (!e.ctrlKey && !e.metaKey) jumpToSla('alerta');
+      break;
+    case 'p': case 'P':
+      // Fixar/desafixar a linha ativa
+      if (_activeRowEl) {
+        const btn = _activeRowEl.querySelector('.pin-btn');
+        if (btn) btn.click();
+      }
+      break;
+    case 'ArrowDown': {
+      e.preventDefault();
+      const allRows = [...document.querySelectorAll('#tableContainer tbody tr:not(.row-detail-panel)')];
+      if (!allRows.length) break;
+      const idx = _activeRowEl ? allRows.indexOf(_activeRowEl) : -1;
+      const next = allRows[Math.min(idx + 1, allRows.length - 1)];
+      if (next) { next.scrollIntoView({ block:'nearest' }); _setActiveRow(next); }
+      break;
+    }
+    case 'ArrowUp': {
+      e.preventDefault();
+      const allRows = [...document.querySelectorAll('#tableContainer tbody tr:not(.row-detail-panel)')];
+      if (!allRows.length) break;
+      const idx = _activeRowEl ? allRows.indexOf(_activeRowEl) : allRows.length;
+      const prev = allRows[Math.max(idx - 1, 0)];
+      if (prev) { prev.scrollIntoView({ block:'nearest' }); _setActiveRow(prev); }
+      break;
+    }
+  }
+});
+
+// Limpa linha ativa ao re-renderizar
+const _origRenderTable = renderTable;
+// Patch pós-render
+const _renderTableOrig = renderTable;
+
 // ─── Topology Engine ────────────────────────────────────────────
+// ─── FAB Multi-Menu ─────────────────────────────────────────────
+let _fabMenuOpen = false;
+let _fabActiveTab = 'turno';
+
+function toggleFabMenu() {
+  if (_fabMenuOpen) { closeFabMenu(); return; }
+  const menu = document.getElementById('fabMenu');
+  if (menu) menu.classList.add('open');
+  _fabMenuOpen = true;
+  // Sync turno count
+  const countEl = document.getElementById('fabMenuTurnoCount');
+  const fabBadge = document.getElementById('fabBadge');
+  if (countEl && fabBadge) countEl.textContent = fabBadge.textContent || '0';
+  setTimeout(() => {
+    document.addEventListener('mousedown', _fabMenuOutside, { once: true });
+  }, 10);
+}
+
+function closeFabMenu() {
+  const menu = document.getElementById('fabMenu');
+  if (menu) menu.classList.remove('open');
+  _fabMenuOpen = false;
+}
+
+function _fabMenuOutside(e) {
+  const wrap = document.getElementById('fabWrap');
+  if (wrap && !wrap.contains(e.target)) closeFabMenu();
+  else if (_fabMenuOpen) {
+    setTimeout(() => document.addEventListener('mousedown', _fabMenuOutside, { once: true }), 10);
+  }
+}
+
+function fabSwitchTab(tab) {
+  _fabActiveTab = tab;
+  document.querySelectorAll('.fab-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.fab-pane').forEach(p => p.classList.remove('active'));
+  const btn = document.getElementById('fabTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+  const pane = document.getElementById('fabPane' + tab.charAt(0).toUpperCase() + tab.slice(1));
+  if (btn) btn.classList.add('active');
+  if (pane) {
+    pane.classList.add('active');
+    if (tab === 'colar') {
+      setTimeout(() => { const ta = document.getElementById('fabColarInput'); if (ta) ta.focus(); }, 80);
+    }
+  }
+}
+
+function applyFabColarPaste() {
+  const ta = document.getElementById('fabColarInput');
+  const val = ta ? ta.value.trim() : '';
+  closeFabMenu();
+  if (ta) ta.value = '';
+  floatSwitch('sitesfora');
+  if (val) {
+    const sfTA = document.getElementById('sfPasteArea');
+    if (sfTA) { sfTA.value = val; parsePaste(); }
+    setTimeout(() => {
+      const chips = document.querySelectorAll('#sfColChips .sf-col-chip');
+      let found = null;
+      chips.forEach(c => {
+        const t = c.textContent.toUpperCase();
+        if (t.includes('END') || t.includes('END_ID') || t.includes('END-ID')) found = c;
+      });
+      if (!found) chips.forEach(c => { const t = c.textContent.toUpperCase(); if (!found && (t.includes('ID') || t.includes('NE') || t.includes('SITE') || t.includes('CM'))) found = c; });
+      if (!found && chips.length > 0) found = chips[0];
+      if (found && !found.classList.contains('on')) found.click();
+      const sfXlsxCol = document.getElementById('sfXlsxCol');
+      if (sfXlsxCol && sfXlsxCol.value) runComparison();
+    }, 150);
+  }
+}
+
+// Sync FAB badge count to mini-menu kpi
+const _origUpdateFabBadge = window.updateFabBadge;
+// Patch fabBadge update to also update fabMenuTurnoCount
+const _fabBadgeObserver = new MutationObserver(() => {
+  const badge = document.getElementById('fabBadge');
+  const kpi   = document.getElementById('fabMenuTurnoCount');
+  if (badge && kpi) kpi.textContent = badge.textContent || '0';
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const badge = document.getElementById('fabBadge');
+  if (badge) _fabBadgeObserver.observe(badge, { childList: true, characterData: true, subtree: true });
+});
+
 // ── Floating Nav Switch — liquid pill ───────────────────────────
 const FN_TABS = ['tabela','graficos','sitesfora'];
 
