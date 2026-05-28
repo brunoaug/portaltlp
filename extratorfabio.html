@@ -164,6 +164,88 @@ body.dark td{border-bottom-color:#232738}
 .topbar-colar-btn:active{transform:scale(.95);transition-duration:.07s}
 .topbar-colar-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.92);letter-spacing:.2px}
 
+/* ── PASTA MONITORADA ── */
+.monitor-btn{
+  display:flex;align-items:center;gap:7px;cursor:pointer;
+  padding:6px 13px;border-radius:20px;
+  border:1.5px solid rgba(34,197,94,.5);
+  background:linear-gradient(155deg,rgba(34,197,94,.22),rgba(22,163,74,.14));
+  backdrop-filter:blur(8px);
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);
+  user-select:none;flex-shrink:0;
+  box-shadow:0 1px 0 rgba(255,255,255,.15) inset,0 2px 10px rgba(22,163,74,.18);
+  font-family:'Inter',sans-serif;
+}
+.monitor-btn:hover{
+  background:linear-gradient(155deg,rgba(74,222,128,.38),rgba(34,197,94,.28));
+  border-color:rgba(134,239,172,.75);
+  transform:translateY(-1px) scale(1.03);
+  box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 5px 18px rgba(22,163,74,.28);
+}
+.monitor-btn:active{transform:scale(.95);transition-duration:.07s}
+.monitor-btn.active{
+  border-color:rgba(34,197,94,.85);
+  background:linear-gradient(155deg,rgba(34,197,94,.35),rgba(22,163,74,.25));
+  box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 0 14px rgba(34,197,94,.35);
+}
+.monitor-btn.active:hover{
+  background:linear-gradient(155deg,rgba(74,222,128,.48),rgba(34,197,94,.38));
+}
+.monitor-btn-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.9);letter-spacing:.2px}
+.monitor-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:#4ade80;flex-shrink:0;
+  box-shadow:0 0 5px #4ade80;
+  animation:monitorPulse 2s ease-in-out infinite;
+}
+@keyframes monitorPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.75)}}
+.monitor-dot.off{background:#64748b;box-shadow:none;animation:none}
+
+/* Toast de arquivo detectado */
+.monitor-toast{
+  position:fixed;bottom:80px;right:20px;z-index:9999;
+  background:var(--white);border:1px solid var(--border);
+  border-left:4px solid #22c55e;border-radius:12px;
+  padding:14px 18px;font-family:'Inter',sans-serif;
+  box-shadow:0 8px 32px rgba(15,23,42,.18);
+  display:flex;align-items:flex-start;gap:12px;
+  max-width:340px;animation:monitorToastIn .35s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
+}
+@keyframes monitorToastIn{from{opacity:0;transform:translateY(16px) scale(.95)}to{opacity:1;transform:none}}
+.monitor-toast-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.monitor-toast-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px}
+.monitor-toast-sub{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+
+/* Modal pasta monitorada */
+.monitor-modal-overlay{
+  position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9998;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.monitor-modal{
+  background:var(--white);border:1px solid var(--border);border-radius:20px;
+  padding:30px 32px;max-width:440px;width:92%;
+  box-shadow:0 24px 64px rgba(15,23,42,.25);
+  font-family:'Inter',sans-serif;animation:monitorToastIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+.monitor-modal h3{font-size:17px;font-weight:800;color:var(--text);margin:0 0 6px}
+.monitor-modal p{font-size:12.5px;color:var(--muted);line-height:1.7;margin:0 0 18px}
+.monitor-modal ul{font-size:12px;color:var(--text2);line-height:2;margin:0 0 20px;padding-left:18px}
+.monitor-modal ul li span{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)}
+.monitor-modal-btns{display:flex;gap:10px}
+.monitor-modal-btns button{flex:1;padding:12px;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .18s ease}
+.monitor-modal-ok{background:var(--accent);color:#fff}
+.monitor-modal-ok:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.monitor-modal-cancel{background:var(--bg);color:var(--text2);border:1.5px solid var(--border2) !important}
+.monitor-modal-cancel:hover{background:var(--border)}
+.monitor-status-bar{
+  margin-top:16px;padding:12px 14px;border-radius:10px;
+  background:var(--bg);border:1px solid var(--border);
+  font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:8px;
+}
+.monitor-status-bar .monitor-dot{width:8px;height:8px}
+
 /* ── TOPBAR — Menu wrap + dropdown ── */
 .topbar-menu-wrap{position:relative;flex-shrink:0}
 .topbar-menu-arrow{
@@ -210,6 +292,7 @@ body.dark .topbar-dd-sep{background:var(--border)}
   width:22px;height:22px;display:flex;align-items:center;justify-content:center;
 }
 .slot.loaded:hover .slot-x{color:rgba(248,113,113,.65)}
+body:not(.dark) .slot.loaded:hover .slot-x{color:rgba(220,38,38,.6)}
 .slot-x:hover{color:#f87171 !important;background:rgba(248,113,113,.22);transform:scale(1.15)}
 .slot-x:active{transform:scale(.9);background:rgba(248,113,113,.35)}
 
@@ -403,8 +486,12 @@ body:not(.dark) .slot:hover:not(.loaded):not(.loading){
   box-shadow:0 2px 12px rgba(0,0,0,.35);
 }
 body:not(.dark) .slot.loaded{
-  background:rgba(15,20,50,.75);
+  background:linear-gradient(135deg,rgba(255,255,255,.88) 0%,rgba(240,244,255,.75) 100%);
+  box-shadow:0 2px 12px rgba(15,23,42,.1),0 0 0 1.5px var(--slot-c,rgba(99,102,241,.4));
 }
+body:not(.dark) .slot.loaded .slot-title{color:#1e293b}
+body:not(.dark) .slot.loaded .slot-sub{color:rgba(30,41,59,.55)}
+body:not(.dark) .slot.loaded .slot-area-code{opacity:1}
 
 /* Glow orb */
 .slot-glow{
@@ -419,9 +506,10 @@ body:not(.dark) .slot.loaded{
 /* Area code badge */
 .slot-area-code{
   font-size:8px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;
-  color:var(--slot-c,var(--accent));opacity:.75;
+  color:var(--slot-c,var(--accent));opacity:.85;
   margin-bottom:5px;font-family:'DM Mono',monospace;
 }
+body:not(.dark) .slot-area-code{opacity:1}
 
 /* Name */
 .slot-title{
@@ -429,6 +517,7 @@ body:not(.dark) .slot.loaded{
   color:#e8eaf0;font-family:'Syne',sans-serif;
   line-height:1.15;margin-bottom:4px;
 }
+body:not(.dark) .slot-title{color:#1e293b}
 
 /* Person */
 .slot-sub{
@@ -436,6 +525,7 @@ body:not(.dark) .slot.loaded{
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   font-weight:500;
 }
+body:not(.dark) .slot-sub{color:rgba(30,41,59,.5)}
 
 /* Upload icon row */
 .slot-upload-row{
@@ -451,11 +541,13 @@ body:not(.dark) .slot.loaded{
   font-size:11px;
   transition:border-color .2s;
 }
+body:not(.dark) .slot-upload-icon{border-color:rgba(30,41,59,.25)}
 .slot:hover .slot-upload-icon{border-color:var(--slot-c,var(--accent))}
 .slot-upload-text{
   font-size:9px;font-family:'DM Mono',monospace;
   color:rgba(255,255,255,.3);
 }
+body:not(.dark) .slot-upload-text{color:rgba(30,41,59,.45)}
 
 /* Remove button — ver definição completa no bloco de estilos do topbar acima */
 
@@ -535,6 +627,9 @@ body.dark .sf-qp-btn.cancel:hover{background:var(--red-light);color:var(--red)}
 .sla-mini-pill.v{background:rgba(153,27,27,.45);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
 .sla-mini-pill.a{background:rgba(146,64,14,.4);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
 .sla-mini-pill.k{background:rgba(22,101,52,.4);color:#86efac;border:1px solid rgba(34,197,94,.3)}
+body:not(.dark) .sla-mini-pill.v{background:#fef2f2;color:#991b1b;border-color:#fecaca}
+body:not(.dark) .sla-mini-pill.a{background:#fffbeb;color:#92400e;border-color:#fde68a}
+body:not(.dark) .sla-mini-pill.k{background:#f0fdf4;color:#166534;border-color:#bbf7d0}
 
 .slot-heatmap{display:flex;gap:2px;margin-top:5px;height:4px;border-radius:3px;overflow:hidden;opacity:0;transition:opacity .4s}
 .slot.loaded .slot-heatmap{opacity:1}
@@ -543,17 +638,20 @@ body.dark .sf-qp-btn.cancel:hover{background:var(--red-light);color:var(--red)}
 .hm-seg.yellow{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
 .hm-seg.green{background:linear-gradient(90deg,#22c55e,#4ade80)}
 .hm-seg.empty{background:rgba(255,255,255,.12)}
+body:not(.dark) .hm-seg.empty{background:rgba(30,41,59,.12)}
 
 /* Update time */
 .slot-update-time{
   font-size:8px;font-family:'DM Mono',monospace;
   color:rgba(255,255,255,.22);margin-bottom:2px;
 }
+body:not(.dark) .slot-update-time{color:rgba(30,41,59,.4)}
 
 /* Filename when loaded */
 .slot-sub.loaded-name{
   color:rgba(255,255,255,.45);font-family:'DM Mono',monospace;font-size:9px;
 }
+body:not(.dark) .slot-sub.loaded-name{color:rgba(30,41,59,.6)}
 
 /* Per-area color vars */
 .slot.B{--slot-c:#3b82f6}
@@ -608,107 +706,69 @@ body.dark .area-pill.N{background:#1e1640;border-color:#3a2870;color:#a78bfa}
 body.dark .area-pill.I{background:#2a1600;border-color:#5a2e00;color:#fb923c}
 body.dark .area-pill.E{background:#0a2030;border-color:#0e4060;color:#22d3ee}
 
-/* ── BTNS — Apple-style redesign ── */
+/* ── BTNS — Refined glass redesign ── */
 .btn-row{display:flex;flex-direction:column;gap:11px;padding:8px 0}
 .btn{
   display:flex;align-items:center;justify-content:center;gap:9px;
-  padding:15px 20px;border-radius:16px;font-family:'Inter',sans-serif;
-  font-size:13.5px;font-weight:650;cursor:pointer;border:none;
+  padding:14px 20px;border-radius:14px;font-family:'Inter',sans-serif;
+  font-size:13px;font-weight:650;cursor:pointer;border:none;
   transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease, filter .2s;
   width:100%;letter-spacing:-.15px;position:relative;overflow:hidden;
 }
-/* gloss top highlight */
+/* subtle top sheen — very light */
 .btn::before{
-  content:'';position:absolute;top:0;left:8%;right:8%;height:38%;
-  background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 100%);
-  border-radius:16px 16px 80% 80%;
+  content:'';position:absolute;top:0;left:10%;right:10%;height:42%;
+  background:linear-gradient(180deg,rgba(255,255,255,.09) 0%,rgba(255,255,255,0) 100%);
+  border-radius:14px 14px 60% 60%;
   pointer-events:none;
 }
-/* bottom edge shadow line */
-.btn::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
-  background:rgba(0,0,0,.14);border-radius:0 0 16px 16px;
-  pointer-events:none;
-}
-.btn:active{transform:scale(.955) translateY(1px) !important;transition-duration:.07s}
-.btn:not(:disabled):focus-visible{outline:3px solid rgba(79,70,229,.5);outline-offset:2px}
+.btn::after{content:none}
+.btn:active{transform:scale(.96) translateY(1px) !important;transition-duration:.07s}
+.btn:not(:disabled):focus-visible{outline:3px solid rgba(79,70,229,.4);outline-offset:2px}
 
-/* ── Export (green) — primary action ── */
+/* ── Export (green) ── */
 .btn-export{
-  background:linear-gradient(175deg,#34d974 0%,#1db954 30%,#16a34a 65%,#136b35 100%);
+  background:linear-gradient(170deg,#22c55e 0%,#16a34a 55%,#15803d 100%);
   color:#fff;
-  text-shadow:0 1px 2px rgba(0,0,0,.2);
-  box-shadow:
-    0 2px 0 rgba(255,255,255,.22) inset,
-    0 -3px 0 rgba(0,0,0,.18) inset,
-    0 6px 20px rgba(22,163,74,.42),
-    0 2px 6px rgba(22,163,74,.28),
-    0 0 0 1px rgba(22,163,74,.25);
+  box-shadow:0 3px 14px rgba(22,163,74,.25),0 1px 0 rgba(255,255,255,.12) inset;
 }
 .btn-export:hover:not(:disabled){
-  transform:translateY(-3px) scale(1.008);
-  filter:brightness(1.06);
-  box-shadow:
-    0 2px 0 rgba(255,255,255,.22) inset,
-    0 -3px 0 rgba(0,0,0,.18) inset,
-    0 12px 32px rgba(22,163,74,.52),
-    0 4px 10px rgba(22,163,74,.32),
-    0 0 0 1px rgba(22,163,74,.3);
+  transform:translateY(-2px) scale(1.005);
+  filter:brightness(1.05);
+  box-shadow:0 8px 24px rgba(22,163,74,.32),0 1px 0 rgba(255,255,255,.14) inset;
 }
-.btn-export:disabled{opacity:.3;cursor:not-allowed;filter:saturate(.35) brightness(.9)}
+.btn-export:disabled{opacity:.35;cursor:not-allowed;filter:saturate(.3)}
 
 /* ── Inverse (orange) ── */
 .btn-inverse{
-  background:linear-gradient(175deg,#fda44a 0%,#f97316 30%,#ea580c 65%,#b84208 100%);
+  background:linear-gradient(170deg,#fb923c 0%,#ea580c 55%,#c2410c 100%);
   color:#fff;
-  text-shadow:0 1px 2px rgba(0,0,0,.2);
-  box-shadow:
-    0 2px 0 rgba(255,255,255,.2) inset,
-    0 -3px 0 rgba(0,0,0,.18) inset,
-    0 6px 20px rgba(234,88,12,.4),
-    0 2px 6px rgba(234,88,12,.26),
-    0 0 0 1px rgba(234,88,12,.22);
+  box-shadow:0 3px 14px rgba(234,88,12,.22),0 1px 0 rgba(255,255,255,.12) inset;
 }
 .btn-inverse:hover:not(:disabled){
-  transform:translateY(-3px) scale(1.008);
-  filter:brightness(1.06);
-  box-shadow:
-    0 2px 0 rgba(255,255,255,.2) inset,
-    0 -3px 0 rgba(0,0,0,.18) inset,
-    0 12px 32px rgba(234,88,12,.5),
-    0 4px 10px rgba(234,88,12,.3),
-    0 0 0 1px rgba(234,88,12,.28);
+  transform:translateY(-2px) scale(1.005);
+  filter:brightness(1.05);
+  box-shadow:0 8px 24px rgba(234,88,12,.28),0 1px 0 rgba(255,255,255,.14) inset;
 }
-.btn-inverse:disabled{opacity:.3;cursor:not-allowed;filter:saturate(.35) brightness(.9)}
+.btn-inverse:disabled{opacity:.35;cursor:not-allowed;filter:saturate(.3)}
 
 /* ── Primary (indigo) ── */
 .btn-primary{
-  background:linear-gradient(175deg,#7c7ff5 0%,#6366f1 30%,#4f46e5 65%,#3730a3 100%);
+  background:linear-gradient(170deg,#818cf8 0%,#6366f1 45%,#4f46e5 100%);
   color:#fff;
-  text-shadow:0 1px 2px rgba(0,0,0,.2);
-  box-shadow:
-    0 2px 0 rgba(255,255,255,.2) inset,
-    0 -3px 0 rgba(0,0,0,.18) inset,
-    0 6px 20px rgba(79,70,229,.42),
-    0 2px 6px rgba(79,70,229,.28),
-    0 0 0 1px rgba(79,70,229,.25);
+  box-shadow:0 3px 14px rgba(79,70,229,.25),0 1px 0 rgba(255,255,255,.12) inset;
 }
 .btn-primary:hover:not(:disabled){
-  transform:translateY(-3px) scale(1.008);
-  filter:brightness(1.06);
-  box-shadow:
-    0 2px 0 rgba(255,255,255,.2) inset,
-    0 -3px 0 rgba(0,0,0,.18) inset,
-    0 12px 32px rgba(79,70,229,.52),
-    0 4px 10px rgba(79,70,229,.3),
-    0 0 0 1px rgba(79,70,229,.3);
+  transform:translateY(-2px) scale(1.005);
+  filter:brightness(1.05);
+  box-shadow:0 8px 24px rgba(79,70,229,.32),0 1px 0 rgba(255,255,255,.14) inset;
 }
-.btn-primary:disabled{opacity:.3;cursor:not-allowed;filter:saturate(.35) brightness(.9)}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed;filter:saturate(.3)}
 
 /* dark mode */
-body.dark .btn-export{box-shadow:0 2px 0 rgba(255,255,255,.18) inset,0 -3px 0 rgba(0,0,0,.3) inset,0 6px 24px rgba(22,163,74,.45)}
-body.dark .btn-inverse{box-shadow:0 2px 0 rgba(255,255,255,.15) inset,0 -3px 0 rgba(0,0,0,.3) inset,0 6px 24px rgba(234,88,12,.42)}
-body.dark .btn-primary{box-shadow:0 2px 0 rgba(255,255,255,.15) inset,0 -3px 0 rgba(0,0,0,.3) inset,0 6px 24px rgba(79,70,229,.48)}
+body.dark .btn-export{box-shadow:0 3px 16px rgba(22,163,74,.3),0 1px 0 rgba(255,255,255,.08) inset}
+body.dark .btn-inverse{box-shadow:0 3px 16px rgba(234,88,12,.28),0 1px 0 rgba(255,255,255,.08) inset}
+body.dark .btn-primary{box-shadow:0 3px 16px rgba(79,70,229,.32),0 1px 0 rgba(255,255,255,.08) inset}
 
 /* ── FILTER SECTION redesign ── */
 .filter-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
@@ -716,41 +776,41 @@ body.dark .btn-primary{box-shadow:0 2px 0 rgba(255,255,255,.15) inset,0 -3px 0 r
 .filter-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
 .filter-controls{display:flex;gap:7px;margin-bottom:12px}
 .filter-ctrl-btn{
-  flex:1;padding:10px 8px;border-radius:12px;
-  border:1.5px solid var(--border2);background:var(--bg);
-  font-size:11.5px;font-weight:700;cursor:pointer;color:var(--text2);
+  flex:1;padding:9px 8px;border-radius:10px;
+  border:1px solid var(--border2);background:var(--bg);
+  font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);
   transition:all .2s cubic-bezier(.34,1.56,.64,1);
   font-family:'Inter',sans-serif;letter-spacing:.1px;
-  box-shadow:0 1px 4px rgba(15,23,42,.07),0 1px 0 rgba(255,255,255,.8) inset;
+  box-shadow:0 1px 3px rgba(15,23,42,.05);
   position:relative;overflow:hidden;
 }
 .filter-ctrl-btn::before{
   content:'';position:absolute;top:0;left:0;right:0;height:35%;
-  background:rgba(255,255,255,.25);border-radius:12px 12px 60% 60%;
+  background:rgba(255,255,255,.1);border-radius:10px 10px 50% 50%;
   pointer-events:none;
 }
-.filter-ctrl-btn:active{transform:scale(.95) translateY(1px)}
+.filter-ctrl-btn:active{transform:scale(.96) translateY(1px)}
 /* Marcar tudo = green */
 .filter-ctrl-btn:first-child{
-  border-color:#86efac;color:#15803d;background:linear-gradient(175deg,#f0fdf4,#dcfce7);
-  box-shadow:0 2px 6px rgba(22,163,74,.14),0 1px 0 rgba(255,255,255,.9) inset,0 -1px 0 rgba(0,0,0,.06) inset;
+  border-color:#bbf7d0;color:#15803d;background:linear-gradient(175deg,#f0fdf4,#dcfce7);
+  box-shadow:0 1px 4px rgba(22,163,74,.1);
 }
 .filter-ctrl-btn:first-child:hover{
   background:linear-gradient(175deg,#22c55e,#16a34a);
   border-color:#16a34a;color:#fff;
-  box-shadow:0 5px 16px rgba(22,163,74,.38),0 1px 0 rgba(255,255,255,.2) inset,0 -1px 0 rgba(0,0,0,.15) inset;
-  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(22,163,74,.28);
+  transform:translateY(-1px);
 }
 /* Desmarcar tudo = red */
 .filter-ctrl-btn:last-child{
-  border-color:#fca5a5;color:#b91c1c;background:linear-gradient(175deg,#fef2f2,#fee2e2);
-  box-shadow:0 2px 6px rgba(220,38,38,.12),0 1px 0 rgba(255,255,255,.9) inset,0 -1px 0 rgba(0,0,0,.06) inset;
+  border-color:#fecaca;color:#b91c1c;background:linear-gradient(175deg,#fef2f2,#fee2e2);
+  box-shadow:0 1px 4px rgba(220,38,38,.08);
 }
 .filter-ctrl-btn:last-child:hover{
   background:linear-gradient(175deg,#f87171,#dc2626);
   border-color:#dc2626;color:#fff;
-  box-shadow:0 5px 16px rgba(220,38,38,.36),0 1px 0 rgba(255,255,255,.2) inset,0 -1px 0 rgba(0,0,0,.15) inset;
-  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(220,38,38,.24);
+  transform:translateY(-1px);
 }
 body.dark .filter-ctrl-btn:first-child{border-color:#166534;color:#4ade80;background:linear-gradient(175deg,#052e16,#0d2218)}
 body.dark .filter-ctrl-btn:first-child:hover{background:linear-gradient(175deg,#22c55e,#16a34a);border-color:#16a34a;color:#fff}
@@ -1341,23 +1401,19 @@ body.dark .fn-divider{background:rgba(255,255,255,.09)}
              filter .18s ease;
   -webkit-tap-highlight-color:transparent;
 }
-/* gloss top highlight universal */
+/* gloss top highlight universal — subtle */
 .aero-btn::before, .btn-copy-all::before, .copy10-btn::before,
 .preset-save-btn::before, .modal-confirm::before, .modal-cancel::before {
   content:''; position:absolute;
-  top:0; left:6%; right:6%; height:40%;
-  background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 100%);
-  border-radius:12px 12px 60% 60%;
+  top:0; left:8%; right:8%; height:38%;
+  background:linear-gradient(180deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,0) 100%);
+  border-radius:12px 12px 50% 50%;
   pointer-events:none; z-index:1;
 }
-/* bottom depth line universal */
+/* bottom depth line — removed */
 .aero-btn::after, .btn-copy-all::after, .copy10-btn::after,
 .preset-save-btn::after, .modal-confirm::after {
-  content:''; position:absolute;
-  bottom:0; left:0; right:0; height:2px;
-  background:rgba(0,0,0,.14);
-  border-radius:0 0 12px 12px;
-  pointer-events:none; z-index:1;
+  content:none;
 }
 /* hover lift & brightness */
 .aero-btn:hover:not(:disabled), .btn-copy-all:hover:not(:disabled),
@@ -2264,30 +2320,16 @@ body.dark .fab-colar-btn.cancel:hover { background:var(--red-light); }
       <div class="logo-sub">BAIXADA · OESTE · GRANDE RJ · INTERIOR · ES</div>
     </div>
   </div>
-  <div class="topbar-divider"></div>
-  <div class="dot-wrap">
-    <div class="dot-live"></div>
-    <span class="live-label">Online</span>
-  </div>
   <div class="topbar-right">
-    <!-- Menu de ações — Painel de Turno + mais -->
-    <div class="topbar-menu-wrap" id="topbarMenuWrap">
-      <div class="turno-topbar-chip" onclick="toggleTopbarMenu()" id="topbarMenuBtn" title="Mais ações">
-        <span style="font-size:14px">📊</span>
-        <span class="turno-topbar-num" id="topbarTurnoCount">0</span>
-        <span class="turno-topbar-lbl">no turno</span>
-        <span class="topbar-menu-arrow" id="topbarMenuArrow">▾</span>
-      </div>
-      <div class="topbar-dropdown" id="topbarDropdown">
-        <button class="topbar-dd-item" onclick="openTurnoPanel();closeTopbarMenu()" title="Painel de Turno (T)">
-          <span>📊</span> Painel de Turno
-        </button>
-        <div class="topbar-dd-sep"></div>
-        <button class="topbar-dd-item topbar-dd-danger" onclick="removeAllAreasFromTopbar();closeTopbarMenu()" title="Remover todos os arquivos carregados" id="topbarRemoveAllBtn">
-          <span>🗑️</span> Remover arquivos
-        </button>
-      </div>
-    </div>
+    <!-- Pasta Monitorada -->
+    <button class="monitor-btn" id="monitorBtn" onclick="openMonitorModal()" title="Monitorar pasta — carrega arquivos automaticamente">
+      <div class="monitor-dot off" id="monitorDot"></div>
+      <span class="monitor-btn-lbl" id="monitorBtnLbl">Pasta automática</span>
+    </button>
+    <button class="topbar-colar-btn" onclick="removeAllAreasFromTopbar()" id="topbarRemoveAllBtn" title="Remover todos os arquivos carregados">
+      <span style="font-size:13px">🗑️</span>
+      <span class="topbar-colar-lbl">Limpar arquivos</span>
+    </button>
     <div class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Alternar modo escuro">
       <div class="dark-toggle-track" id="darkTrack"><div class="dark-toggle-thumb"></div></div>
       <span class="dark-toggle-lbl" id="darkLbl">🌙</span>
@@ -2700,39 +2742,20 @@ body.dark .fab-colar-btn.cancel:hover { background:var(--red-light); }
 <div class="fab-wrap" id="fabWrap">
   <!-- Mini-menu popup -->
   <div class="fab-menu" id="fabMenu">
-    <div class="fab-menu-tabs">
-      <button class="fab-tab active" id="fabTabTurno" onclick="fabSwitchTab('turno')">📊 Turno</button>
-      <button class="fab-tab" id="fabTabColar" onclick="fabSwitchTab('colar')">⚡ Colar ID</button>
-    </div>
-    <!-- Painel Turno -->
-    <div class="fab-pane active" id="fabPaneTurno">
-      <div class="fab-pane-action" onclick="openTurnoPanel();closeFabMenu()">
-        <span class="fab-pane-icon">📊</span>
-        <div>
-          <div class="fab-pane-title">Abrir Painel de Turno</div>
-          <div class="fab-pane-sub">Histórico, timer e KPIs do turno</div>
-        </div>
-        <span class="fab-pane-arrow">›</span>
-      </div>
-      <div class="fab-pane-kpi">
-        <span class="fab-pane-kpi-val" id="fabMenuTurnoCount">0</span>
-        <span class="fab-pane-kpi-lbl">OS no turno</span>
-      </div>
-    </div>
-    <!-- Painel Colar ID -->
-    <div class="fab-pane" id="fabPaneColar">
+    <!-- Painel Colar ID (único) -->
+    <div class="fab-pane active" id="fabPaneColar" style="padding:14px">
       <div class="fab-pane-sub-title">⚡ Atalho — Sites Fora</div>
-      <div class="fab-pane-sub-desc">Cole os IDs de site e vá direto para a aba <strong>Sites Fora</strong> com END-ID selecionado automaticamente.</div>
+      <div class="fab-pane-sub-desc">Cole os IDs de site e os dados serão processados automaticamente na tabela de Sites Fora.</div>
       <textarea id="fabColarInput" class="fab-colar-textarea" placeholder="Cole os IDs aqui (CTRL+V)&#10;Ex: MIPE07, RJPH08…"></textarea>
       <div class="fab-colar-actions">
-        <button class="fab-colar-btn go" onclick="applyFabColarPaste()">🔴 Ir para Sites Fora</button>
+        <button class="fab-colar-btn go" onclick="applyFabColarPaste()">🔴 Enviar Sites Fora</button>
         <button class="fab-colar-btn cancel" onclick="closeFabMenu()">✕</button>
       </div>
     </div>
   </div>
   <!-- FAB button -->
-  <button class="turno-fab" id="turnoFab" onclick="toggleFabMenu()" title="Painel de Turno / Colar ID">
-    <span id="fabIcon">📊</span><span class="fab-badge" id="fabBadge">0</span>
+  <button class="turno-fab" id="turnoFab" onclick="toggleFabMenu()" title="Atalho Sites Fora" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 20px rgba(220,38,38,.4),0 2px 6px rgba(0,0,0,.2)">
+    <span id="fabIcon">⚡</span><span class="fab-badge" id="fabBadge">0</span>
   </button>
 </div>
 
@@ -3412,7 +3435,38 @@ function _updateSlotLoadCount() {
   _updateSlotClearAllBtn();
 }
 function triggerUpload(area) {
-  if (areaData[area]) return;
+  if (areaData[area]) {
+    // Slot já tem arquivo — pedir confirmação para substituir
+    const existing = areaData[area];
+    const overlay = document.createElement('div');
+    overlay.id = 'slotReplaceConfirm';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+    overlay.innerHTML = `
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:26px 30px;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(15,23,42,.25);font-family:'Inter',sans-serif">
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px">🔄 Substituir arquivo?</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">
+          O slot <strong style="color:var(--accent)">${AREA_LABELS[area]}</strong> já tem um arquivo carregado:<br>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)">${esc(existing.fileName)}</span>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button id="slotReplaceOk"
+            style="flex:1;padding:11px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer">
+            ✅ Substituir
+          </button>
+          <button onclick="document.getElementById('slotReplaceConfirm').remove()"
+            style="flex:1;padding:11px;border-radius:10px;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);font-size:13px;font-weight:600;cursor:pointer">
+            Cancelar
+          </button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    document.getElementById('slotReplaceOk').onclick = () => {
+      overlay.remove();
+      areaData[area] = null;
+      document.getElementById('fi-' + area).click();
+    };
+    return;
+  }
   document.getElementById('fi-' + area).click();
 }
 function handleFile(ev, area) {
@@ -3507,7 +3561,7 @@ function _autoDetectAndLoad(file) {
       toast(`❌ Erro ao detectar área: ${err.message}`, 'err');
     }
   };
-  reader.readAsBinaryString(file);
+  reader.readAsArrayBuffer(file);
 }
 
 function _restoreEmptySlot(area) {
@@ -3548,11 +3602,11 @@ function _confirmAreaSwitch(file, originalArea, targetArea, _rows) {
         Deseja <strong>substituir</strong> o arquivo existente?
       </div>
       <div style="display:flex;gap:10px;margin-top:18px">
-        <button onclick="document.getElementById('autoAreaConfirm').remove();processFile(document.__autoAreaFile,'${targetArea}')"
+        <button onclick="document.getElementById('autoAreaConfirm').remove();areaData['${targetArea}']=null;processFile(document.__autoAreaFile,'${targetArea}')"
           style="flex:1;padding:11px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer">
           ✅ Sim, substituir ${AREA_LABELS[targetArea]}
         </button>
-        <button onclick="document.getElementById('autoAreaConfirm').remove();processFile(document.__autoAreaFile,'${originalArea}')"
+        <button onclick="document.getElementById('autoAreaConfirm').remove();areaData['${originalArea}']=null;processFile(document.__autoAreaFile,'${originalArea}')"
           style="flex:1;padding:11px;border-radius:10px;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);font-size:13px;font-weight:600;cursor:pointer">
           Manter em ${AREA_LABELS[originalArea]}
         </button>
@@ -3572,19 +3626,21 @@ function processFile(file, area) {
     toast(`❌ Arquivo muito grande (máx 50 MB)`, 'err'); return;
   }
 
-  // Skeleton loading no slot original enquanto detecta
-  const slotEl = document.getElementById('slot-' + area);
-  slotEl.className = 'slot loading ' + area;
-  slotEl.onclick = null;
-  slotEl.innerHTML = `
-    <div class="slot-glow"></div>
-    <div class="slot-indicator"></div>
-    <div class="slot-skeleton">
-      <div class="sk-line title"></div>
-      <div class="sk-line sub"></div>
-      <div class="sk-line time"></div>
-      <div class="sk-line bar"></div>
-    </div>`;
+  // Skeleton loading no slot — só se area for conhecida
+  const slotEl = area ? document.getElementById('slot-' + area) : null;
+  if (slotEl) {
+    slotEl.className = 'slot loading ' + area;
+    slotEl.onclick = null;
+    slotEl.innerHTML = `
+      <div class="slot-glow"></div>
+      <div class="slot-indicator"></div>
+      <div class="slot-skeleton">
+        <div class="sk-line title"></div>
+        <div class="sk-line sub"></div>
+        <div class="sk-line time"></div>
+        <div class="sk-line bar"></div>
+      </div>`;
+  }
 
   showProgress(true, 'Lendo arquivo…', 20);
   const reader = new FileReader();
@@ -3606,16 +3662,23 @@ function processFile(file, area) {
       // ── DETECÇÃO AUTOMÁTICA DE ÁREA ─────────────────────────
       const detectedArea = detectAreaFromRows(rows);
       if (detectedArea && detectedArea !== area) {
-        // Restaura o slot original (que estava em skeleton)
-        _restoreEmptySlot(area);
+        // Restaura o slot original (que estava em skeleton) — só se area era conhecido
+        if (area) _restoreEmptySlot(area);
 
         if (areaData[detectedArea]) {
-          // Área detectada já está ocupada — perguntar se deseja substituir
-          showProgress(false);
-          _confirmAreaSwitch(file, area, detectedArea, rows);
-          return;
+          // Área detectada já está ocupada — substituir diretamente (pasta monitor) ou perguntar
+          if (!area) {
+            // Veio do monitor de pasta — substituir silenciosamente
+            areaData[detectedArea] = null;
+            area = detectedArea;
+          } else {
+            // Veio de upload manual — perguntar
+            showProgress(false);
+            _confirmAreaSwitch(file, area, detectedArea, rows);
+            return;
+          }
         }
-        // Redireciona silenciosamente para a área correta
+        // Redireciona para a área correta
         area = detectedArea;
         const newSlot = document.getElementById('slot-' + area);
         newSlot.className = 'slot loading ' + area;
@@ -3630,6 +3693,13 @@ function processFile(file, area) {
             <div class="sk-line bar"></div>
           </div>`;
         toast(`🎯 Área detectada automaticamente: <strong>${AREA_LABELS[area]}</strong>`, 'ok');
+      } else if (!area && detectedArea) {
+        // area era null e foi detectada mas igual — definir
+        area = detectedArea;
+      } else if (!area && !detectedArea) {
+        showProgress(false);
+        toast('⚠️ Não foi possível identificar a área deste arquivo.', 'err');
+        return;
       }
       // ── /DETECÇÃO AUTOMÁTICA ─────────────────────────────────
       const uploadTime = new Date();
@@ -3637,7 +3707,7 @@ function processFile(file, area) {
 
       const slot = document.getElementById('slot-' + area);
       slot.className = `slot loaded ${area}`;
-      slot.onclick = null;
+      slot.onclick = () => triggerUpload(area);
 
       // Reconstruct slot inner HTML — Premium Dark Card style
       const areaLabel = AREA_LABELS[area];
@@ -3684,7 +3754,7 @@ function processFile(file, area) {
       toast(`❌ Erro ao ler arquivo da área ${AREA_LABELS[area]}: ${err.message}`, 'err');
     }
   };
-  reader.readAsBinaryString(file);
+  reader.readAsArrayBuffer(file);
 }
 
 function removeArea(area) {
@@ -3723,7 +3793,7 @@ function removeArea(area) {
     areaData[area] = snapshot;
     const s = document.getElementById('slot-' + area);
     s.className = `slot loaded ${area}`;
-    s.onclick = null;
+    s.onclick = () => triggerUpload(area);
     // Rebuild slot HTML with heatmap — premium dark card
     let nV2=0,nA2=0,nK2=0;
     snapshot.rows.forEach(r => { const st=slaStatus(r); if(st==='vencido')nV2++; else if(st==='alerta')nA2++; else if(st==='ok')nK2++; });
@@ -5767,11 +5837,9 @@ function toggleFabMenu() {
   const menu = document.getElementById('fabMenu');
   if (menu) menu.classList.add('open');
   _fabMenuOpen = true;
-  // Sync turno count
-  const countEl = document.getElementById('fabMenuTurnoCount');
-  const fabBadge = document.getElementById('fabBadge');
-  if (countEl && fabBadge) countEl.textContent = fabBadge.textContent || '0';
   setTimeout(() => {
+    const ta = document.getElementById('fabColarInput');
+    if (ta) ta.focus();
     document.addEventListener('mousedown', _fabMenuOutside, { once: true });
   }, 10);
 }
@@ -5810,7 +5878,6 @@ function applyFabColarPaste() {
   const val = ta ? ta.value.trim() : '';
   closeFabMenu();
   if (ta) ta.value = '';
-  floatSwitch('sitesfora');
   if (val) {
     const sfTA = document.getElementById('sfPasteArea');
     if (sfTA) { sfTA.value = val; parsePaste(); }
@@ -5830,18 +5897,8 @@ function applyFabColarPaste() {
   }
 }
 
-// Sync FAB badge count to mini-menu kpi
-const _origUpdateFabBadge = window.updateFabBadge;
-// Patch fabBadge update to also update fabMenuTurnoCount
-const _fabBadgeObserver = new MutationObserver(() => {
-  const badge = document.getElementById('fabBadge');
-  const kpi   = document.getElementById('fabMenuTurnoCount');
-  if (badge && kpi) kpi.textContent = badge.textContent || '0';
-});
-document.addEventListener('DOMContentLoaded', () => {
-  const badge = document.getElementById('fabBadge');
-  if (badge) _fabBadgeObserver.observe(badge, { childList: true, characterData: true, subtree: true });
-});
+// Sync FAB badge — no longer needed (turno pane removed)
+// _fabBadgeObserver kept for compatibility but does nothing harmful
 
 // ── Floating Nav Switch — liquid pill ───────────────────────────
 const FN_TABS = ['tabela','graficos','sitesfora'];
@@ -5888,5 +5945,467 @@ window.addEventListener('load', _initPill);
 // Handle font-swap reflow
 if (document.fonts) document.fonts.ready.then(_initPill);
 </script>
+<!-- ═══════════════════════════════════════════════════════════
+     PASTA MONITORADA — File System Access API
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  // ── Estado ──────────────────────────────────────────────────
+  let _dirHandle   = null;   // FileSystemDirectoryHandle
+  let _watchTimer  = null;   // setInterval ID
+  let _knownFiles  = {};     // { filename: lastModified }
+  let _active      = false;
+  const INTERVAL_MS = 3000;  // verifica a cada 3s
+
+  // ── Suporte ──────────────────────────────────────────────────
+  const supported = ('showDirectoryPicker' in window);
+
+  // ── Elementos ────────────────────────────────────────────────
+  const btn    = () => document.getElementById('monitorBtn');
+  const dot    = () => document.getElementById('monitorDot');
+  const lbl    = () => document.getElementById('monitorBtnLbl');
+
+  function setUI(active, dirName) {
+    _active = active;
+    const b = btn(), d = dot(), l = lbl();
+    if (!b) return;
+    if (active) {
+      b.classList.add('active');
+      d.classList.remove('off');
+      l.textContent = dirName ? `📁 ${dirName}` : '📁 Monitorando…';
+    } else {
+      b.classList.remove('active');
+      d.classList.add('off');
+      l.textContent = 'Pasta automática';
+    }
+  }
+
+  // ── Modal de apresentação ────────────────────────────────────
+  window.openMonitorModal = function() {
+    if (!supported) {
+      toast('⚠️ Seu navegador não suporta esta função. Use Chrome ou Edge.', 'err');
+      return;
+    }
+    if (_active) {
+      // Já ativo → perguntar se quer parar ou trocar de pasta
+      const ov = document.createElement('div');
+      ov.className = 'monitor-modal-overlay';
+      ov.innerHTML = `
+        <div class="monitor-modal">
+          <h3>📁 Pasta monitorada</h3>
+          <p>O monitoramento está ativo. O site verifica a pasta a cada 3 segundos e carrega automaticamente os arquivos novos ou atualizados.</p>
+          <div class="monitor-status-bar">
+            <div class="monitor-dot"></div>
+            <span>Monitorando: <strong style="color:var(--text)">${_dirHandle ? _dirHandle.name : '—'}</strong></span>
+          </div>
+          <div class="monitor-modal-btns" style="margin-top:18px">
+            <button class="monitor-modal-ok" onclick="this.closest('.monitor-modal-overlay').remove();pickFolder()">🔄 Trocar pasta</button>
+            <button class="monitor-modal-cancel" onclick="stopMonitor();this.closest('.monitor-modal-overlay').remove()">⏹ Parar</button>
+            <button class="monitor-modal-cancel" onclick="this.closest('.monitor-modal-overlay').remove()">Fechar</button>
+          </div>
+        </div>`;
+      document.body.appendChild(ov);
+      return;
+    }
+    // Inativo → apresentar
+    const ov = document.createElement('div');
+    ov.className = 'monitor-modal-overlay';
+    ov.innerHTML = `
+      <div class="monitor-modal">
+        <h3>📂 Pasta automática</h3>
+        <p>Aponte para a pasta onde você salva os relatórios. O site vai monitorar e carregar automaticamente qualquer arquivo novo ou atualizado, sem precisar arrastar nada.</p>
+        <ul>
+          <li>✅ Detecta a área pelo conteúdo do arquivo</li>
+          <li>✅ Substitui automaticamente se a área já estiver carregada</li>
+          <li>✅ Notifica quando um arquivo é detectado</li>
+          <li><span>⚠️ Requer Chrome ou Edge — não funciona no Firefox</span></li>
+        </ul>
+        <div class="monitor-modal-btns">
+          <button class="monitor-modal-ok" onclick="this.closest('.monitor-modal-overlay').remove();pickFolder()">📂 Escolher pasta</button>
+          <button class="monitor-modal-cancel" onclick="this.closest('.monitor-modal-overlay').remove()">Cancelar</button>
+        </div>
+      </div>`;
+    document.body.appendChild(ov);
+  };
+
+  // ── Escolher pasta ───────────────────────────────────────────
+  window.pickFolder = async function() {
+    try {
+      const handle = await window.showDirectoryPicker({ mode: 'read' });
+      _dirHandle = handle;
+      await snapshotDir();   // registra estado atual sem processar
+      startMonitor();
+    } catch(e) {
+      if (e.name !== 'AbortError') toast('❌ Não foi possível acessar a pasta: ' + e.message, 'err');
+    }
+  };
+
+  // ── Snapshot inicial ─────────────────────────────────────────
+  async function snapshotDir() {
+    _knownFiles = {};
+    for await (const [name, entry] of _dirHandle.entries()) {
+      if (entry.kind !== 'file') continue;
+      if (!isXlsx(name)) continue;
+      const f = await entry.getFile();
+      _knownFiles[name] = f.lastModified;
+    }
+  }
+
+  // ── Iniciar monitoramento ────────────────────────────────────
+  function startMonitor() {
+    const h = _dirHandle;       // salva antes de stopMonitor zerar
+    clearInterval(_watchTimer); // para timer anterior sem apagar _dirHandle
+    _watchTimer = null;
+    _dirHandle  = h;            // garante que está definido
+    _active     = true;
+    setUI(true, _dirHandle.name);
+    toast(`📂 Monitorando <strong>${_dirHandle.name}</strong> — arquivos novos serão carregados automaticamente`, 'ok');
+    _watchTimer = setInterval(checkDir, INTERVAL_MS);
+  }
+
+  window.stopMonitor = function() {
+    clearInterval(_watchTimer);
+    _watchTimer = null;
+    _dirHandle  = null;
+    _knownFiles = {};
+    setUI(false);
+  };
+
+  // ── Verificação periódica ────────────────────────────────────
+  async function checkDir() {
+    if (!_dirHandle) return;
+    try {
+      for await (const [name, entry] of _dirHandle.entries()) {
+        if (entry.kind !== 'file') continue;
+        if (!isXlsx(name)) continue;
+        const f = await entry.getFile();
+        const prev = _knownFiles[name];
+        // Arquivo novo (só registra) ou modificado (processa)
+        if (prev === undefined) {
+          _knownFiles[name] = f.lastModified; // novo: registra sem processar
+        } else if (f.lastModified > prev) {
+          _knownFiles[name] = f.lastModified;
+          await handleNewFile(f, name);        // atualizado: carrega
+        }
+      }
+    } catch(e) {
+      // Pasta desapareceu ou permissão revogada
+      stopMonitor();
+      toast('⚠️ Pasta monitorada inacessível — monitoramento pausado', 'err');
+    }
+  }
+
+  // ── Processar arquivo novo ───────────────────────────────────
+  async function handleNewFile(file, name) {
+    try {
+      // Usar processFile diretamente sem passar area → detecção automática
+      // Precisamos de uma area fake para iniciar; detectAreaFromRows vai corrigir
+      await processFile(file, null);
+      showMonitorToast(name);
+    } catch(e) {
+      toast(`❌ Erro ao processar <strong>${name}</strong>: ${e.message}`, 'err');
+    }
+  }
+
+  // ── Notificação visual ───────────────────────────────────────
+  function showMonitorToast(name) {
+    const t = document.createElement('div');
+    t.className = 'monitor-toast';
+    t.innerHTML = `
+      <div class="monitor-toast-icon">📄</div>
+      <div>
+        <div class="monitor-toast-title">Arquivo detectado</div>
+        <div class="monitor-toast-sub">${esc(name)}</div>
+      </div>`;
+    document.body.appendChild(t);
+    setTimeout(() => t.style.cssText += 'opacity:0;transform:translateY(8px);transition:all .4s ease', 2800);
+    setTimeout(() => t.remove(), 3300);
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────
+  function isXlsx(name) {
+    return /\.(xlsx|xls|xlsm)$/i.test(name);
+  }
+
+  // Expor para uso externo se precisar
+  window._folderMonitor = { start: pickFolder, stop: stopMonitor, get active(){ return _active; } };
+})();
+</script>
+
+
+
+
+<script>
+/* ===== MONITORAMENTO AUTOMÁTICO ULTRA ===== */
+window.__AUTO_MONITOR__ = {
+  dirHandle:null,
+  interval:null,
+  lastProcessed:null,
+  initialized:false
+};
+
+async function selecionarPastaMonitorada(){
+  try{
+
+    if(!window.showDirectoryPicker){
+      alert('Chrome/Edge atualizado necessário.');
+      return;
+    }
+
+    const dirHandle = await window.showDirectoryPicker({
+      mode:'readwrite'
+    });
+
+    window.__AUTO_MONITOR__.dirHandle = dirHandle;
+
+    iniciarMonitoramentoPasta();
+
+    // PRIMEIRA LEITURA IMEDIATA
+    setTimeout(async ()=>{
+      await verificarAtualizacaoPasta(true);
+    }, 150);
+
+    mostrarToastMonitor('📂 Pasta conectada','Monitoramento automático iniciado');
+
+  }catch(err){
+    console.error(err);
+  }
+}
+
+async function pegarArquivoMaisRecente(){
+
+  const monitor = window.__AUTO_MONITOR__;
+
+  if(!monitor.dirHandle) return null;
+
+  let latestFile = null;
+
+  for await (const entry of monitor.dirHandle.values()){
+
+    if(entry.kind !== 'file') continue;
+
+    const name = entry.name || '';
+
+    if(!name.match(/\.xlsx?$|\.csv$/i)) continue;
+
+    try{
+
+      const file = await entry.getFile();
+
+      if(!latestFile || file.lastModified > latestFile.file.lastModified){
+        latestFile = {
+          entry,
+          file
+        };
+      }
+
+    }catch(e){
+      console.warn(e);
+    }
+  }
+
+  return latestFile;
+}
+
+async function processarArquivoAutomatico(fileObj){
+
+  if(!fileObj || !fileObj.file) return;
+
+  const monitor = window.__AUTO_MONITOR__;
+
+  const uniqueKey = fileObj.file.name + '_' + fileObj.file.lastModified;
+
+  // primeira carga SEMPRE processa
+  if(monitor.initialized && monitor.lastProcessed === uniqueKey){
+    return;
+  }
+
+  monitor.initialized = true;
+  monitor.lastProcessed = uniqueKey;
+
+  console.log('AUTO PROCESSANDO:', fileObj.file.name);
+
+  mostrarToastMonitor(
+    '⚡ Arquivo detectado',
+    fileObj.file.name
+  );
+
+  try{
+
+    if(typeof handleNewFile === 'function'){
+      await handleNewFile(fileObj.file, fileObj.file.name);
+      return;
+    }
+
+    if(typeof loadFile === 'function'){
+      await loadFile(fileObj.file);
+      return;
+    }
+
+    if(typeof processFile === 'function'){
+      await processFile(fileObj.file);
+      return;
+    }
+
+    // fallback inteligente
+    const input = document.querySelector('input[type=file]');
+
+    if(input){
+      const dt = new DataTransfer();
+      dt.items.add(fileObj.file);
+      input.files = dt.files;
+      input.dispatchEvent(new Event('change'));
+    }
+
+  }catch(err){
+    console.error('Erro processando:', err);
+  }
+}
+
+async function verificarAtualizacaoPasta(force=false){
+
+  try{
+
+    const latest = await pegarArquivoMaisRecente();
+
+    if(!latest) return;
+
+    if(force){
+      window.__AUTO_MONITOR__.lastProcessed = null;
+    }
+
+    await processarArquivoAutomatico(latest);
+
+  }catch(err){
+    console.error(err);
+  }
+}
+
+function iniciarMonitoramentoPasta(){
+
+  const monitor = window.__AUTO_MONITOR__;
+
+  if(monitor.interval){
+    clearInterval(monitor.interval);
+  }
+
+  verificarAtualizacaoPasta(true);
+
+  monitor.interval = setInterval(async ()=>{
+    await verificarAtualizacaoPasta();
+  }, 2500);
+
+  console.log('MONITORAMENTO ATIVO');
+}
+
+async function apagarArquivosDaPasta(){
+
+  try{
+
+    const monitor = window.__AUTO_MONITOR__;
+
+    if(!monitor.dirHandle){
+      alert('Selecione uma pasta primeiro.');
+      return;
+    }
+
+    const ok = confirm(
+      'Deseja realmente APAGAR TODOS os arquivos Excel da pasta monitorada?'
+    );
+
+    if(!ok) return;
+
+    let removidos = 0;
+
+    for await (const entry of monitor.dirHandle.values()){
+
+      const name = entry.name || '';
+
+      if(!name.match(/\.xlsx?$|\.csv$/i)) continue;
+
+      try{
+
+        await monitor.dirHandle.removeEntry(name);
+
+        removidos++;
+
+      }catch(err){
+        console.warn('Falha ao remover:', name, err);
+      }
+    }
+
+    mostrarToastMonitor(
+      '🗑️ Limpeza concluída',
+      removidos + ' arquivo(s) removido(s)'
+    );
+
+  }catch(err){
+    console.error(err);
+    alert('Erro ao apagar arquivos.');
+  }
+}
+
+function mostrarToastMonitor(title,sub){
+
+  const old = document.querySelector('.monitor-toast-auto');
+
+  if(old) old.remove();
+
+  const toast = document.createElement('div');
+
+  toast.className = 'monitor-toast monitor-toast-auto';
+
+  toast.innerHTML = `
+    <div class="monitor-toast-icon">⚡</div>
+    <div>
+      <div class="monitor-toast-title">${title}</div>
+      <div class="monitor-toast-sub">${sub}</div>
+    </div>
+  `;
+
+  document.body.appendChild(toast);
+
+  setTimeout(()=>{
+    toast.remove();
+  }, 3500);
+}
+
+window.addEventListener('DOMContentLoaded', ()=>{
+
+  const topbar = document.querySelector('.topbar-right') ||
+                 document.querySelector('.topbar');
+
+  if(!topbar) return;
+
+  // botão monitorar
+  const btnMonitor = document.createElement('button');
+
+  btnMonitor.innerHTML = '📂 MONITORAR PASTA';
+
+  btnMonitor.className = 'monitor-btn';
+
+  btnMonitor.style.marginLeft = '8px';
+
+  btnMonitor.onclick = selecionarPastaMonitorada;
+
+  topbar.appendChild(btnMonitor);
+
+  // botão limpar
+  const btnDelete = document.createElement('button');
+
+  btnDelete.innerHTML = '🗑️ LIMPAR PASTA';
+
+  btnDelete.className = 'slot-clear-all-btn';
+
+  btnDelete.style.height = '36px';
+  btnDelete.style.padding = '0 14px';
+  btnDelete.style.fontSize = '11px';
+
+  btnDelete.onclick = apagarArquivosDaPasta;
+
+  topbar.appendChild(btnDelete);
+});
+</script>
+
 </body>
 </html>
