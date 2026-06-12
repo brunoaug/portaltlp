@@ -17,6 +17,9 @@
     --text:     #e8eaf6;
     --muted:    #5c6080;
     --border:   rgba(255,95,0,0.15);
+    --bat-ok:   #00e5a0;
+    --bat-no:   #f43f5e;
+    --bat-un:   #5c6080;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -92,10 +95,15 @@ h1 span { color: var(--accent); }
     font-weight: 600;
     font-size: 14px;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .menu button:hover { color: var(--text); background: var(--surface2); }
 .menu button.active { background: var(--accent); color: white; }
+
+.menu button .bat-icon { font-size: 13px; }
 
 /* ─── CARDS ─── */
 .cards {
@@ -167,6 +175,26 @@ h1 span { color: var(--accent); }
 .filtros input:focus, .filtros select:focus { border-color: var(--accent); }
 .filtros input { flex: 1; min-width: 180px; }
 .filtros select option { background: var(--surface2); }
+
+/* ─── MINI FILTRO (gráficos) ─── */
+.mini-filtro {
+    margin-bottom: 16px;
+}
+
+.mini-filtro input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.mini-filtro input:focus { border-color: var(--accent); }
 
 /* ─── TABELA ─── */
 .table-wrap {
@@ -326,6 +354,270 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 .grafico-card canvas { max-height: 420px; }
 .grafico-card.resp-card { overflow-y: auto; max-height: 620px; }
 .grafico-card.resp-card canvas { max-height: none; }
+
+/* ─── ABA BATERIA ─── */
+.bat-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.bat-header-text { display: flex; flex-direction: column; gap: 3px; }
+
+.bat-header-text .bat-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--bat-ok);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.bat-header-text h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+/* Cards de bateria */
+.bat-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.bat-card {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 22px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.bat-card:hover { transform: translateY(-2px); }
+
+.bat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 4px;
+    background: var(--bcc);
+    border-radius: 0 2px 2px 0;
+}
+
+.bat-card-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 8px var(--bcc));
+}
+
+.bat-card-info { display: flex; flex-direction: column; gap: 4px; }
+
+.bat-card-number {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: 'DM Mono', monospace;
+    line-height: 1;
+    color: var(--bcc);
+}
+
+.bat-card-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.bat-card-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--bcc);
+    opacity: 0.7;
+}
+
+/* Grid gráficos bateria — 1:2 ratio, altura igual nos dois cards */
+.bat-graficos {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+    margin-bottom: 28px;
+    align-items: stretch;   /* <-- garante mesma altura */
+}
+
+.bat-graficos .grafico-card.full { grid-column: 1 / -1; }
+
+/* card do donut: flex para centralizar verticalmente */
+.bat-grafico-dist {
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.bat-grafico-dist h3 {
+    margin-bottom: 16px;
+    flex-shrink: 0;
+}
+
+/* wrapper do canvas do donut ocupa o espaço restante e centraliza */
+.bat-grafico-dist .donut-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* card do bar chart — altura mínima razoável */
+.bat-grafico-resp {
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+}
+
+.bat-grafico-resp h3 { flex-shrink: 0; }
+.bat-grafico-resp .mini-filtro { flex-shrink: 0; }
+
+/* canvas do bar chart ocupa o espaço restante */
+.bat-grafico-resp .chart-area {
+    flex: 1;
+    position: relative;
+    min-height: 200px;
+}
+
+/* Lista de sites sem bateria */
+.bat-list-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.bat-list-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.bat-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+}
+
+.bat-list-header h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bat-count-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(255,95,0,0.15);
+    color: var(--accent2);
+    border: 1px solid var(--border);
+}
+
+/* ─── BOTÃO COPIAR ─── */
+.btn-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-copy:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255,95,0,0.08);
+}
+
+.btn-copy.copied {
+    border-color: var(--bat-ok);
+    color: var(--bat-ok);
+    background: rgba(0,229,160,0.08);
+}
+
+.btn-copy svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+.bat-site-list { max-height: 320px; overflow-y: auto; }
+.bat-site-list::-webkit-scrollbar { width: 4px; }
+.bat-site-list::-webkit-scrollbar-track { background: transparent; }
+.bat-site-list::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 4px; }
+
+.bat-site-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+    gap: 10px;
+}
+
+.bat-site-row:last-child { border-bottom: none; }
+.bat-site-row:hover { background: rgba(255,95,0,0.04); }
+
+.bat-site-name {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.bat-site-resp {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+/* pill bateria inline na tabela */
+.bat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    border: 1px solid var(--bpc);
+    color: var(--bpc);
+    background: color-mix(in srgb, var(--bpc) 12%, transparent);
+}
+
+.bat-pill::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--bpc);
+    flex-shrink: 0;
+}
 
 .empty { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
 
@@ -508,7 +800,13 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 768px) { .graficos { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+    .graficos { grid-template-columns: 1fr; }
+    .bat-graficos { grid-template-columns: 1fr; }
+    .bat-list-grid { grid-template-columns: 1fr; }
+    .bat-cards { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 640px) {
     .container { padding: 20px 16px; }
     .modal-fields { grid-template-columns: 1fr; }
@@ -516,6 +814,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     th:nth-child(5), td:nth-child(5),
     th:nth-child(6), td:nth-child(6),
     th:nth-child(7), td:nth-child(7) { display: none; }
+    .bat-cards { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -530,6 +829,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
         <nav class="menu">
             <button onclick="trocarAba('tabela', this)" class="active">Tabela</button>
             <button onclick="trocarAba('graficos', this)">Gráficos</button>
+            <button onclick="trocarAba('bateria', this)"><span class="bat-icon">🔋</span>Bateria</button>
         </nav>
     </header>
 
@@ -577,6 +877,80 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
                 <canvas id="graficoResp"></canvas>
             </div>
         </div>
+    </div>
+
+    <!-- ABA BATERIA -->
+    <div id="bateria" class="tab">
+
+        <!-- Cards de resumo -->
+        <div class="bat-cards" id="bat-cards"></div>
+
+        <!-- Gráficos: donut menor à esquerda (1fr), barras verticais à direita (2fr) -->
+        <div class="bat-graficos">
+
+            <!-- DONUT — ocupa mesma altura que o card da direita -->
+            <div class="grafico-card bat-grafico-dist">
+                <h3>Distribuição Geral</h3>
+                <div class="donut-wrapper">
+                    <canvas id="graficoBatDist"></canvas>
+                </div>
+            </div>
+
+            <!-- BAR CHART -->
+            <div class="grafico-card bat-grafico-resp">
+                <h3>Por Responsável — Sem Bateria</h3>
+                <div class="mini-filtro">
+                    <input type="text" id="filtroBatResp" placeholder="🔍  Filtrar responsável...">
+                </div>
+                <div class="chart-area">
+                    <canvas id="graficoBatResp"></canvas>
+                    <div class="empty" id="batRespEmpty" style="display:none;padding:24px">Nenhum site sem bateria.</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Listas de sites -->
+        <div class="bat-list-grid">
+
+            <!-- SEM BATERIA -->
+            <div class="bat-list-card">
+                <div class="bat-list-header">
+                    <h4>⚠️ Sem Bateria</h4>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <span class="bat-count-badge" id="badge-no">0</span>
+                        <button class="btn-copy" id="btnCopyNo" onclick="copiarLista('no')" title="Copiar lista">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                            </svg>
+                            Copiar
+                        </button>
+                    </div>
+                </div>
+                <div class="bat-site-list" id="list-no-bat"></div>
+            </div>
+
+            <!-- COM BATERIA -->
+            <div class="bat-list-card">
+                <div class="bat-list-header">
+                    <h4>✅ Com Bateria</h4>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <span class="bat-count-badge" id="badge-yes">0</span>
+                        <button class="btn-copy" id="btnCopyYes" onclick="copiarLista('yes')" title="Copiar lista">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                            </svg>
+                            Copiar
+                        </button>
+                    </div>
+                </div>
+                <div class="bat-site-list" id="list-yes-bat"></div>
+            </div>
+
+        </div>
+
     </div>
 
 </div>
@@ -644,9 +1018,18 @@ const dia  = String(hoje.getDate()).padStart(2, '0');
 const mes  = String(hoje.getMonth() + 1).padStart(2, '0');
 const paginaHoje = `${dia}/${mes}`;
 
+/* Armazena as listas para uso pelo botão copiar */
+let listaSemBateria = [];
+let listaComBateria = [];
+
 let dados = [];
+let dadosBateria = [];
 let chartsCreated = false;
+let batChartsCreated = false;
 let editandoIndex = null;
+
+let semBateriaGlobal = [];
+let batRespChart = null;
 
 function escHtml(str) {
     return (str || '')
@@ -656,7 +1039,6 @@ function escHtml(str) {
         .replace(/"/g, '&quot;');
 }
 
-// ─── CATEGORIAS ──────────────────────────────────────────
 const CATS = [
     { key:'normalizado',   label:'Normalizado',    color:'#00e5a0', kw:['normalizado','normal'] },
     { key:'provedor',      label:'Provedor',        color:'#38bdf8', kw:['provedor','vtal','ihs','fmo','k2'] },
@@ -678,15 +1060,23 @@ function categorizar(previsao, status) {
     return CAT_OUTRO;
 }
 
-// ─── BOOT ────────────────────────────────────────────────
+function parseBateria(valor) {
+    if (valor === null || valor === undefined) return null;
+    const v = String(valor).trim().toLowerCase();
+    if (!v || v === '') return null;
+    if (['sim','s','yes','1','x','possui','ok','tem'].some(k => v.startsWith(k))) return true;
+    if (['não','nao','n','no','0','sem','nao possui','nao tem'].some(k => v.startsWith(k))) return false;
+    return null;
+}
+
 Chart.defaults.color = '#e8eaf6';
 Chart.defaults.font  = { family: "'DM Mono', monospace", size: 11 };
 
 carregarDados();
 
 function carregarDados() {
-    const url = `${APPS_SCRIPT_URL}?aba=${encodeURIComponent(paginaHoje)}`;
-    fetch(url)
+    const urlMain = `${APPS_SCRIPT_URL}?aba=${encodeURIComponent(paginaHoje)}`;
+    fetch(urlMain)
         .then(r => r.json())
         .then(data => {
             if (!Array.isArray(data) || data.length === 0) throw new Error('vazio');
@@ -699,18 +1089,28 @@ function carregarDados() {
             document.getElementById('tbody').innerHTML =
                 `<tr><td colspan="8" class="empty">⚠️ Aba "${paginaHoje}" não encontrada ou sem dados.</td></tr>`;
         });
+
+    const urlBat = `${APPS_SCRIPT_URL}?aba=${encodeURIComponent('BATERIA')}`;
+    fetch(urlBat)
+        .then(r => r.json())
+        .then(data => {
+            if (!Array.isArray(data) || data.length === 0) throw new Error('vazio');
+            dadosBateria = data;
+        })
+        .catch(() => {
+            dadosBateria = [];
+        });
 }
 
-// ─── ABAS ────────────────────────────────────────────────
 function trocarAba(nome, btn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById(nome).classList.add('active');
     document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     if (nome === 'graficos' && !chartsCreated) { chartsCreated = true; criarGraficos(); }
+    if (nome === 'bateria'  && !batChartsCreated) { batChartsCreated = true; criarAbasBateria(); }
 }
 
-// ─── FILTROS ─────────────────────────────────────────────
 function preencherFiltros() {
     const respSet = new Set();
     const catSet  = new Set();
@@ -731,7 +1131,6 @@ function preencherFiltros() {
     if (catSet.has('outro')) selCat.innerHTML += `<option value="outro">Outro</option>`;
 }
 
-// ─── CARDS ───────────────────────────────────────────────
 function renderCards() {
     const counts = {};
     dados.forEach(i => {
@@ -759,7 +1158,6 @@ function renderCards() {
         });
 }
 
-// ─── TABELA ──────────────────────────────────────────────
 function renderTabela() {
     const tbody      = document.getElementById('tbody');
     tbody.innerHTML  = '';
@@ -822,7 +1220,6 @@ function renderTabela() {
 
 document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', renderTabela));
 
-// ─── MODAL ───────────────────────────────────────────────
 function abrirModal(idx) {
     editandoIndex = idx;
     const item = dados[idx];
@@ -848,7 +1245,6 @@ document.getElementById('modalOverlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) fecharModal();
 });
 
-// ─── SALVAR ──────────────────────────────────────────────
 async function salvar() {
     if (editandoIndex === null) return;
 
@@ -896,7 +1292,6 @@ async function salvar() {
     }
 }
 
-// ─── TOAST ───────────────────────────────────────────────
 function mostrarToast(msg, tipo) {
     const t = document.getElementById('toast');
     t.textContent   = msg;
@@ -905,7 +1300,38 @@ function mostrarToast(msg, tipo) {
     setTimeout(() => { t.style.display = 'none'; }, 3500);
 }
 
-// ─── GRÁFICOS ────────────────────────────────────────────
+/* ─── COPIAR LISTA ─────────────────────────────────────── */
+function copiarLista(tipo) {
+    const lista  = tipo === 'no' ? listaSemBateria : listaComBateria;
+    const btnId  = tipo === 'no' ? 'btnCopyNo' : 'btnCopyYes';
+    const titulo = tipo === 'no'
+        ? `SITES SEM POSSIBILIDADE DE BATERIA ${dia}/${mes}:`
+        : `SITES COM POSSIBILIDADE DE BATERIA ${dia}/${mes}:`;
+
+    if (!lista.length) {
+        mostrarToast('Nenhum site para copiar.', 'err');
+        return;
+    }
+
+    const texto = titulo + '\n' + lista.map(i => i.site).join('\n');
+
+    navigator.clipboard.writeText(texto).then(() => {
+        const btn = document.getElementById(btnId);
+        btn.classList.add('copied');
+        btn.querySelector('svg').innerHTML = `<polyline points="20 6 9 17 4 12" stroke-width="2.5"/>`;
+        const span = btn.childNodes[btn.childNodes.length - 1];
+        btn.lastChild.textContent = ' Copiado!';
+        mostrarToast('✓ Lista copiada!', 'ok');
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.querySelector('svg').innerHTML = `<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>`;
+            btn.lastChild.textContent = ' Copiar';
+        }, 2200);
+    }).catch(() => {
+        mostrarToast('✗ Falha ao copiar. Tente manualmente.', 'err');
+    });
+}
+
 function criarGraficos() {
     const catCounts = {};
     const respMap   = {};
@@ -981,6 +1407,220 @@ function criarGraficos() {
                 y: {
                     grid: { display: false },
                     ticks: { font: { family: "'Outfit', sans-serif", size: 12, weight: '600' }, color: '#e8eaf6', autoSkip: false, maxRotation: 0 },
+                    border: { display: false }
+                }
+            }
+        }
+    });
+}
+
+/* ─── ABA BATERIA ─────────────────────────────────────── */
+function criarAbasBateria() {
+    const fonte = dadosBateria.length > 0 ? dadosBateria : dados;
+
+    if (!fonte.length) {
+        document.getElementById('bat-cards').innerHTML =
+            `<div style="color:var(--muted);font-size:14px;padding:20px">Nenhum dado de bateria disponível.</div>`;
+        return;
+    }
+
+    const colKeys = ['BATERIA', 'Bateria', 'bateria', 'HAS_BATERIA', 'POSSUI BATERIA', 'possui bateria', 'TEM BATERIA'];
+    let colBat = null;
+    if (fonte.length > 0) {
+        for (const k of colKeys) {
+            if (k in fonte[0]) { colBat = k; break; }
+        }
+        if (!colBat) {
+            colBat = Object.keys(fonte[0]).find(k => k.toLowerCase().includes('bateria')) || null;
+        }
+    }
+
+    let comBateria = [], semBateria = [], indefinido = [];
+
+    fonte.forEach(item => {
+        const site = item["SITE"] || item["Site"] || item["site"] || "—";
+        const resp = item["RESPONSÁVEL"] || item["Responsável"] || item["responsavel"] || "";
+        const valBat = colBat ? item[colBat] : null;
+        const status = parseBateria(valBat);
+
+        if (status === true)  comBateria.push({ site, resp, raw: valBat });
+        else if (status === false) semBateria.push({ site, resp, raw: valBat });
+        else indefinido.push({ site, resp, raw: valBat });
+    });
+
+    /* Salva globalmente para o botão copiar */
+    listaSemBateria = semBateria;
+    listaComBateria = comBateria;
+
+    const total = fonte.length;
+    const pctCom = total ? Math.round((comBateria.length / total) * 100) : 0;
+    const pctSem = total ? Math.round((semBateria.length / total) * 100) : 0;
+
+    /* ── Cards de resumo ── */
+    document.getElementById('bat-cards').innerHTML = `
+        <div class="bat-card" style="--bcc:var(--bat-ok)">
+            <div class="bat-card-icon">🔋</div>
+            <div class="bat-card-info">
+                <div class="bat-card-number">${comBateria.length}</div>
+                <div class="bat-card-label">Com Bateria</div>
+                <div class="bat-card-pct">${pctCom}% do total</div>
+            </div>
+        </div>
+        <div class="bat-card" style="--bcc:var(--bat-no)">
+            <div class="bat-card-icon">🪫</div>
+            <div class="bat-card-info">
+                <div class="bat-card-number">${semBateria.length}</div>
+                <div class="bat-card-label">Sem Bateria</div>
+                <div class="bat-card-pct">${pctSem}% do total</div>
+            </div>
+        </div>
+        <div class="bat-card" style="--bcc:var(--bat-un)">
+            <div class="bat-card-icon">❓</div>
+            <div class="bat-card-info">
+                <div class="bat-card-number">${indefinido.length}</div>
+                <div class="bat-card-label">Indefinido</div>
+                <div class="bat-card-pct">${total ? Math.round((indefinido.length/total)*100) : 0}% do total</div>
+            </div>
+        </div>`;
+
+    /* ── Gráfico de rosca — Distribuição ── */
+    const distTotal = comBateria.length + semBateria.length;
+    new Chart(document.getElementById('graficoBatDist'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Com Bateria', 'Sem Bateria'],
+            datasets: [{
+                data: [comBateria.length, semBateria.length],
+                backgroundColor: ['#00e5a0cc', '#f43f5ecc'],
+                borderWidth: 0,
+                hoverOffset: 8,
+            }]
+        },
+        options: {
+            cutout: '65%',
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 12, usePointStyle: true, boxWidth: 7, font: { size: 10 } }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const v = ctx.parsed;
+                            const pct = distTotal ? Math.round((v / distTotal) * 100) : 0;
+                            return ` ${v} sites (${pct}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    /* ── Gráfico de barras — Sem Bateria por Responsável ── */
+    semBateriaGlobal = semBateria;
+    renderBatRespChart('');
+
+    const filtroInput = document.getElementById('filtroBatResp');
+    if (filtroInput) {
+        filtroInput.addEventListener('input', e => renderBatRespChart(e.target.value));
+    }
+
+    /* ── Listas de sites ── */
+    document.getElementById('badge-no').textContent  = semBateria.length;
+    document.getElementById('badge-yes').textContent = comBateria.length;
+
+    const renderLista = (containerId, lista, color) => {
+        const el = document.getElementById(containerId);
+        if (!lista.length) {
+            el.innerHTML = `<div class="empty" style="padding:24px">Nenhum site.</div>`;
+            return;
+        }
+        el.innerHTML = lista.map(i => `
+            <div class="bat-site-row">
+                <span class="bat-site-name" style="color:${color}">${escHtml(i.site)}</span>
+                <span class="bat-site-resp">${escHtml(i.resp) || '—'}</span>
+            </div>`).join('');
+    };
+
+    renderLista('list-no-bat',  semBateria, '#f43f5e');
+    renderLista('list-yes-bat', comBateria, '#00e5a0');
+}
+
+/* ─── Gráfico vertical "Por Responsável — Sem Bateria" ── */
+function renderBatRespChart(filtro) {
+    const termo = (filtro || '').trim().toLowerCase();
+
+    const filtrados = semBateriaGlobal.filter(i =>
+        (i.resp || 'Sem responsável').toLowerCase().includes(termo)
+    );
+
+    const respSemBat = {};
+    filtrados.forEach(i => {
+        const r = i.resp || 'Sem responsável';
+        respSemBat[r] = (respSemBat[r] || 0) + 1;
+    });
+
+    const respLabels = Object.keys(respSemBat).sort((a, b) => respSemBat[b] - respSemBat[a]);
+    const gridColor  = 'rgba(255,255,255,0.06)';
+    const batCanvas  = document.getElementById('graficoBatResp');
+    const emptyEl    = document.getElementById('batRespEmpty');
+
+    if (batRespChart) {
+        batRespChart.destroy();
+        batRespChart = null;
+    }
+
+    if (respLabels.length === 0) {
+        batCanvas.style.display = 'none';
+        emptyEl.style.display   = 'block';
+        emptyEl.textContent     = termo
+            ? 'Nenhum responsável encontrado para o filtro.'
+            : 'Nenhum site sem bateria.';
+        return;
+    }
+
+    batCanvas.style.display = 'block';
+    emptyEl.style.display   = 'none';
+
+    batRespChart = new Chart(batCanvas, {
+        type: 'bar',
+        data: {
+            labels: respLabels,
+            datasets: [{
+                data: respLabels.map(r => respSemBat[r]),
+                backgroundColor: '#f43f5eaa',
+                borderColor: '#f43f5e',
+                borderWidth: 1,
+                borderRadius: 5,
+                borderSkipped: false,
+                categoryPercentage: 0.6,
+                barPercentage: 0.8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} site${ctx.parsed.y > 1 ? 's' : ''} sem bateria` } }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        font: { family: "'Outfit', sans-serif", size: 11, weight: '600' },
+                        color: '#e8eaf6',
+                        autoSkip: false,
+                        maxRotation: 35,
+                        minRotation: 0
+                    },
+                    border: { display: false }
+                },
+                y: {
+                    grid: { color: gridColor },
+                    ticks: { precision: 0, stepSize: 1, font: { size: 11 } },
                     border: { display: false }
                 }
             }
