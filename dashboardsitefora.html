@@ -102,7 +102,6 @@ h1 span { color: var(--accent); }
 
 .menu button:hover { color: var(--text); background: var(--surface2); }
 .menu button.active { background: var(--accent); color: white; }
-
 .menu button .bat-icon { font-size: 13px; }
 
 /* ─── CARDS ─── */
@@ -176,10 +175,8 @@ h1 span { color: var(--accent); }
 .filtros input { flex: 1; min-width: 180px; }
 .filtros select option { background: var(--surface2); }
 
-/* ─── MINI FILTRO (gráficos) ─── */
-.mini-filtro {
-    margin-bottom: 16px;
-}
+/* ─── MINI FILTRO ─── */
+.mini-filtro { margin-bottom: 16px; }
 
 .mini-filtro input {
     width: 100%;
@@ -257,24 +254,9 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 }
 
 .site-name { font-weight: 600; font-size: 14px; }
-
-.tsk-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-}
-
-.cell-wrap {
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-
-.obs-cell {
-    font-size: 12px;
-    color: var(--muted);
-    white-space: pre-wrap;
-    word-break: break-word;
-}
+.tsk-badge { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+.cell-wrap { white-space: pre-wrap; word-break: break-word; }
+.obs-cell { font-size: 12px; color: var(--muted); white-space: pre-wrap; word-break: break-word; }
 
 /* ─── PENDÊNCIA ─── */
 .pendencia-cell {
@@ -356,26 +338,153 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 .grafico-card.resp-card canvas { max-height: none; }
 
 /* ─── ABA BATERIA ─── */
-.bat-header {
+
+/* ─── SELETOR DE DIA ─── */
+.bat-day-selector {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     margin-bottom: 28px;
+    flex-wrap: wrap;
 }
 
-.bat-header-text { display: flex; flex-direction: column; gap: 3px; }
-
-.bat-header-text .bat-eyebrow {
+.bat-day-selector-label {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
-    color: var(--bat-ok);
-    letter-spacing: 3px;
+    color: var(--accent);
+    letter-spacing: 2px;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
-.bat-header-text h2 {
-    font-size: 1.3rem;
-    font-weight: 800;
+.day-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.day-tab {
+    padding: 6px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.day-tab:hover {
+    color: var(--text);
+    border-color: rgba(255,95,0,0.4);
+    background: var(--surface2);
+}
+
+.day-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.day-tab.hoje-tab {
+    border-color: rgba(255,95,0,0.5);
+    color: var(--accent2);
+}
+
+.day-tab.hoje-tab.active {
+    background: var(--accent);
+    color: white;
+}
+
+/* ─── BOTÃO TODOS OS DIAS ─── */
+.day-tab.todos-tab {
+    border-color: rgba(56,189,248,0.4);
+    color: #38bdf8;
+    background: rgba(56,189,248,0.06);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+}
+
+.day-tab.todos-tab:hover {
+    border-color: rgba(56,189,248,0.7);
+    background: rgba(56,189,248,0.12);
+    color: #7dd3fc;
+}
+
+.day-tab.todos-tab.active {
+    background: #38bdf8;
+    border-color: #38bdf8;
+    color: #05061a;
+}
+
+.day-tab.todos-tab .todos-spinner {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid rgba(56,189,248,0.3);
+    border-top-color: #38bdf8;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+}
+
+.day-tab.todos-tab.loading .todos-spinner { display: inline-block; }
+.day-tab.todos-tab.loading .todos-icon { display: none; }
+
+/* ─── BANNER MODO TODOS ─── */
+.todos-banner {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(56,189,248,0.07);
+    border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #38bdf8;
+}
+
+.todos-banner.visible { display: flex; }
+
+.todos-banner .dias-list {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.todos-banner .dia-chip {
+    padding: 2px 8px;
+    background: rgba(56,189,248,0.12);
+    border: 1px solid rgba(56,189,248,0.25);
+    border-radius: 6px;
+    font-size: 11px;
+    color: #7dd3fc;
+}
+
+.bat-day-loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 0;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+}
+
+.bat-day-loading .dot-spin {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,95,0,0.3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
 }
 
 /* Cards de bateria */
@@ -410,11 +519,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     border-radius: 0 2px 2px 0;
 }
 
-.bat-card-icon {
-    font-size: 2rem;
-    flex-shrink: 0;
-    filter: drop-shadow(0 0 8px var(--bcc));
-}
+.bat-card-icon { font-size: 2rem; flex-shrink: 0; filter: drop-shadow(0 0 8px var(--bcc)); }
 
 .bat-card-info { display: flex; flex-direction: column; gap: 4px; }
 
@@ -441,30 +546,25 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     opacity: 0.7;
 }
 
-/* Grid gráficos bateria — 1:2 ratio, altura igual nos dois cards */
+/* Grid gráficos bateria */
 .bat-graficos {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 20px;
     margin-bottom: 28px;
-    align-items: stretch;   /* <-- garante mesma altura */
+    align-items: stretch;
 }
 
 .bat-graficos .grafico-card.full { grid-column: 1 / -1; }
 
-/* card do donut: flex para centralizar verticalmente */
 .bat-grafico-dist {
     padding: 22px 20px;
     display: flex;
     flex-direction: column;
 }
 
-.bat-grafico-dist h3 {
-    margin-bottom: 16px;
-    flex-shrink: 0;
-}
+.bat-grafico-dist h3 { margin-bottom: 16px; flex-shrink: 0; }
 
-/* wrapper do canvas do donut ocupa o espaço restante e centraliza */
 .bat-grafico-dist .donut-wrapper {
     flex: 1;
     display: flex;
@@ -472,7 +572,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     justify-content: center;
 }
 
-/* card do bar chart — altura mínima razoável */
 .bat-grafico-resp {
     min-height: 380px;
     display: flex;
@@ -482,11 +581,67 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 .bat-grafico-resp h3 { flex-shrink: 0; }
 .bat-grafico-resp .mini-filtro { flex-shrink: 0; }
 
-/* canvas do bar chart ocupa o espaço restante */
 .bat-grafico-resp .chart-area {
     flex: 1;
     position: relative;
     min-height: 200px;
+}
+
+/* ─── FILTROS DA ABA BATERIA ─── */
+.bat-filtros {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.bat-filtros input,
+.bat-filtros select {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.bat-filtros input:focus,
+.bat-filtros select:focus { border-color: var(--accent); }
+.bat-filtros input { flex: 1; min-width: 180px; }
+.bat-filtros select option { background: var(--surface2); }
+
+/* ─── TABELA BATERIA (histórico) ─── */
+.bat-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 28px;
+}
+
+/* Badge de data na tabela */
+.data-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.data-badge.hoje {
+    background: rgba(255,95,0,0.12);
+    border-color: var(--border);
+    color: var(--accent2);
 }
 
 /* Lista de sites sem bateria */
@@ -584,9 +739,13 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 .bat-site-row:last-child { border-bottom: none; }
 .bat-site-row:hover { background: rgba(255,95,0,0.04); }
 
-.bat-site-name {
-    font-size: 13px;
-    font-weight: 600;
+.bat-site-name { font-size: 13px; font-weight: 600; }
+
+.bat-site-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .bat-site-resp {
@@ -594,29 +753,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     font-family: 'DM Mono', monospace;
     color: var(--muted);
     white-space: nowrap;
-}
-
-/* pill bateria inline na tabela */
-.bat-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    font-family: 'DM Mono', monospace;
-    border: 1px solid var(--bpc);
-    color: var(--bpc);
-    background: color-mix(in srgb, var(--bpc) 12%, transparent);
-}
-
-.bat-pill::before {
-    content: '';
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--bpc);
-    flex-shrink: 0;
 }
 
 .empty { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
@@ -655,10 +791,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     gap: 12px;
 }
 
-.modal-header h2 {
-    font-size: 1.1rem;
-    font-weight: 800;
-}
+.modal-header h2 { font-size: 1.1rem; font-weight: 800; }
 
 .modal-header .site-label {
     font-family: 'DM Mono', monospace;
@@ -689,12 +822,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     margin-bottom: 28px;
 }
 
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
+.field { display: flex; flex-direction: column; gap: 6px; }
 .field.full { grid-column: 1 / -1; }
 
 .field label {
@@ -723,7 +851,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 .field input:focus,
 .field textarea:focus,
 .field select:focus { border-color: var(--accent); }
-
 .field textarea { min-height: 72px; }
 
 .modal-footer {
@@ -882,13 +1009,32 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     <!-- ABA BATERIA -->
     <div id="bateria" class="tab">
 
+        <!-- Seletor de dia -->
+        <div class="bat-day-selector">
+            <span class="bat-day-selector-label">📅 Dia:</span>
+            <div class="day-tabs" id="dayTabs">
+                <div class="bat-day-loading">
+                    <div class="dot-spin"></div>
+                    Carregando dias...
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner modo todos -->
+        <div class="todos-banner" id="todosBanner">
+            <span>📊 Exibindo dados agregados de:</span>
+            <div class="dias-list" id="todosChips"></div>
+        </div>
+
         <!-- Cards de resumo -->
-        <div class="bat-cards" id="bat-cards"></div>
+        <div class="bat-cards" id="bat-cards">
+            <div style="color:var(--muted);font-size:13px;padding:10px 0;font-family:'DM Mono',monospace">
+                Selecione um dia acima para ver os dados.
+            </div>
+        </div>
 
-        <!-- Gráficos: donut menor à esquerda (1fr), barras verticais à direita (2fr) -->
+        <!-- Gráficos -->
         <div class="bat-graficos">
-
-            <!-- DONUT — ocupa mesma altura que o card da direita -->
             <div class="grafico-card bat-grafico-dist">
                 <h3>Distribuição Geral</h3>
                 <div class="donut-wrapper">
@@ -896,7 +1042,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
                 </div>
             </div>
 
-            <!-- BAR CHART -->
             <div class="grafico-card bat-grafico-resp">
                 <h3>Por Responsável — Sem Bateria</h3>
                 <div class="mini-filtro">
@@ -904,16 +1049,45 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
                 </div>
                 <div class="chart-area">
                     <canvas id="graficoBatResp"></canvas>
-                    <div class="empty" id="batRespEmpty" style="display:none;padding:24px">Nenhum site sem bateria.</div>
+                    <div class="empty" id="batRespEmpty" style="display:none;padding:24px">Selecione um dia para ver os dados.</div>
                 </div>
             </div>
-
         </div>
 
-        <!-- Listas de sites -->
-        <div class="bat-list-grid">
+        <!-- Tabela histórica completa -->
+        <div class="bat-filtros">
+            <input type="text" id="batSearch" placeholder="🔍  Buscar site...">
+            <select id="batFiltroBat">
+                <option value="">Todos os Status</option>
+                <option value="NAO">⚠️ Sem Bateria</option>
+                <option value="SIM">✅ Com Bateria</option>
+            </select>
+            <select id="batFiltroResp"><option value="">Todos os Responsáveis</option></select>
+            <select id="batOrdenar">
+                <option value="bat_no">Sem bateria primeiro</option>
+                <option value="bat_yes">Com bateria primeiro</option>
+                <option value="az">A → Z</option>
+                <option value="za">Z → A</option>
+            </select>
+        </div>
 
-            <!-- SEM BATERIA -->
+        <div class="bat-table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Site</th>
+                        <th>Bateria</th>
+                        <th>Responsável</th>
+                    </tr>
+                </thead>
+                <tbody id="batTbody">
+                    <tr><td colspan="3" class="empty">Selecione um dia acima para ver os dados.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Listas de sites (para copiar) -->
+        <div class="bat-list-grid">
             <div class="bat-list-card">
                 <div class="bat-list-header">
                     <h4>⚠️ Sem Bateria</h4>
@@ -928,10 +1102,11 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
                         </button>
                     </div>
                 </div>
-                <div class="bat-site-list" id="list-no-bat"></div>
+                <div class="bat-site-list" id="list-no-bat">
+                    <div class="empty" style="padding:24px">Selecione um dia.</div>
+                </div>
             </div>
 
-            <!-- COM BATERIA -->
             <div class="bat-list-card">
                 <div class="bat-list-header">
                     <h4>✅ Com Bateria</h4>
@@ -946,13 +1121,13 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
                         </button>
                     </div>
                 </div>
-                <div class="bat-site-list" id="list-yes-bat"></div>
+                <div class="bat-site-list" id="list-yes-bat">
+                    <div class="empty" style="padding:24px">Selecione um dia.</div>
+                </div>
             </div>
-
         </div>
 
     </div>
-
 </div>
 
 <!-- MODAL DE EDIÇÃO -->
@@ -1011,25 +1186,190 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwip3C7S8xKQQLLHi_Fzeg6SuWeCNpVJ5MHFROjw_6OaLdoRiRi3kMTmRMVpbqks8HLaw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzwS6rc88I7_MhxZ0H1srJxvSqCas4BzbKy6_oM4ZuKSc0arTSea3-mYdGiNdbnvpziA/exec';
 
 const hoje = new Date();
 const dia  = String(hoje.getDate()).padStart(2, '0');
 const mes  = String(hoje.getMonth() + 1).padStart(2, '0');
 const paginaHoje = `${dia}/${mes}`;
 
-/* Armazena as listas para uso pelo botão copiar */
 let listaSemBateria = [];
 let listaComBateria = [];
 
 let dados = [];
-let dadosBateria = [];
+let dadosBateriaAtual = [];
 let chartsCreated = false;
 let batChartsCreated = false;
 let editandoIndex = null;
+let diaSelecionado = paginaHoje;
+let modoTodos = false; // ← NOVO
 
 let semBateriaGlobal = [];
 let batRespChart = null;
+let batDistChart = null;
+
+// ─── SELETOR DE DIAS ───
+let abasDisponiveis = [];
+
+async function carregarAbasDisponiveis() {
+    try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?aba=LISTAR_ABAS`);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+            abasDisponiveis = data.map(a => a.nome || a);
+        } else {
+            abasDisponiveis = [paginaHoje];
+        }
+    } catch {
+        abasDisponiveis = [paginaHoje];
+    }
+    renderDayTabs();
+}
+
+function renderDayTabs() {
+    const container = document.getElementById('dayTabs');
+    if (!abasDisponiveis.length) {
+        container.innerHTML = `<span style="color:var(--muted);font-size:12px;font-family:'DM Mono',monospace">Nenhuma aba encontrada.</span>`;
+        return;
+    }
+
+    // Botão "Todos os dias"
+    const todosAtivo = modoTodos ? ' active' : '';
+    let html = `<button
+        class="day-tab todos-tab${todosAtivo}"
+        id="btnTodosDias"
+        onclick="selecionarTodos(this)"
+        title="Agregar dados de todos os dias">
+        <span class="todos-spinner"></span>
+        <span class="todos-icon">◈</span>
+        Todos
+    </button>`;
+
+    html += abasDisponiveis.map(aba => {
+        const isHoje  = aba === paginaHoje;
+        const isAtivo = !modoTodos && aba === diaSelecionado;
+        return `<button
+            class="day-tab${isHoje ? ' hoje-tab' : ''}${isAtivo ? ' active' : ''}"
+            onclick="selecionarDia('${aba}', this)"
+        >${aba}${isHoje ? ' ●' : ''}</button>`;
+    }).join('');
+
+    container.innerHTML = html;
+}
+
+function selecionarDia(aba, btn) {
+    modoTodos = false;
+    diaSelecionado = aba;
+
+    document.querySelectorAll('.day-tab').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    // Esconde banner de todos
+    document.getElementById('todosBanner').classList.remove('visible');
+
+    carregarDadosBateriaParaDia(aba);
+}
+
+async function selecionarTodos(btn) {
+    if (!abasDisponiveis.length) return;
+
+    modoTodos = true;
+
+    // Visual: ativa botão, desativa dias
+    document.querySelectorAll('.day-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active', 'loading');
+
+    // Mostra loading
+    document.getElementById('bat-cards').innerHTML = `
+        <div class="bat-day-loading" style="grid-column:1/-1">
+            <div class="dot-spin"></div>
+            Agregando dados de ${abasDisponiveis.length} dia(s)...
+        </div>`;
+    document.getElementById('batTbody').innerHTML =
+        `<tr><td colspan="3" class="empty">Carregando...</td></tr>`;
+    document.getElementById('todosBanner').classList.remove('visible');
+
+    try {
+        // Busca todos os dias em paralelo
+        const resultados = await Promise.all(
+            abasDisponiveis.map(aba =>
+                fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(aba)}`)
+                    .then(r => r.json())
+                    .catch(() => [])
+            )
+        );
+
+        // Mescla, descartando arrays vazios ou não-array
+        const merged = resultados.flat().filter(item =>
+            item && typeof item === 'object' && (item["SITE"] || item["Site"])
+        );
+
+        if (!merged.length) {
+            document.getElementById('bat-cards').innerHTML =
+                `<div style="color:var(--muted);font-size:13px;padding:10px 0;font-family:'DM Mono',monospace">
+                    ⚠️ Nenhum dado encontrado nos dias disponíveis.
+                </div>`;
+            btn.classList.remove('loading');
+            return;
+        }
+
+        dadosBateriaAtual = merged;
+
+        // Banner com chips dos dias
+        const banner = document.getElementById('todosBanner');
+        const chips  = document.getElementById('todosChips');
+        chips.innerHTML = abasDisponiveis
+            .map(a => `<span class="dia-chip">${a}</span>`)
+            .join('');
+        banner.classList.add('visible');
+
+        renderAbasBateria('Todos os dias', merged);
+
+    } catch (err) {
+        document.getElementById('bat-cards').innerHTML =
+            `<div style="color:var(--bat-no);font-size:13px;padding:10px 0;font-family:'DM Mono',monospace">
+                ✗ Erro ao agregar dados.
+            </div>`;
+        console.error(err);
+    } finally {
+        btn.classList.remove('loading');
+    }
+}
+
+async function carregarDadosBateriaParaDia(aba) {
+    document.getElementById('bat-cards').innerHTML = `
+        <div class="bat-day-loading" style="grid-column:1/-1">
+            <div class="dot-spin"></div>
+            Carregando dados de ${aba}...
+        </div>`;
+    document.getElementById('batTbody').innerHTML =
+        `<tr><td colspan="3" class="empty">Carregando...</td></tr>`;
+
+    try {
+        const res  = await fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(aba)}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+            document.getElementById('bat-cards').innerHTML =
+                `<div style="color:var(--muted);font-size:13px;padding:10px 0;font-family:'DM Mono',monospace">
+                    ⚠️ Aba "${aba}" sem dados de bateria.
+                </div>`;
+            document.getElementById('batTbody').innerHTML =
+                `<tr><td colspan="3" class="empty">Nenhum dado encontrado para ${aba}.</td></tr>`;
+            return;
+        }
+
+        dadosBateriaAtual = data;
+        renderAbasBateria(aba, data);
+
+    } catch (err) {
+        document.getElementById('bat-cards').innerHTML =
+            `<div style="color:var(--bat-no);font-size:13px;padding:10px 0;font-family:'DM Mono',monospace">
+                ✗ Erro ao carregar dados de ${aba}.
+            </div>`;
+        console.error(err);
+    }
+}
 
 function escHtml(str) {
     return (str || '')
@@ -1062,10 +1402,12 @@ function categorizar(previsao, status) {
 
 function parseBateria(valor) {
     if (valor === null || valor === undefined) return null;
-    const v = String(valor).trim().toLowerCase();
-    if (!v || v === '') return null;
-    if (['sim','s','yes','1','x','possui','ok','tem'].some(k => v.startsWith(k))) return true;
-    if (['não','nao','n','no','0','sem','nao possui','nao tem'].some(k => v.startsWith(k))) return false;
+    const v = String(valor).trim().toUpperCase();
+    if (!v) return null;
+    if (v === 'SIM') return true;
+    if (v === 'NAO' || v === 'NÃO') return false;
+    if (['SIM','S','YES','1','X','POSSUI','OK','TEM'].some(k => v.startsWith(k))) return true;
+    if (['NÃO','NAO','N','NO','0','SEM'].some(k => v.startsWith(k))) return false;
     return null;
 }
 
@@ -1089,17 +1431,6 @@ function carregarDados() {
             document.getElementById('tbody').innerHTML =
                 `<tr><td colspan="8" class="empty">⚠️ Aba "${paginaHoje}" não encontrada ou sem dados.</td></tr>`;
         });
-
-    const urlBat = `${APPS_SCRIPT_URL}?aba=${encodeURIComponent('BATERIA')}`;
-    fetch(urlBat)
-        .then(r => r.json())
-        .then(data => {
-            if (!Array.isArray(data) || data.length === 0) throw new Error('vazio');
-            dadosBateria = data;
-        })
-        .catch(() => {
-            dadosBateria = [];
-        });
 }
 
 function trocarAba(nome, btn) {
@@ -1108,7 +1439,32 @@ function trocarAba(nome, btn) {
     document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     if (nome === 'graficos' && !chartsCreated) { chartsCreated = true; criarGraficos(); }
-    if (nome === 'bateria'  && !batChartsCreated) { batChartsCreated = true; criarAbasBateria(); }
+    if (nome === 'bateria'  && !batChartsCreated) {
+        batChartsCreated = true;
+        iniciarAbaBateria();
+    }
+}
+
+async function iniciarAbaBateria() {
+    await carregarAbasDisponiveis();
+
+    const diaInicial = abasDisponiveis.includes(paginaHoje)
+        ? paginaHoje
+        : abasDisponiveis[abasDisponiveis.length - 1];
+
+    if (diaInicial) {
+        diaSelecionado = diaInicial;
+        renderDayTabs();
+        await carregarDadosBateriaParaDia(diaInicial);
+    }
+
+    ['batSearch','batFiltroBat','batFiltroResp','batOrdenar'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', () => renderBatTabela(dadosBateriaAtual));
+    });
+
+    const filtroInput = document.getElementById('filtroBatResp');
+    if (filtroInput) filtroInput.addEventListener('input', e => renderBatRespChart(e.target.value));
 }
 
 function preencherFiltros() {
@@ -1159,13 +1515,13 @@ function renderCards() {
 }
 
 function renderTabela() {
-    const tbody      = document.getElementById('tbody');
-    tbody.innerHTML  = '';
+    const tbody     = document.getElementById('tbody');
+    tbody.innerHTML = '';
 
-    const busca      = document.getElementById('search').value.toLowerCase();
-    const catFiltro  = document.getElementById('filtroCategoria').value;
-    const respFiltro = document.getElementById('filtroResp').value;
-    const ordem      = document.getElementById('ordenar').value;
+    const busca     = document.getElementById('search').value.toLowerCase();
+    const catFiltro = document.getElementById('filtroCategoria').value;
+    const respFiltro= document.getElementById('filtroResp').value;
+    const ordem     = document.getElementById('ordenar').value;
 
     let lista = dados.map((item, idx) => ({ item, idx }))
         .sort((a, b) => {
@@ -1186,12 +1542,12 @@ function renderTabela() {
 
         found = true;
 
-        const prev      = escHtml(item["PREVISÃO"]  || "—");
-        const obs       = escHtml(item["OBS"]        || "—");
-        const status    = escHtml(item["STATUS"]     || "—");
-        const tsk       = escHtml(item["TSK"]        || "—");
-        const respEsc   = escHtml(resp);
-        const pendencia = escHtml(item["PENDÊNCIA"]  || "");
+        const prev    = escHtml(item["PREVISÃO"]  || "—");
+        const obs     = escHtml(item["OBS"]        || "—");
+        const status  = escHtml(item["STATUS"]     || "—");
+        const tsk     = escHtml(item["TSK"]        || "—");
+        const respEsc = escHtml(resp);
+        const pendencia = escHtml(item["PENDÊNCIA"] || "");
 
         tbody.innerHTML += `
         <tr>
@@ -1218,19 +1574,20 @@ function renderTabela() {
         tbody.innerHTML = `<tr><td colspan="8" class="empty">Nenhum resultado encontrado.</td></tr>`;
 }
 
-document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', renderTabela));
+document.querySelectorAll('#tabela input, #tabela select').forEach(el =>
+    el.addEventListener('input', renderTabela));
 
 function abrirModal(idx) {
     editandoIndex = idx;
     const item = dados[idx];
 
-    document.getElementById('modalSiteNome').textContent = item["SITE"]       || "—";
-    document.getElementById('fStatus').value             = item["STATUS"]     || '';
-    document.getElementById('fTsk').value                = item["TSK"]        || '';
-    document.getElementById('fResp').value               = item["RESPONSÁVEL"]|| '';
-    document.getElementById('fPrevisao').value           = item["PREVISÃO"]   || '';
-    document.getElementById('fPendencia').value          = item["PENDÊNCIA"]  || '';
-    document.getElementById('fObs').value                = item["OBS"]        || '';
+    document.getElementById('modalSiteNome').textContent = item["SITE"]        || "—";
+    document.getElementById('fStatus').value             = item["STATUS"]      || '';
+    document.getElementById('fTsk').value                = item["TSK"]         || '';
+    document.getElementById('fResp').value               = item["RESPONSÁVEL"] || '';
+    document.getElementById('fPrevisao').value           = item["PREVISÃO"]    || '';
+    document.getElementById('fPendencia').value          = item["PENDÊNCIA"]   || '';
+    document.getElementById('fObs').value                = item["OBS"]         || '';
 
     document.getElementById('modalOverlay').classList.add('open');
     document.getElementById('fStatus').focus();
@@ -1300,13 +1657,13 @@ function mostrarToast(msg, tipo) {
     setTimeout(() => { t.style.display = 'none'; }, 3500);
 }
 
-/* ─── COPIAR LISTA ─────────────────────────────────────── */
+/* ─── COPIAR LISTA ─── */
 function copiarLista(tipo) {
     const lista  = tipo === 'no' ? listaSemBateria : listaComBateria;
     const btnId  = tipo === 'no' ? 'btnCopyNo' : 'btnCopyYes';
     const titulo = tipo === 'no'
-        ? `SITES SEM POSSIBILIDADE DE BATERIA ${dia}/${mes}:`
-        : `SITES COM POSSIBILIDADE DE BATERIA ${dia}/${mes}:`;
+        ? `SITES SEM POSSIBILIDADE DE BATERIA ${modoTodos ? 'TODOS OS DIAS' : diaSelecionado}:`
+        : `SITES COM POSSIBILIDADE DE BATERIA ${modoTodos ? 'TODOS OS DIAS' : diaSelecionado}:`;
 
     if (!lista.length) {
         mostrarToast('Nenhum site para copiar.', 'err');
@@ -1319,7 +1676,6 @@ function copiarLista(tipo) {
         const btn = document.getElementById(btnId);
         btn.classList.add('copied');
         btn.querySelector('svg').innerHTML = `<polyline points="20 6 9 17 4 12" stroke-width="2.5"/>`;
-        const span = btn.childNodes[btn.childNodes.length - 1];
         btn.lastChild.textContent = ' Copiado!';
         mostrarToast('✓ Lista copiada!', 'ok');
         setTimeout(() => {
@@ -1414,49 +1770,31 @@ function criarGraficos() {
     });
 }
 
-/* ─── ABA BATERIA ─────────────────────────────────────── */
-function criarAbasBateria() {
-    const fonte = dadosBateria.length > 0 ? dadosBateria : dados;
-
-    if (!fonte.length) {
-        document.getElementById('bat-cards').innerHTML =
-            `<div style="color:var(--muted);font-size:14px;padding:20px">Nenhum dado de bateria disponível.</div>`;
-        return;
-    }
-
-    const colKeys = ['BATERIA', 'Bateria', 'bateria', 'HAS_BATERIA', 'POSSUI BATERIA', 'possui bateria', 'TEM BATERIA'];
-    let colBat = null;
-    if (fonte.length > 0) {
-        for (const k of colKeys) {
-            if (k in fonte[0]) { colBat = k; break; }
-        }
-        if (!colBat) {
-            colBat = Object.keys(fonte[0]).find(k => k.toLowerCase().includes('bateria')) || null;
-        }
-    }
-
+/* ─── RENDERIZA ABA BATERIA COM OS DADOS DO DIA ─── */
+function renderAbasBateria(aba, fonte) {
     let comBateria = [], semBateria = [], indefinido = [];
 
     fonte.forEach(item => {
-        const site = item["SITE"] || item["Site"] || item["site"] || "—";
-        const resp = item["RESPONSÁVEL"] || item["Responsável"] || item["responsavel"] || "";
-        const valBat = colBat ? item[colBat] : null;
-        const status = parseBateria(valBat);
+        const site  = item["SITE"]        || item["Site"]        || "—";
+        const resp  = item["RESPONSÁVEL"] || item["Responsável"] || "";
+        const valBat= item["BATERIA"]     || item["Bateria"]     || "";
+        const status= parseBateria(valBat);
 
-        if (status === true)  comBateria.push({ site, resp, raw: valBat });
-        else if (status === false) semBateria.push({ site, resp, raw: valBat });
-        else indefinido.push({ site, resp, raw: valBat });
+        const entrada = { site, resp, raw: valBat };
+
+        if (status === true)       comBateria.push(entrada);
+        else if (status === false) semBateria.push(entrada);
+        else                       indefinido.push(entrada);
     });
 
-    /* Salva globalmente para o botão copiar */
     listaSemBateria = semBateria;
     listaComBateria = comBateria;
 
-    const total = fonte.length;
+    const total  = fonte.length;
     const pctCom = total ? Math.round((comBateria.length / total) * 100) : 0;
     const pctSem = total ? Math.round((semBateria.length / total) * 100) : 0;
 
-    /* ── Cards de resumo ── */
+    /* Cards de resumo */
     document.getElementById('bat-cards').innerHTML = `
         <div class="bat-card" style="--bcc:var(--bat-ok)">
             <div class="bat-card-icon">🔋</div>
@@ -1483,9 +1821,10 @@ function criarAbasBateria() {
             </div>
         </div>`;
 
-    /* ── Gráfico de rosca — Distribuição ── */
+    /* Gráfico rosca */
+    if (batDistChart) { batDistChart.destroy(); batDistChart = null; }
     const distTotal = comBateria.length + semBateria.length;
-    new Chart(document.getElementById('graficoBatDist'), {
+    batDistChart = new Chart(document.getElementById('graficoBatDist'), {
         type: 'doughnut',
         data: {
             labels: ['Com Bateria', 'Sem Bateria'],
@@ -1518,16 +1857,22 @@ function criarAbasBateria() {
         }
     });
 
-    /* ── Gráfico de barras — Sem Bateria por Responsável ── */
+    /* Gráfico barras por responsável */
     semBateriaGlobal = semBateria;
-    renderBatRespChart('');
+    renderBatRespChart(document.getElementById('filtroBatResp')?.value || '');
 
-    const filtroInput = document.getElementById('filtroBatResp');
-    if (filtroInput) {
-        filtroInput.addEventListener('input', e => renderBatRespChart(e.target.value));
-    }
+    /* Preenche select de responsáveis */
+    const respSetBat = new Set(fonte.map(i => i["RESPONSÁVEL"] || i["Responsável"] || '').filter(Boolean));
+    const selBatResp = document.getElementById('batFiltroResp');
+    selBatResp.innerHTML = '<option value="">Todos os Responsáveis</option>';
+    [...respSetBat].sort().forEach(r =>
+        selBatResp.innerHTML += `<option value="${r}">${escHtml(r)}</option>`
+    );
 
-    /* ── Listas de sites ── */
+    /* Tabela */
+    renderBatTabela(fonte);
+
+    /* Badges e listas */
     document.getElementById('badge-no').textContent  = semBateria.length;
     document.getElementById('badge-yes').textContent = comBateria.length;
 
@@ -1540,7 +1885,9 @@ function criarAbasBateria() {
         el.innerHTML = lista.map(i => `
             <div class="bat-site-row">
                 <span class="bat-site-name" style="color:${color}">${escHtml(i.site)}</span>
-                <span class="bat-site-resp">${escHtml(i.resp) || '—'}</span>
+                <div class="bat-site-meta">
+                    <span class="bat-site-resp">${escHtml(i.resp) || '—'}</span>
+                </div>
             </div>`).join('');
     };
 
@@ -1548,7 +1895,63 @@ function criarAbasBateria() {
     renderLista('list-yes-bat', comBateria, '#00e5a0');
 }
 
-/* ─── Gráfico vertical "Por Responsável — Sem Bateria" ── */
+/* Tabela de bateria com filtros */
+function renderBatTabela(fonte) {
+    if (!fonte || !fonte.length) return;
+    const tbody   = document.getElementById('batTbody');
+    const busca   = (document.getElementById('batSearch')?.value || '').toLowerCase();
+    const filBat  = document.getElementById('batFiltroBat')?.value || '';
+    const filResp = document.getElementById('batFiltroResp')?.value || '';
+    const ordem   = document.getElementById('batOrdenar')?.value || 'bat_no';
+
+    let lista = fonte.map(item => {
+        const site  = item["SITE"]        || item["Site"]        || "—";
+        const resp  = item["RESPONSÁVEL"] || item["Responsável"] || "";
+        const raw   = item["BATERIA"]     || item["Bateria"]     || "";
+        const status= parseBateria(raw);
+        return { site, resp, raw, status };
+    });
+
+    lista = lista.filter(i => {
+        if (busca && !i.site.toLowerCase().includes(busca)) return false;
+        if (filResp && i.resp !== filResp) return false;
+        if (filBat === 'SIM' && i.status !== true)  return false;
+        if (filBat === 'NAO' && i.status !== false) return false;
+        return true;
+    });
+
+    lista.sort((a, b) => {
+        if (ordem === 'az')      return a.site.localeCompare(b.site);
+        if (ordem === 'za')      return b.site.localeCompare(a.site);
+        if (ordem === 'bat_yes') {
+            const s = i => i.status === true ? 0 : i.status === false ? 1 : 2;
+            return s(a) - s(b);
+        }
+        const s = i => i.status === false ? 0 : i.status === true ? 1 : 2;
+        return s(a) - s(b) || a.site.localeCompare(b.site);
+    });
+
+    if (!lista.length) {
+        tbody.innerHTML = `<tr><td colspan="3" class="empty">Nenhum resultado encontrado.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = lista.map(i => {
+        let batLabel, batColor;
+        if (i.status === true)       { batLabel = '✅ Sim';        batColor = 'var(--bat-ok)'; }
+        else if (i.status === false) { batLabel = '🪫 Não';        batColor = 'var(--bat-no)'; }
+        else                         { batLabel = '❓ Indefinido'; batColor = 'var(--bat-un)'; }
+
+        return `
+        <tr>
+            <td><span class="site-name">${escHtml(i.site)}</span></td>
+            <td><span style="color:${batColor};font-family:'DM Mono',monospace;font-size:12px;font-weight:600">${batLabel}</span></td>
+            <td>${i.resp ? `<span class="resp-tag">${escHtml(i.resp)}</span>` : '—'}</td>
+        </tr>`;
+    }).join('');
+}
+
+/* Gráfico vertical "Sem Bateria por Responsável" */
 function renderBatRespChart(filtro) {
     const termo = (filtro || '').trim().toLowerCase();
 
@@ -1567,17 +1970,12 @@ function renderBatRespChart(filtro) {
     const batCanvas  = document.getElementById('graficoBatResp');
     const emptyEl    = document.getElementById('batRespEmpty');
 
-    if (batRespChart) {
-        batRespChart.destroy();
-        batRespChart = null;
-    }
+    if (batRespChart) { batRespChart.destroy(); batRespChart = null; }
 
     if (respLabels.length === 0) {
         batCanvas.style.display = 'none';
         emptyEl.style.display   = 'block';
-        emptyEl.textContent     = termo
-            ? 'Nenhum responsável encontrado para o filtro.'
-            : 'Nenhum site sem bateria.';
+        emptyEl.textContent     = termo ? 'Nenhum responsável encontrado.' : 'Nenhum site sem bateria.';
         return;
     }
 
