@@ -339,106 +339,9 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 
 /* ─── ABA BATERIA ─── */
 
-/* ─── SELETOR DE DIA ─── */
-.bat-day-selector {
+/* Banner info "todos os dias" */
+.bat-info-banner {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 28px;
-    flex-wrap: wrap;
-}
-
-.bat-day-selector-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
-.day-tabs {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    flex: 1;
-}
-
-.day-tab {
-    padding: 6px 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-
-.day-tab:hover {
-    color: var(--text);
-    border-color: rgba(255,95,0,0.4);
-    background: var(--surface2);
-}
-
-.day-tab.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-}
-
-.day-tab.hoje-tab {
-    border-color: rgba(255,95,0,0.5);
-    color: var(--accent2);
-}
-
-.day-tab.hoje-tab.active {
-    background: var(--accent);
-    color: white;
-}
-
-/* ─── BOTÃO TODOS OS DIAS ─── */
-.day-tab.todos-tab {
-    border-color: rgba(56,189,248,0.4);
-    color: #38bdf8;
-    background: rgba(56,189,248,0.06);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: 600;
-}
-
-.day-tab.todos-tab:hover {
-    border-color: rgba(56,189,248,0.7);
-    background: rgba(56,189,248,0.12);
-    color: #7dd3fc;
-}
-
-.day-tab.todos-tab.active {
-    background: #38bdf8;
-    border-color: #38bdf8;
-    color: #05061a;
-}
-
-.day-tab.todos-tab .todos-spinner {
-    width: 10px;
-    height: 10px;
-    border: 1.5px solid rgba(56,189,248,0.3);
-    border-top-color: #38bdf8;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: none;
-}
-
-.day-tab.todos-tab.loading .todos-spinner { display: inline-block; }
-.day-tab.todos-tab.loading .todos-icon { display: none; }
-
-/* ─── BANNER MODO TODOS ─── */
-.todos-banner {
-    display: none;
     align-items: center;
     gap: 10px;
     padding: 10px 16px;
@@ -449,18 +352,17 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     font-family: 'DM Mono', monospace;
     font-size: 12px;
     color: #38bdf8;
+    flex-wrap: wrap;
 }
 
-.todos-banner.visible { display: flex; }
-
-.todos-banner .dias-list {
+.bat-info-banner .dias-list {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
     flex: 1;
 }
 
-.todos-banner .dia-chip {
+.bat-info-banner .dia-chip {
     padding: 2px 8px;
     background: rgba(56,189,248,0.12);
     border: 1px solid rgba(56,189,248,0.25);
@@ -469,23 +371,28 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     color: #7dd3fc;
 }
 
-.bat-day-loading {
+.bat-loading-state {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 16px 0;
+    justify-content: center;
+    gap: 16px;
+    padding: 60px 20px;
     color: var(--muted);
-    font-size: 13px;
     font-family: 'DM Mono', monospace;
+    font-size: 13px;
 }
 
-.bat-day-loading .dot-spin {
-    width: 16px; height: 16px;
-    border: 2px solid rgba(255,95,0,0.3);
+.bat-loading-state .big-spin {
+    width: 32px; height: 32px;
+    border: 3px solid rgba(255,95,0,0.2);
     border-top-color: var(--accent);
     border-radius: 50%;
-    animation: spin 0.7s linear infinite;
+    animation: spin 0.8s linear infinite;
 }
+
+.bat-loading-state .load-msg { color: var(--accent2); }
+.bat-loading-state .load-sub { font-size: 11px; opacity: 0.6; }
 
 /* Cards de bateria */
 .bat-cards {
@@ -614,7 +521,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 .bat-filtros input { flex: 1; min-width: 180px; }
 .bat-filtros select option { background: var(--surface2); }
 
-/* ─── TABELA BATERIA (histórico) ─── */
+/* ─── TABELA BATERIA ─── */
 .bat-table-wrap {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -623,14 +530,14 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     margin-bottom: 28px;
 }
 
-/* Badge de data na tabela */
+/* Badge de data "última atualização" */
 .data-badge {
     display: inline-flex;
     align-items: center;
     padding: 2px 8px;
     border-radius: 6px;
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.1);
@@ -753,6 +660,27 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     font-family: 'DM Mono', monospace;
     color: var(--muted);
     white-space: nowrap;
+}
+
+/* Progresso de carregamento */
+.bat-progress-bar {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 3px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+.bat-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+.bat-progress-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 16px;
 }
 
 .empty { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
@@ -1009,124 +937,124 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     <!-- ABA BATERIA -->
     <div id="bateria" class="tab">
 
-        <!-- Seletor de dia -->
-        <div class="bat-day-selector">
-            <span class="bat-day-selector-label">📅 Dia:</span>
-            <div class="day-tabs" id="dayTabs">
-                <div class="bat-day-loading">
-                    <div class="dot-spin"></div>
-                    Carregando dias...
-                </div>
-            </div>
+        <!-- Estado de carregamento inicial -->
+        <div id="batLoadingState" class="bat-loading-state">
+            <div class="big-spin"></div>
+            <div class="load-msg">Carregando dados...</div>
+            <div class="load-sub" id="batLoadSub">Buscando abas</div>
         </div>
 
-        <!-- Banner modo todos -->
-        <div class="todos-banner" id="todosBanner">
-            <span>📊 Exibindo dados agregados de:</span>
-            <div class="dias-list" id="todosChips"></div>
-        </div>
+        <!-- FASE 1: listas de copiar (aparecem logo após consolidar) -->
+        <div id="batFase1" style="display:none">
 
-        <!-- Cards de resumo -->
-        <div class="bat-cards" id="bat-cards">
-            <div style="color:var(--muted);font-size:13px;padding:10px 0;font-family:'DM Mono',monospace">
-                Selecione um dia acima para ver os dados.
-            </div>
-        </div>
-
-        <!-- Gráficos -->
-        <div class="bat-graficos">
-            <div class="grafico-card bat-grafico-dist">
-                <h3>Distribuição Geral</h3>
-                <div class="donut-wrapper">
-                    <canvas id="graficoBatDist"></canvas>
-                </div>
+            <!-- Banner info -->
+            <div class="bat-info-banner" id="batInfoBanner">
+                <span>📊 Dados consolidados —</span>
+                <div class="dias-list" id="batDiasChips"></div>
+                <span style="color:var(--muted);font-size:11px">· última info por site prevalece</span>
             </div>
 
-            <div class="grafico-card bat-grafico-resp">
-                <h3>Por Responsável — Sem Bateria</h3>
-                <div class="mini-filtro">
-                    <input type="text" id="filtroBatResp" placeholder="🔍  Filtrar responsável...">
-                </div>
-                <div class="chart-area">
-                    <canvas id="graficoBatResp"></canvas>
-                    <div class="empty" id="batRespEmpty" style="display:none;padding:24px">Selecione um dia para ver os dados.</div>
-                </div>
-            </div>
-        </div>
+            <!-- Cards de resumo -->
+            <div class="bat-cards" id="bat-cards"></div>
 
-        <!-- Tabela histórica completa -->
-        <div class="bat-filtros">
-            <input type="text" id="batSearch" placeholder="🔍  Buscar site...">
-            <select id="batFiltroBat">
-                <option value="">Todos os Status</option>
-                <option value="NAO">⚠️ Sem Bateria</option>
-                <option value="SIM">✅ Com Bateria</option>
-            </select>
-            <select id="batFiltroResp"><option value="">Todos os Responsáveis</option></select>
-            <select id="batOrdenar">
-                <option value="bat_no">Sem bateria primeiro</option>
-                <option value="bat_yes">Com bateria primeiro</option>
-                <option value="az">A → Z</option>
-                <option value="za">Z → A</option>
-            </select>
-        </div>
-
-        <div class="bat-table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Site</th>
-                        <th>Bateria</th>
-                        <th>Responsável</th>
-                    </tr>
-                </thead>
-                <tbody id="batTbody">
-                    <tr><td colspan="3" class="empty">Selecione um dia acima para ver os dados.</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Listas de sites (para copiar) -->
-        <div class="bat-list-grid">
-            <div class="bat-list-card">
-                <div class="bat-list-header">
-                    <h4>⚠️ Sem Bateria</h4>
-                    <div style="display:flex;align-items:center;gap:8px">
-                        <span class="bat-count-badge" id="badge-no">0</span>
-                        <button class="btn-copy" id="btnCopyNo" onclick="copiarLista('no')" title="Copiar lista">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                            </svg>
-                            Copiar
-                        </button>
+            <!-- Listas para copiar — aparecem ANTES da tabela -->
+            <div class="bat-list-grid" style="margin-bottom:28px">
+                <div class="bat-list-card">
+                    <div class="bat-list-header">
+                        <h4>⚠️ Sem Bateria</h4>
+                        <div style="display:flex;align-items:center;gap:8px">
+                            <span class="bat-count-badge" id="badge-no">0</span>
+                            <button class="btn-copy" id="btnCopyNo" onclick="copiarLista('no')" title="Copiar lista">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                Copiar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bat-site-list" id="list-no-bat">
+                        <div class="empty" style="padding:24px">Carregando...</div>
                     </div>
                 </div>
-                <div class="bat-site-list" id="list-no-bat">
-                    <div class="empty" style="padding:24px">Selecione um dia.</div>
-                </div>
-            </div>
 
-            <div class="bat-list-card">
-                <div class="bat-list-header">
-                    <h4>✅ Com Bateria</h4>
-                    <div style="display:flex;align-items:center;gap:8px">
-                        <span class="bat-count-badge" id="badge-yes">0</span>
-                        <button class="btn-copy" id="btnCopyYes" onclick="copiarLista('yes')" title="Copiar lista">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                            </svg>
-                            Copiar
-                        </button>
+                <div class="bat-list-card">
+                    <div class="bat-list-header">
+                        <h4>✅ Com Bateria</h4>
+                        <div style="display:flex;align-items:center;gap:8px">
+                            <span class="bat-count-badge" id="badge-yes">0</span>
+                            <button class="btn-copy" id="btnCopyYes" onclick="copiarLista('yes')" title="Copiar lista">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                Copiar
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="bat-site-list" id="list-yes-bat">
-                    <div class="empty" style="padding:24px">Selecione um dia.</div>
+                    <div class="bat-site-list" id="list-yes-bat">
+                        <div class="empty" style="padding:24px">Carregando...</div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- FASE 2: gráficos + tabela (aparecem depois, sem bloquear listas) -->
+        <div id="batFase2" style="display:none">
+
+            <!-- Gráficos -->
+            <div class="bat-graficos">
+                <div class="grafico-card bat-grafico-dist">
+                    <h3>Distribuição Geral</h3>
+                    <div class="donut-wrapper">
+                        <canvas id="graficoBatDist"></canvas>
+                    </div>
+                </div>
+
+                <div class="grafico-card bat-grafico-resp">
+                    <h3>Por Responsável — Sem Bateria</h3>
+                    <div class="mini-filtro">
+                        <input type="text" id="filtroBatResp" placeholder="🔍  Filtrar responsável...">
+                    </div>
+                    <div class="chart-area">
+                        <canvas id="graficoBatResp"></canvas>
+                        <div class="empty" id="batRespEmpty" style="display:none;padding:24px">Nenhum dado.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros tabela -->
+            <div class="bat-filtros">
+                <input type="text" id="batSearch" placeholder="🔍  Buscar site...">
+                <select id="batFiltroBat">
+                    <option value="">Todos os Status</option>
+                    <option value="NAO">⚠️ Sem Bateria</option>
+                    <option value="SIM">✅ Com Bateria</option>
+                </select>
+                <select id="batFiltroResp"><option value="">Todos os Responsáveis</option></select>
+                <select id="batOrdenar">
+                    <option value="bat_no">Sem bateria primeiro</option>
+                    <option value="bat_yes">Com bateria primeiro</option>
+                    <option value="az">A → Z</option>
+                    <option value="za">Z → A</option>
+                </select>
+            </div>
+
+            <div class="bat-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Site</th>
+                            <th>Bateria</th>
+                            <th>Responsável</th>
+                            <th>Última info</th>
+                        </tr>
+                    </thead>
+                    <tbody id="batTbody"></tbody>
+                </table>
+            </div>
+
+        </div><!-- fim #batFase2 -->
     </div>
 </div>
 
@@ -1193,182 +1121,153 @@ const dia  = String(hoje.getDate()).padStart(2, '0');
 const mes  = String(hoje.getMonth() + 1).padStart(2, '0');
 const paginaHoje = `${dia}/${mes}`;
 
+// ─── Listas globais para copiar ───
 let listaSemBateria = [];
 let listaComBateria = [];
 
+// ─── Dados globais ───
 let dados = [];
-let dadosBateriaAtual = [];
-let chartsCreated = false;
-let batChartsCreated = false;
-let editandoIndex = null;
-let diaSelecionado = paginaHoje;
-let modoTodos = false; // ← NOVO
+let dadosBateriaConsolidados = [];
+let chartsCreated    = false;
+let batCarregado     = false;
+let editandoIndex    = null;
 
 let semBateriaGlobal = [];
-let batRespChart = null;
-let batDistChart = null;
+let batRespChart     = null;
+let batDistChart     = null;
 
-// ─── SELETOR DE DIAS ───
-let abasDisponiveis = [];
-
-async function carregarAbasDisponiveis() {
-    try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?aba=LISTAR_ABAS`);
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-            abasDisponiveis = data.map(a => a.nome || a);
-        } else {
-            abasDisponiveis = [paginaHoje];
-        }
-    } catch {
-        abasDisponiveis = [paginaHoje];
+// ─── Converte string de data "DD/MM" para número comparável ───
+function dataParaNum(str) {
+    if (!str) return 0;
+    const partes = str.split('/');
+    if (partes.length >= 2) {
+        const d = parseInt(partes[0], 10) || 0;
+        const m = parseInt(partes[1], 10) || 0;
+        const a = parseInt(partes[2], 10) || 0;
+        return a * 10000 + m * 100 + d;
     }
-    renderDayTabs();
+    return 0;
 }
 
-function renderDayTabs() {
-    const container = document.getElementById('dayTabs');
-    if (!abasDisponiveis.length) {
-        container.innerHTML = `<span style="color:var(--muted);font-size:12px;font-family:'DM Mono',monospace">Nenhuma aba encontrada.</span>`;
+// ─── Ordena abas cronologicamente (DD/MM) ───
+function ordenarAbas(abas) {
+    return [...abas].sort((a, b) => dataParaNum(a) - dataParaNum(b));
+}
+
+// ─── CARREGAR E CONSOLIDAR TODOS OS DIAS ───
+async function carregarTodosOsDias() {
+    const loadSub  = document.getElementById('batLoadSub');
+    const loadState= document.getElementById('batLoadingState');
+
+    let abas = [];
+    let fetchesEmAndamento = {};
+
+    const listarPromise = fetch(`${APPS_SCRIPT_URL}?aba=LISTAR_ABAS`)
+        .then(r => r.json())
+        .catch(() => null);
+
+    fetchesEmAndamento[paginaHoje] = fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(paginaHoje)}`)
+        .then(r => r.json()).catch(() => null);
+
+    loadSub.textContent = 'Buscando abas disponíveis...';
+    const listaRaw = await listarPromise;
+
+    if (Array.isArray(listaRaw) && listaRaw.length > 0) {
+        abas = listaRaw.map(a => a.nome || a);
+    }
+    if (!abas.length) abas = [paginaHoje];
+
+    abas = ordenarAbas(abas);
+
+    let concluidos = 0;
+    const total = abas.length;
+
+    const promessas = abas.map(aba => {
+        const p = fetchesEmAndamento[aba]
+            ? fetchesEmAndamento[aba]
+            : fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(aba)}`).then(r => r.json()).catch(() => null);
+
+        return p.then(data => {
+            concluidos++;
+            loadSub.textContent = `${concluidos} / ${total} dias carregados`;
+            return { aba, data };
+        });
+    });
+
+    const resultados = await Promise.allSettled(promessas);
+
+    const resultadosPorAba = {};
+    for (const r of resultados) {
+        if (r.status === 'fulfilled' && r.value) {
+            const { aba, data } = r.value;
+            if (Array.isArray(data) && data.length > 0) {
+                resultadosPorAba[aba] = data;
+            }
+        }
+    }
+
+    const temColunaBateria = Object.values(resultadosPorAba).some(lista =>
+        lista.some(item => 'BATERIA' in item || 'Bateria' in item)
+    );
+
+    if (!temColunaBateria) {
+        loadState.innerHTML = `
+            <div style="font-size:2rem">📋</div>
+            <div class="load-msg">Coluna de Bateria não encontrada</div>
+            <div class="load-sub">A planilha não possui a coluna BATERIA. Adicione-a para usar esta aba.</div>`;
         return;
     }
 
-    // Botão "Todos os dias"
-    const todosAtivo = modoTodos ? ' active' : '';
-    let html = `<button
-        class="day-tab todos-tab${todosAtivo}"
-        id="btnTodosDias"
-        onclick="selecionarTodos(this)"
-        title="Agregar dados de todos os dias">
-        <span class="todos-spinner"></span>
-        <span class="todos-icon">◈</span>
-        Todos
-    </button>`;
+    const mapaConsolidado = {};
 
-    html += abasDisponiveis.map(aba => {
-        const isHoje  = aba === paginaHoje;
-        const isAtivo = !modoTodos && aba === diaSelecionado;
-        return `<button
-            class="day-tab${isHoje ? ' hoje-tab' : ''}${isAtivo ? ' active' : ''}"
-            onclick="selecionarDia('${aba}', this)"
-        >${aba}${isHoje ? ' ●' : ''}</button>`;
-    }).join('');
+    for (const aba of abas) {
+        const lista = resultadosPorAba[aba];
+        if (!lista) continue;
+        for (const item of lista) {
+            const site = (item["SITE"] || item["Site"] || "").trim();
+            if (!site) continue;
+            mapaConsolidado[site.toUpperCase()] = {
+                site,
+                resp:    item["RESPONSÁVEL"] || item["Responsável"] || "",
+                bateria: item["BATERIA"]     || item["Bateria"]     || "",
+                dia:     aba,
+            };
+        }
+    }
 
-    container.innerHTML = html;
-}
+    dadosBateriaConsolidados = Object.values(mapaConsolidado);
 
-function selecionarDia(aba, btn) {
-    modoTodos = false;
-    diaSelecionado = aba;
+    loadState.style.display = 'none';
+    document.getElementById('batFase1').style.display = 'block';
 
-    document.querySelectorAll('.day-tab').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
+    document.getElementById('batDiasChips').innerHTML = abas
+        .filter(a => resultadosPorAba[a])
+        .map(a => `<span class="dia-chip${a === paginaHoje
+            ? '" style="border-color:var(--accent);color:var(--accent2)' : ''}">${a}</span>`)
+        .join('');
 
-    // Esconde banner de todos
-    document.getElementById('todosBanner').classList.remove('visible');
+    renderFase1(dadosBateriaConsolidados);
 
-    carregarDadosBateriaParaDia(aba);
-}
+    requestAnimationFrame(() => {
+        const fase2 = document.getElementById('batFase2');
+        fase2.style.display = 'block';
 
-async function selecionarTodos(btn) {
-    if (!abasDisponiveis.length) return;
-
-    modoTodos = true;
-
-    // Visual: ativa botão, desativa dias
-    document.querySelectorAll('.day-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active', 'loading');
-
-    // Mostra loading
-    document.getElementById('bat-cards').innerHTML = `
-        <div class="bat-day-loading" style="grid-column:1/-1">
-            <div class="dot-spin"></div>
-            Agregando dados de ${abasDisponiveis.length} dia(s)...
-        </div>`;
-    document.getElementById('batTbody').innerHTML =
-        `<tr><td colspan="3" class="empty">Carregando...</td></tr>`;
-    document.getElementById('todosBanner').classList.remove('visible');
-
-    try {
-        // Busca todos os dias em paralelo
-        const resultados = await Promise.all(
-            abasDisponiveis.map(aba =>
-                fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(aba)}`)
-                    .then(r => r.json())
-                    .catch(() => [])
-            )
+        const respSet = new Set(dadosBateriaConsolidados.map(i => i.resp).filter(Boolean));
+        const selBatResp = document.getElementById('batFiltroResp');
+        selBatResp.innerHTML = '<option value="">Todos os Responsáveis</option>';
+        [...respSet].sort().forEach(r =>
+            selBatResp.innerHTML += `<option value="${r}">${escHtml(r)}</option>`
         );
 
-        // Mescla, descartando arrays vazios ou não-array
-        const merged = resultados.flat().filter(item =>
-            item && typeof item === 'object' && (item["SITE"] || item["Site"])
-        );
+        renderFase2(dadosBateriaConsolidados);
 
-        if (!merged.length) {
-            document.getElementById('bat-cards').innerHTML =
-                `<div style="color:var(--muted);font-size:13px;padding:10px 0;font-family:'DM Mono',monospace">
-                    ⚠️ Nenhum dado encontrado nos dias disponíveis.
-                </div>`;
-            btn.classList.remove('loading');
-            return;
-        }
-
-        dadosBateriaAtual = merged;
-
-        // Banner com chips dos dias
-        const banner = document.getElementById('todosBanner');
-        const chips  = document.getElementById('todosChips');
-        chips.innerHTML = abasDisponiveis
-            .map(a => `<span class="dia-chip">${a}</span>`)
-            .join('');
-        banner.classList.add('visible');
-
-        renderAbasBateria('Todos os dias', merged);
-
-    } catch (err) {
-        document.getElementById('bat-cards').innerHTML =
-            `<div style="color:var(--bat-no);font-size:13px;padding:10px 0;font-family:'DM Mono',monospace">
-                ✗ Erro ao agregar dados.
-            </div>`;
-        console.error(err);
-    } finally {
-        btn.classList.remove('loading');
-    }
-}
-
-async function carregarDadosBateriaParaDia(aba) {
-    document.getElementById('bat-cards').innerHTML = `
-        <div class="bat-day-loading" style="grid-column:1/-1">
-            <div class="dot-spin"></div>
-            Carregando dados de ${aba}...
-        </div>`;
-    document.getElementById('batTbody').innerHTML =
-        `<tr><td colspan="3" class="empty">Carregando...</td></tr>`;
-
-    try {
-        const res  = await fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(aba)}`);
-        const data = await res.json();
-
-        if (!Array.isArray(data) || data.length === 0) {
-            document.getElementById('bat-cards').innerHTML =
-                `<div style="color:var(--muted);font-size:13px;padding:10px 0;font-family:'DM Mono',monospace">
-                    ⚠️ Aba "${aba}" sem dados de bateria.
-                </div>`;
-            document.getElementById('batTbody').innerHTML =
-                `<tr><td colspan="3" class="empty">Nenhum dado encontrado para ${aba}.</td></tr>`;
-            return;
-        }
-
-        dadosBateriaAtual = data;
-        renderAbasBateria(aba, data);
-
-    } catch (err) {
-        document.getElementById('bat-cards').innerHTML =
-            `<div style="color:var(--bat-no);font-size:13px;padding:10px 0;font-family:'DM Mono',monospace">
-                ✗ Erro ao carregar dados de ${aba}.
-            </div>`;
-        console.error(err);
-    }
+        ['batSearch','batFiltroBat','batFiltroResp','batOrdenar'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', () => renderBatTabela(dadosBateriaConsolidados));
+        });
+        const fi = document.getElementById('filtroBatResp');
+        if (fi) fi.addEventListener('input', e => renderBatRespChart(e.target.value));
+    });
 }
 
 function escHtml(str) {
@@ -1404,8 +1303,6 @@ function parseBateria(valor) {
     if (valor === null || valor === undefined) return null;
     const v = String(valor).trim().toUpperCase();
     if (!v) return null;
-    if (v === 'SIM') return true;
-    if (v === 'NAO' || v === 'NÃO') return false;
     if (['SIM','S','YES','1','X','POSSUI','OK','TEM'].some(k => v.startsWith(k))) return true;
     if (['NÃO','NAO','N','NO','0','SEM'].some(k => v.startsWith(k))) return false;
     return null;
@@ -1417,8 +1314,7 @@ Chart.defaults.font  = { family: "'DM Mono', monospace", size: 11 };
 carregarDados();
 
 function carregarDados() {
-    const urlMain = `${APPS_SCRIPT_URL}?aba=${encodeURIComponent(paginaHoje)}`;
-    fetch(urlMain)
+    fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(paginaHoje)}`)
         .then(r => r.json())
         .then(data => {
             if (!Array.isArray(data) || data.length === 0) throw new Error('vazio');
@@ -1433,38 +1329,28 @@ function carregarDados() {
         });
 }
 
+// ─── CORREÇÃO PRINCIPAL: usa requestAnimationFrame para garantir que
+//     os canvases estejam visíveis e com dimensões antes do Chart.js ───
 function trocarAba(nome, btn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById(nome).classList.add('active');
     document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    if (nome === 'graficos' && !chartsCreated) { chartsCreated = true; criarGraficos(); }
-    if (nome === 'bateria'  && !batChartsCreated) {
-        batChartsCreated = true;
-        iniciarAbaBateria();
-    }
-}
 
-async function iniciarAbaBateria() {
-    await carregarAbasDisponiveis();
-
-    const diaInicial = abasDisponiveis.includes(paginaHoje)
-        ? paginaHoje
-        : abasDisponiveis[abasDisponiveis.length - 1];
-
-    if (diaInicial) {
-        diaSelecionado = diaInicial;
-        renderDayTabs();
-        await carregarDadosBateriaParaDia(diaInicial);
+    if (nome === 'graficos' && !chartsCreated) {
+        chartsCreated = true;
+        // Aguarda o browser aplicar display:block nos canvases antes de renderizar
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                criarGraficos();
+            });
+        });
     }
 
-    ['batSearch','batFiltroBat','batFiltroResp','batOrdenar'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('input', () => renderBatTabela(dadosBateriaAtual));
-    });
-
-    const filtroInput = document.getElementById('filtroBatResp');
-    if (filtroInput) filtroInput.addEventListener('input', e => renderBatRespChart(e.target.value));
+    if (nome === 'bateria' && !batCarregado) {
+        batCarregado = true;
+        carregarTodosOsDias();
+    }
 }
 
 function preencherFiltros() {
@@ -1662,8 +1548,8 @@ function copiarLista(tipo) {
     const lista  = tipo === 'no' ? listaSemBateria : listaComBateria;
     const btnId  = tipo === 'no' ? 'btnCopyNo' : 'btnCopyYes';
     const titulo = tipo === 'no'
-        ? `SITES SEM POSSIBILIDADE DE BATERIA ${modoTodos ? 'TODOS OS DIAS' : diaSelecionado}:`
-        : `SITES COM POSSIBILIDADE DE BATERIA ${modoTodos ? 'TODOS OS DIAS' : diaSelecionado}:`;
+        ? 'SITES SEM BATERIA (CONSOLIDADO TODOS OS DIAS):'
+        : 'SITES COM BATERIA (CONSOLIDADO TODOS OS DIAS):';
 
     if (!lista.length) {
         mostrarToast('Nenhum site para copiar.', 'err');
@@ -1770,31 +1656,33 @@ function criarGraficos() {
     });
 }
 
-/* ─── RENDERIZA ABA BATERIA COM OS DADOS DO DIA ─── */
-function renderAbasBateria(aba, fonte) {
+/* ─── FASE 1: cards de resumo + listas de copiar ─── */
+function renderFase1(fonte) {
     let comBateria = [], semBateria = [], indefinido = [];
 
+    const vistosNo  = new Set();
+    const vistosYes = new Set();
+
     fonte.forEach(item => {
-        const site  = item["SITE"]        || item["Site"]        || "—";
-        const resp  = item["RESPONSÁVEL"] || item["Responsável"] || "";
-        const valBat= item["BATERIA"]     || item["Bateria"]     || "";
-        const status= parseBateria(valBat);
-
-        const entrada = { site, resp, raw: valBat };
-
-        if (status === true)       comBateria.push(entrada);
-        else if (status === false) semBateria.push(entrada);
-        else                       indefinido.push(entrada);
+        const status = parseBateria(item.bateria);
+        const chave  = item.site.toUpperCase();
+        if (status === true) {
+            if (!vistosYes.has(chave)) { vistosYes.add(chave); comBateria.push(item); }
+        } else if (status === false) {
+            if (!vistosNo.has(chave))  { vistosNo.add(chave);  semBateria.push(item); }
+        } else {
+            indefinido.push(item);
+        }
     });
 
     listaSemBateria = semBateria;
     listaComBateria = comBateria;
+    semBateriaGlobal = semBateria;
 
     const total  = fonte.length;
     const pctCom = total ? Math.round((comBateria.length / total) * 100) : 0;
     const pctSem = total ? Math.round((semBateria.length / total) * 100) : 0;
 
-    /* Cards de resumo */
     document.getElementById('bat-cards').innerHTML = `
         <div class="bat-card" style="--bcc:var(--bat-ok)">
             <div class="bat-card-icon">🔋</div>
@@ -1821,15 +1709,40 @@ function renderAbasBateria(aba, fonte) {
             </div>
         </div>`;
 
-    /* Gráfico rosca */
+    document.getElementById('badge-no').textContent  = semBateria.length;
+    document.getElementById('badge-yes').textContent = comBateria.length;
+
+    const renderLista = (containerId, lista, color) => {
+        const el = document.getElementById(containerId);
+        if (!lista.length) {
+            el.innerHTML = `<div class="empty" style="padding:24px">Nenhum site.</div>`;
+            return;
+        }
+        const sorted = [...lista].sort((a, b) => a.site.localeCompare(b.site));
+        el.innerHTML = sorted.map(i => `
+            <div class="bat-site-row">
+                <span class="bat-site-name" style="color:${color}">${escHtml(i.site)}</span>
+                <div class="bat-site-meta">
+                    <span class="bat-site-resp">${escHtml(i.resp) || '—'}</span>
+                    <span class="data-badge${i.dia === paginaHoje ? ' hoje' : ''}">${escHtml(i.dia)}</span>
+                </div>
+            </div>`).join('');
+    };
+
+    renderLista('list-no-bat',  semBateria, '#f43f5e');
+    renderLista('list-yes-bat', comBateria, '#00e5a0');
+}
+
+/* ─── FASE 2: gráficos + tabela ─── */
+function renderFase2(fonte) {
     if (batDistChart) { batDistChart.destroy(); batDistChart = null; }
-    const distTotal = comBateria.length + semBateria.length;
+
     batDistChart = new Chart(document.getElementById('graficoBatDist'), {
         type: 'doughnut',
         data: {
             labels: ['Com Bateria', 'Sem Bateria'],
             datasets: [{
-                data: [comBateria.length, semBateria.length],
+                data: [listaComBateria.length, listaSemBateria.length],
                 backgroundColor: ['#00e5a0cc', '#f43f5ecc'],
                 borderWidth: 0,
                 hoverOffset: 8,
@@ -1840,77 +1753,45 @@ function renderAbasBateria(aba, fonte) {
             responsive: true,
             maintainAspectRatio: true,
             plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: { padding: 12, usePointStyle: true, boxWidth: 7, font: { size: 10 } }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: ctx => {
-                            const v = ctx.parsed;
-                            const pct = distTotal ? Math.round((v / distTotal) * 100) : 0;
-                            return ` ${v} sites (${pct}%)`;
-                        }
-                    }
-                }
+                legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, boxWidth: 7, font: { size: 10 } } },
+                tooltip: { callbacks: { label: ctx => {
+                    const v = ctx.parsed;
+                    const distTotal = listaComBateria.length + listaSemBateria.length;
+                    const pct = distTotal ? Math.round((v / distTotal) * 100) : 0;
+                    return ` ${v} sites (${pct}%)`;
+                }}}
             }
         }
     });
 
-    /* Gráfico barras por responsável */
-    semBateriaGlobal = semBateria;
-    renderBatRespChart(document.getElementById('filtroBatResp')?.value || '');
-
-    /* Preenche select de responsáveis */
-    const respSetBat = new Set(fonte.map(i => i["RESPONSÁVEL"] || i["Responsável"] || '').filter(Boolean));
-    const selBatResp = document.getElementById('batFiltroResp');
-    selBatResp.innerHTML = '<option value="">Todos os Responsáveis</option>';
-    [...respSetBat].sort().forEach(r =>
-        selBatResp.innerHTML += `<option value="${r}">${escHtml(r)}</option>`
-    );
-
-    /* Tabela */
+    renderBatRespChart('');
     renderBatTabela(fonte);
-
-    /* Badges e listas */
-    document.getElementById('badge-no').textContent  = semBateria.length;
-    document.getElementById('badge-yes').textContent = comBateria.length;
-
-    const renderLista = (containerId, lista, color) => {
-        const el = document.getElementById(containerId);
-        if (!lista.length) {
-            el.innerHTML = `<div class="empty" style="padding:24px">Nenhum site.</div>`;
-            return;
-        }
-        el.innerHTML = lista.map(i => `
-            <div class="bat-site-row">
-                <span class="bat-site-name" style="color:${color}">${escHtml(i.site)}</span>
-                <div class="bat-site-meta">
-                    <span class="bat-site-resp">${escHtml(i.resp) || '—'}</span>
-                </div>
-            </div>`).join('');
-    };
-
-    renderLista('list-no-bat',  semBateria, '#f43f5e');
-    renderLista('list-yes-bat', comBateria, '#00e5a0');
 }
 
 /* Tabela de bateria com filtros */
 function renderBatTabela(fonte) {
     if (!fonte || !fonte.length) return;
     const tbody   = document.getElementById('batTbody');
+    if (!tbody) return;
+
     const busca   = (document.getElementById('batSearch')?.value || '').toLowerCase();
     const filBat  = document.getElementById('batFiltroBat')?.value || '';
     const filResp = document.getElementById('batFiltroResp')?.value || '';
     const ordem   = document.getElementById('batOrdenar')?.value || 'bat_no';
 
-    let lista = fonte.map(item => {
-        const site  = item["SITE"]        || item["Site"]        || "—";
-        const resp  = item["RESPONSÁVEL"] || item["Responsável"] || "";
-        const raw   = item["BATERIA"]     || item["Bateria"]     || "";
-        const status= parseBateria(raw);
-        return { site, resp, raw, status };
-    });
+    const vistos = new Set();
+    let lista = [];
+    for (const item of fonte) {
+        const chave = item.site.toUpperCase();
+        if (vistos.has(chave)) continue;
+        vistos.add(chave);
+        lista.push({
+            site:   item.site,
+            resp:   item.resp,
+            dia:    item.dia,
+            status: parseBateria(item.bateria),
+        });
+    }
 
     lista = lista.filter(i => {
         if (busca && !i.site.toLowerCase().includes(busca)) return false;
@@ -1925,14 +1806,14 @@ function renderBatTabela(fonte) {
         if (ordem === 'za')      return b.site.localeCompare(a.site);
         if (ordem === 'bat_yes') {
             const s = i => i.status === true ? 0 : i.status === false ? 1 : 2;
-            return s(a) - s(b);
+            return s(a) - s(b) || a.site.localeCompare(b.site);
         }
         const s = i => i.status === false ? 0 : i.status === true ? 1 : 2;
         return s(a) - s(b) || a.site.localeCompare(b.site);
     });
 
     if (!lista.length) {
-        tbody.innerHTML = `<tr><td colspan="3" class="empty">Nenhum resultado encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="empty">Nenhum resultado encontrado.</td></tr>`;
         return;
     }
 
@@ -1947,11 +1828,12 @@ function renderBatTabela(fonte) {
             <td><span class="site-name">${escHtml(i.site)}</span></td>
             <td><span style="color:${batColor};font-family:'DM Mono',monospace;font-size:12px;font-weight:600">${batLabel}</span></td>
             <td>${i.resp ? `<span class="resp-tag">${escHtml(i.resp)}</span>` : '—'}</td>
+            <td><span class="data-badge${i.dia === paginaHoje ? ' hoje' : ''}">${escHtml(i.dia || '—')}</span></td>
         </tr>`;
     }).join('');
 }
 
-/* Gráfico vertical "Sem Bateria por Responsável" */
+/* Gráfico barras "Sem Bateria por Responsável" */
 function renderBatRespChart(filtro) {
     const termo = (filtro || '').trim().toLowerCase();
 
