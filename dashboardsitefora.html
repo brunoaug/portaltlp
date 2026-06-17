@@ -339,7 +339,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
 
 /* ─── ABA BATERIA ─── */
 
-/* Banner info "todos os dias" */
 .bat-info-banner {
     display: flex;
     align-items: center;
@@ -530,7 +529,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     margin-bottom: 28px;
 }
 
-/* Badge de data "última atualização" */
+/* Badge de data */
 .data-badge {
     display: inline-flex;
     align-items: center;
@@ -551,7 +550,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     color: var(--accent2);
 }
 
-/* Lista de sites sem bateria */
+/* Lista de sites */
 .bat-list-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -660,27 +659,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     font-family: 'DM Mono', monospace;
     color: var(--muted);
     white-space: nowrap;
-}
-
-/* Progresso de carregamento */
-.bat-progress-bar {
-    height: 3px;
-    background: var(--surface2);
-    border-radius: 3px;
-    margin-bottom: 8px;
-    overflow: hidden;
-}
-.bat-progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 3px;
-    transition: width 0.3s ease;
-}
-.bat-progress-text {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 16px;
 }
 
 .empty { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
@@ -937,27 +915,23 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     <!-- ABA BATERIA -->
     <div id="bateria" class="tab">
 
-        <!-- Estado de carregamento inicial -->
         <div id="batLoadingState" class="bat-loading-state">
             <div class="big-spin"></div>
             <div class="load-msg">Carregando dados...</div>
             <div class="load-sub" id="batLoadSub">Buscando abas</div>
         </div>
 
-        <!-- FASE 1: listas de copiar (aparecem logo após consolidar) -->
+        <!-- FASE 1: listas de copiar -->
         <div id="batFase1" style="display:none">
 
-            <!-- Banner info -->
             <div class="bat-info-banner" id="batInfoBanner">
                 <span>📊 Dados consolidados —</span>
                 <div class="dias-list" id="batDiasChips"></div>
-                <span style="color:var(--muted);font-size:11px">· última info por site prevalece</span>
+                <span style="color:var(--muted);font-size:11px">· última info válida por site prevalece</span>
             </div>
 
-            <!-- Cards de resumo -->
             <div class="bat-cards" id="bat-cards"></div>
 
-            <!-- Listas para copiar — aparecem ANTES da tabela -->
             <div class="bat-list-grid" style="margin-bottom:28px">
                 <div class="bat-list-card">
                     <div class="bat-list-header">
@@ -999,10 +973,9 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
             </div>
         </div>
 
-        <!-- FASE 2: gráficos + tabela (aparecem depois, sem bloquear listas) -->
+        <!-- FASE 2: gráficos + tabela -->
         <div id="batFase2" style="display:none">
 
-            <!-- Gráficos -->
             <div class="bat-graficos">
                 <div class="grafico-card bat-grafico-dist">
                     <h3>Distribuição Geral</h3>
@@ -1023,7 +996,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
                 </div>
             </div>
 
-            <!-- Filtros tabela -->
             <div class="bat-filtros">
                 <input type="text" id="batSearch" placeholder="🔍  Buscar site...">
                 <select id="batFiltroBat">
@@ -1054,7 +1026,7 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
                 </table>
             </div>
 
-        </div><!-- fim #batFase2 -->
+        </div>
     </div>
 </div>
 
@@ -1110,7 +1082,6 @@ tbody tr:hover { background: rgba(255,95,0,0.04); }
     </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1121,162 +1092,359 @@ const dia  = String(hoje.getDate()).padStart(2, '0');
 const mes  = String(hoje.getMonth() + 1).padStart(2, '0');
 const paginaHoje = `${dia}/${mes}`;
 
-// ─── Listas globais para copiar ───
 let listaSemBateria = [];
 let listaComBateria = [];
 
-// ─── Dados globais ───
 let dados = [];
 let dadosBateriaConsolidados = [];
-let chartsCreated    = false;
-let batCarregado     = false;
-let editandoIndex    = null;
+let chartsCreated = false;
+let batCarregado  = false;
+let editandoIndex = null;
 
 let semBateriaGlobal = [];
 let batRespChart     = null;
 let batDistChart     = null;
 
-// ─── Converte string de data "DD/MM" para número comparável ───
+// ─── Helpers ───────────────────────────────────────────────────────────────
+
+function escHtml(str) {
+    return (str || '')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+}
+
+/**
+ * getField(item, ...possibleKeys)
+ * Tenta todas as variações de nome de coluna e retorna o primeiro valor encontrado.
+ * Faz busca case-insensitive nas chaves do objeto.
+ */
+function getField(item, ...possibleKeys) {
+    if (!item || typeof item !== 'object') return undefined;
+    // Primeiro tenta match exato
+    for (const key of possibleKeys) {
+        if (key in item) return item[key];
+    }
+    // Depois tenta case-insensitive
+    const itemKeys = Object.keys(item);
+    for (const key of possibleKeys) {
+        const upper = key.toUpperCase();
+        const found = itemKeys.find(k => k.toUpperCase() === upper);
+        if (found !== undefined) return item[found];
+    }
+    return undefined;
+}
+
+/**
+ * normalizeStr(str)
+ * Remove caracteres invisíveis, zero-width spaces, non-breaking spaces,
+ * espaços duplos, trim agressivo. Retorna string limpa.
+ */
+function normalizeStr(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/[\u200B\u200C\u200D\uFEFF\u00A0\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/**
+ * normalizeSiteKey(str)
+ * Gera chave de consolidação: normaliza, uppercase, remove espaços extras.
+ */
+function normalizeSiteKey(str) {
+    return normalizeStr(str).toUpperCase();
+}
+
+// Converte "DD/MM" → número para ordenação cronológica
 function dataParaNum(str) {
     if (!str) return 0;
-    const partes = str.split('/');
-    if (partes.length >= 2) {
-        const d = parseInt(partes[0], 10) || 0;
-        const m = parseInt(partes[1], 10) || 0;
-        const a = parseInt(partes[2], 10) || 0;
+    const p = str.split('/');
+    if (p.length >= 2) {
+        const d = parseInt(p[0], 10) || 0;
+        const m = parseInt(p[1], 10) || 0;
+        const a = parseInt(p[2], 10) || 0;
         return a * 10000 + m * 100 + d;
     }
     return 0;
 }
 
-// ─── Ordena abas cronologicamente (DD/MM) ───
 function ordenarAbas(abas) {
     return [...abas].sort((a, b) => dataParaNum(a) - dataParaNum(b));
 }
 
-// ─── CARREGAR E CONSOLIDAR TODOS OS DIAS ───
+/*
+ * parseBateria()
+ * Retorna:
+ *   true  → tem bateria (SIM/S/YES/1/X/POSSUI/OK/TEM)
+ *   false → sem bateria (NÃO/NAO/N/NO/0/SEM)
+ *   null  → valor ausente, vazio ou não reconhecido
+ */
+function parseBateria(valor) {
+    if (valor === null || valor === undefined) return null;
+    // Normalização agressiva: remove caracteres invisíveis, non-breaking spaces, zero-width
+    const v = normalizeStr(valor).toUpperCase();
+    if (!v) return null;
+    if (['SIM','S','YES','1','X','POSSUI','OK','TEM'].some(k => v.startsWith(k))) return true;
+    if (['NÃO','NAO','N','NO','0','SEM'].some(k => v.startsWith(k))) return false;
+    return null;
+}
+
+/*
+ * abaTemColunaBateria(lista)
+ * Retorna true se QUALQUER item da aba tiver a chave "BATERIA" ou "Bateria"
+ * presente no objeto JSON — independentemente do valor.
+ * Abas sem essa coluna não geram a chave no objeto retornado pelo Apps Script.
+ */
+function abaTemColunaBateria(lista) {
+    if (!Array.isArray(lista) || lista.length === 0) return false;
+    return lista.some(item => {
+        if (!item || typeof item !== 'object') return false;
+        // Verifica todas as variações case-insensitive
+        return Object.keys(item).some(k => k.toUpperCase().trim() === 'BATERIA');
+    });
+}
+
+// ─── CARREGAR E CONSOLIDAR TODOS OS DIAS ───────────────────────────────────
+//
+// Correções em relação à versão anterior:
+//
+// 1. Filtragem por coluna BATERIA feita POR ABA, não depois de consolidar tudo.
+//    → Abas sem coluna I são completamente ignoradas (não entram no mapa,
+//      não aparecem nos chips, não influenciam nenhum site).
+//
+// 2. Lógica "indefinido só se nunca teve valor válido":
+//    → Ao percorrer as abas em ordem cronológica, `bateriaValida` só é
+//      atualizado quando parseBateria() retorna true ou false.
+//    → Se o valor do dia for null (vazio/não reconhecido), mantém o último
+//      status válido — nunca o sobrescreve com null.
+//    → Um site é "indefinido" somente se NUNCA tiver tido SIM ou NAO.
+//
+function gerarPeriodoBateria() {
+
+    const resultado = [];
+
+    const hoje = new Date();
+
+    // 20/05 do ano atual
+    const inicio = new Date(hoje.getFullYear(), 4, 20);
+
+    const cursor = new Date(inicio);
+
+    while (cursor <= hoje) {
+
+        const d = String(cursor.getDate()).padStart(2, '0');
+        const m = String(cursor.getMonth() + 1).padStart(2, '0');
+
+        resultado.push(`${d}/${m}`);
+
+        cursor.setDate(cursor.getDate() + 1);
+    }
+
+    return resultado;
+}
+
 async function carregarTodosOsDias() {
-    const loadSub  = document.getElementById('batLoadSub');
-    const loadState= document.getElementById('batLoadingState');
+    const loadSub   = document.getElementById('batLoadSub');
+    const loadState = document.getElementById('batLoadingState');
 
-    let abas = [];
-    let fetchesEmAndamento = {};
+  try {
+    // 1. Gera período 20/05 → hoje e busca aba de hoje em paralelo
+    loadSub.textContent = 'Gerando intervalo de datas (20/05 → hoje)...';
 
-    const listarPromise = fetch(`${APPS_SCRIPT_URL}?aba=LISTAR_ABAS`)
-        .then(r => r.json())
-        .catch(() => null);
+    const periodo = gerarPeriodoBateria();
 
-    fetchesEmAndamento[paginaHoje] = fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(paginaHoje)}`)
+    const dadosHoje = await fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(paginaHoje)}`)
         .then(r => r.json()).catch(() => null);
 
-    loadSub.textContent = 'Buscando abas disponíveis...';
-    const listaRaw = await listarPromise;
-
-    if (Array.isArray(listaRaw) && listaRaw.length > 0) {
-        abas = listaRaw.map(a => a.nome || a);
-    }
-    if (!abas.length) abas = [paginaHoje];
-
+    // Garante que a aba de hoje esteja na lista e ordena cronologicamente
+    let abas = Array.from(new Set([...periodo, paginaHoje]));
     abas = ordenarAbas(abas);
+
+    // 2. Fetch de todos os dias em paralelo
+    loadSub.textContent = `Carregando ${abas.length} dias...`;
+
+    const fetchPorAba = {};
+    for (const aba of abas) {
+        if (aba === paginaHoje && dadosHoje !== null) {
+            fetchPorAba[aba] = Promise.resolve(dadosHoje);
+        } else {
+            fetchPorAba[aba] = fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(aba)}`)
+                .then(r => r.json()).catch(() => null);
+        }
+    }
 
     let concluidos = 0;
     const total = abas.length;
 
-    const promessas = abas.map(aba => {
-        const p = fetchesEmAndamento[aba]
-            ? fetchesEmAndamento[aba]
-            : fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(aba)}`).then(r => r.json()).catch(() => null);
-
-        return p.then(data => {
-            concluidos++;
-            loadSub.textContent = `${concluidos} / ${total} dias carregados`;
-            return { aba, data };
-        });
-    });
-
-    const resultados = await Promise.allSettled(promessas);
-
     const resultadosPorAba = {};
-    for (const r of resultados) {
-        if (r.status === 'fulfilled' && r.value) {
-            const { aba, data } = r.value;
-            if (Array.isArray(data) && data.length > 0) {
-                resultadosPorAba[aba] = data;
+    await Promise.all(
+        abas.map(aba =>
+            fetchPorAba[aba].then(data => {
+                concluidos++;
+                loadSub.textContent = `${concluidos} / ${total} dias carregados`;
+                if (Array.isArray(data) && data.length > 0) {
+                    resultadosPorAba[aba] = data;
+                }
+            })
+        )
+    );
+
+    // 3. Filtra: só abas que realmente possuem a coluna BATERIA
+    //    (coluna I no Sheets → chave "BATERIA" ou "Bateria" no JSON)
+    const abasComColuna = abas.filter(aba =>
+        resultadosPorAba[aba] && abaTemColunaBateria(resultadosPorAba[aba])
+    );
+
+    if (abasComColuna.length === 0) {
+        loadState.innerHTML = `
+            <div style="font-size:2rem">📋</div>
+            <div class="load-msg">Coluna de Bateria não encontrada</div>
+            <div class="load-sub">Nenhuma aba possui a coluna BATERIA (coluna I). Adicione-a para usar esta aba.</div>`;
+        return;
+    }
+
+    // 4. CONSOLIDAÇÃO — percorre SOMENTE as abas com coluna, em ordem cronológica
+    //
+    // Regra de atualização por site:
+    //   • Se parseBateria() → true ou false: atualiza bateriaValida e a data.
+    //   • Se parseBateria() → null (vazio/indefinido): mantém bateriaValida anterior,
+    //     atualiza apenas responsável e data da última menção.
+    //   • Site só fica "indefinido" no resultado final se NUNCA teve valor válido.
+    //
+    const mapaConsolidado = {}; // chave: normalizeSiteKey(site)
+
+    // Debug: rastrear MIPE07 especificamente
+    const DEBUG_SITE = 'MIPE07';
+
+    for (const aba of abasComColuna) {          // ← ordem cronológica garantida
+        const lista = resultadosPorAba[aba];
+        if (!lista) continue;
+
+        for (const item of lista) {
+            const siteRaw = getField(item, 'SITE', 'Site', 'site') || '';
+            const site    = normalizeStr(siteRaw);
+            if (!site) continue;
+
+            const chave       = normalizeSiteKey(site);
+            const respRaw     = getField(item, 'RESPONSÁVEL', 'Responsável', 'responsável', 'RESPONSAVEL', 'Responsavel', 'responsavel') || '';
+            const resp        = normalizeStr(respRaw);
+            const batRaw      = getField(item, 'BATERIA', 'Bateria', 'bateria') || '';
+            const statusAtual = parseBateria(batRaw); // true | false | null
+
+            // Debug log para MIPE07
+            if (chave === DEBUG_SITE || chave.includes(DEBUG_SITE)) {
+                console.log(`[DEBUG ${DEBUG_SITE}] aba=${aba} | siteRaw="${siteRaw}" | chave="${chave}" | batRaw="${batRaw}" (len=${batRaw.length}) | parseBateria=${statusAtual}`);
+            }
+
+            if (!mapaConsolidado[chave]) {
+                mapaConsolidado[chave] = {
+                    site,
+                    resp,
+                    bateriaValida: statusAtual !== null ? statusAtual : null,
+                    ultimaDataValida: statusAtual !== null ? aba : null,
+                    dia: aba
+                };
+            } else {
+                const entrada = mapaConsolidado[chave];
+
+                if (resp) entrada.resp = resp;
+                entrada.dia = aba;
+
+                if (statusAtual !== null) {
+                    entrada.bateriaValida = statusAtual;
+                    entrada.ultimaDataValida = aba;
+                }
+                // statusAtual === null → NÃO sobrescreve bateriaValida anterior
             }
         }
     }
 
-    const temColunaBateria = Object.values(resultadosPorAba).some(lista =>
-        lista.some(item => 'BATERIA' in item || 'Bateria' in item)
-    );
-
-    if (!temColunaBateria) {
-        loadState.innerHTML = `
-            <div style="font-size:2rem">📋</div>
-            <div class="load-msg">Coluna de Bateria não encontrada</div>
-            <div class="load-sub">A planilha não possui a coluna BATERIA. Adicione-a para usar esta aba.</div>`;
-        return;
-    }
-
-    const mapaConsolidado = {};
-
-    for (const aba of abas) {
-        const lista = resultadosPorAba[aba];
-        if (!lista) continue;
-        for (const item of lista) {
-            const site = (item["SITE"] || item["Site"] || "").trim();
-            if (!site) continue;
-            mapaConsolidado[site.toUpperCase()] = {
-                site,
-                resp:    item["RESPONSÁVEL"] || item["Responsável"] || "",
-                bateria: item["BATERIA"]     || item["Bateria"]     || "",
-                dia:     aba,
-            };
+    // Debug: resultado final para MIPE07
+    for (const [chave, val] of Object.entries(mapaConsolidado)) {
+        if (chave === DEBUG_SITE || chave.includes(DEBUG_SITE)) {
+            console.log(`[DEBUG ${DEBUG_SITE}] RESULTADO FINAL: chave="${chave}" | bateriaValida=${val.bateriaValida} | ultimaDataValida=${val.ultimaDataValida} | dia=${val.dia} | resp="${val.resp}"`);
         }
     }
 
-    dadosBateriaConsolidados = Object.values(mapaConsolidado);
+    // Converte mapa → array
+    // Sites sem nenhum valor válido ficam com bateria = "" → parseBateria → null → "indefinido"
+    // Converte mapa → array
+// terminou de consolidar todos os sites
+dadosBateriaConsolidados = Object.values(mapaConsolidado).map(item => ({
 
+    site: item.site,
+
+    resp: item.resp,
+
+    dia: item.ultimaDataValida || item.dia,
+
+    bateria:
+        item.bateriaValida === true
+            ? 'SIM'
+            : item.bateriaValida === false
+                ? 'NAO'
+                : ''
+
+}));
+
+// listas auxiliares
+listaComBateria = dadosBateriaConsolidados.filter(i => i.bateria === 'SIM');
+listaSemBateria = dadosBateriaConsolidados.filter(i => i.bateria === 'NAO');
+
+    // 5. Exibe resultado — esconde loading, mostra Fase 1
     loadState.style.display = 'none';
     document.getElementById('batFase1').style.display = 'block';
 
-    document.getElementById('batDiasChips').innerHTML = abas
-        .filter(a => resultadosPorAba[a])
-        .map(a => `<span class="dia-chip${a === paginaHoje
-            ? '" style="border-color:var(--accent);color:var(--accent2)' : ''}">${a}</span>`)
+    // Chips: apenas as abas com coluna BATERIA (não todas as dd/mm)
+    document.getElementById('batDiasChips').innerHTML = abasComColuna
+        .map(a => `<span class="dia-chip${
+            a === paginaHoje
+                ? '" style="border-color:var(--accent);color:var(--accent2)'
+                : ''
+        }">${a}</span>`)
         .join('');
 
+    // Renderiza cards e listas (Fase 1)
     renderFase1(dadosBateriaConsolidados);
 
+    // Renderiza gráficos e tabela (Fase 2) no próximo frame
     requestAnimationFrame(() => {
-        const fase2 = document.getElementById('batFase2');
-        fase2.style.display = 'block';
+        try {
+            const fase2 = document.getElementById('batFase2');
+            fase2.style.display = 'block';
 
-        const respSet = new Set(dadosBateriaConsolidados.map(i => i.resp).filter(Boolean));
-        const selBatResp = document.getElementById('batFiltroResp');
-        selBatResp.innerHTML = '<option value="">Todos os Responsáveis</option>';
-        [...respSet].sort().forEach(r =>
-            selBatResp.innerHTML += `<option value="${r}">${escHtml(r)}</option>`
-        );
+            const respSet = new Set(dadosBateriaConsolidados.map(i => i.resp).filter(Boolean));
+            const selBatResp = document.getElementById('batFiltroResp');
+            selBatResp.innerHTML = '<option value="">Todos os Responsáveis</option>';
+            [...respSet].sort().forEach(r =>
+                selBatResp.innerHTML += `<option value="${escHtml(r)}">${escHtml(r)}</option>`
+            );
 
-        renderFase2(dadosBateriaConsolidados);
+            renderFase2(dadosBateriaConsolidados);
 
-        ['batSearch','batFiltroBat','batFiltroResp','batOrdenar'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('input', () => renderBatTabela(dadosBateriaConsolidados));
-        });
-        const fi = document.getElementById('filtroBatResp');
-        if (fi) fi.addEventListener('input', e => renderBatRespChart(e.target.value));
+            ['batSearch','batFiltroBat','batFiltroResp','batOrdenar'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', () => renderBatTabela(dadosBateriaConsolidados));
+            });
+            const fi = document.getElementById('filtroBatResp');
+            if (fi) fi.addEventListener('input', e => renderBatRespChart(e.target.value));
+        } catch (e) {
+            console.error('[Bateria] Erro ao renderizar Fase 2:', e);
+        }
     });
+
+  } catch (err) {
+    console.error('[Bateria] Erro fatal ao carregar dados de bateria:', err);
+    loadState.innerHTML = `
+        <div style="font-size:2rem">⚠️</div>
+        <div class="load-msg">Erro ao processar dados de bateria</div>
+        <div class="load-sub" style="max-width:500px;text-align:center">${escHtml(String(err.message || err))}</div>`;
+  }
 }
 
-function escHtml(str) {
-    return (str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-}
+// ─── Categorias ────────────────────────────────────────────────────────────
 
 const CATS = [
     { key:'normalizado',   label:'Normalizado',    color:'#00e5a0', kw:['normalizado','normal'] },
@@ -1299,18 +1467,11 @@ function categorizar(previsao, status) {
     return CAT_OUTRO;
 }
 
-function parseBateria(valor) {
-    if (valor === null || valor === undefined) return null;
-    const v = String(valor).trim().toUpperCase();
-    if (!v) return null;
-    if (['SIM','S','YES','1','X','POSSUI','OK','TEM'].some(k => v.startsWith(k))) return true;
-    if (['NÃO','NAO','N','NO','0','SEM'].some(k => v.startsWith(k))) return false;
-    return null;
-}
-
+// ─── Chart.js defaults ─────────────────────────────────────────────────────
 Chart.defaults.color = '#e8eaf6';
 Chart.defaults.font  = { family: "'DM Mono', monospace", size: 11 };
 
+// ─── Init ──────────────────────────────────────────────────────────────────
 carregarDados();
 
 function carregarDados() {
@@ -1329,8 +1490,6 @@ function carregarDados() {
         });
 }
 
-// ─── CORREÇÃO PRINCIPAL: usa requestAnimationFrame para garantir que
-//     os canvases estejam visíveis e com dimensões antes do Chart.js ───
 function trocarAba(nome, btn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById(nome).classList.add('active');
@@ -1339,12 +1498,7 @@ function trocarAba(nome, btn) {
 
     if (nome === 'graficos' && !chartsCreated) {
         chartsCreated = true;
-        // Aguarda o browser aplicar display:block nos canvases antes de renderizar
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                criarGraficos();
-            });
-        });
+        requestAnimationFrame(() => requestAnimationFrame(criarGraficos));
     }
 
     if (nome === 'bateria' && !batCarregado) {
@@ -1357,13 +1511,19 @@ function preencherFiltros() {
     const respSet = new Set();
     const catSet  = new Set();
     dados.forEach(i => {
-        if (i["RESPONSÁVEL"]) respSet.add(i["RESPONSÁVEL"]);
-        catSet.add(categorizar(i["PREVISÃO"], i["STATUS"]).key);
+        const resp = getField(i, 'RESPONSÁVEL', 'Responsável', 'responsável', 'RESPONSAVEL', 'Responsavel', 'responsavel');
+        if (resp) respSet.add(normalizeStr(resp));
+        catSet.add(categorizar(
+            getField(i, 'PREVISÃO', 'Previsão', 'previsão', 'PREVISAO', 'Previsao', 'previsao') || '',
+            getField(i, 'STATUS', 'Status', 'status') || ''
+        ).key);
     });
 
     const selResp = document.getElementById('filtroResp');
     selResp.innerHTML = '<option value="">Todos os Responsáveis</option>';
-    [...respSet].sort().forEach(r => selResp.innerHTML += `<option value="${r}">${escHtml(r)}</option>`);
+    [...respSet].sort().forEach(r =>
+        selResp.innerHTML += `<option value="${escHtml(r)}">${escHtml(r)}</option>`
+    );
 
     const selCat = document.getElementById('filtroCategoria');
     selCat.innerHTML = '<option value="">Todas as Categorias</option>';
@@ -1376,7 +1536,7 @@ function preencherFiltros() {
 function renderCards() {
     const counts = {};
     dados.forEach(i => {
-        const c = categorizar(i["PREVISÃO"], i["STATUS"]);
+        const c = categorizar(i['PREVISÃO'], i['STATUS']);
         if (!counts[c.key]) counts[c.key] = { cat: c, n: 0 };
         counts[c.key].n++;
     });
@@ -1401,26 +1561,26 @@ function renderCards() {
 }
 
 function renderTabela() {
-    const tbody     = document.getElementById('tbody');
+    const tbody  = document.getElementById('tbody');
     tbody.innerHTML = '';
 
-    const busca     = document.getElementById('search').value.toLowerCase();
-    const catFiltro = document.getElementById('filtroCategoria').value;
-    const respFiltro= document.getElementById('filtroResp').value;
-    const ordem     = document.getElementById('ordenar').value;
+    const busca      = document.getElementById('search').value.toLowerCase();
+    const catFiltro  = document.getElementById('filtroCategoria').value;
+    const respFiltro = document.getElementById('filtroResp').value;
+    const ordem      = document.getElementById('ordenar').value;
 
     let lista = dados.map((item, idx) => ({ item, idx }))
         .sort((a, b) => {
-            const A = (a.item["SITE"] || "").toLowerCase();
-            const B = (b.item["SITE"] || "").toLowerCase();
-            return ordem === "az" ? A.localeCompare(B) : B.localeCompare(A);
+            const A = (a.item['SITE'] || '').toLowerCase();
+            const B = (b.item['SITE'] || '').toLowerCase();
+            return ordem === 'az' ? A.localeCompare(B) : B.localeCompare(A);
         });
 
     let found = false;
     lista.forEach(({ item, idx }) => {
-        const site = item["SITE"] || "";
-        const resp = item["RESPONSÁVEL"] || "";
-        const cat  = categorizar(item["PREVISÃO"], item["STATUS"]);
+        const site = item['SITE'] || '';
+        const resp = item['RESPONSÁVEL'] || '';
+        const cat  = categorizar(item['PREVISÃO'], item['STATUS']);
 
         if (!site.toLowerCase().includes(busca)) return;
         if (catFiltro && cat.key !== catFiltro) return;
@@ -1428,19 +1588,19 @@ function renderTabela() {
 
         found = true;
 
-        const prev    = escHtml(item["PREVISÃO"]  || "—");
-        const obs     = escHtml(item["OBS"]        || "—");
-        const status  = escHtml(item["STATUS"]     || "—");
-        const tsk     = escHtml(item["TSK"]        || "—");
-        const respEsc = escHtml(resp);
-        const pendencia = escHtml(item["PENDÊNCIA"] || "");
+        const prev     = escHtml(item['PREVISÃO']  || '—');
+        const obs      = escHtml(item['OBS']        || '—');
+        const status   = escHtml(item['STATUS']     || '—');
+        const tsk      = escHtml(item['TSK']        || '—');
+        const respEsc  = escHtml(resp);
+        const pendencia = escHtml(item['PENDÊNCIA'] || '');
 
         tbody.innerHTML += `
         <tr>
             <td><span class="site-name">${escHtml(site)}</span></td>
             <td><span class="tsk-badge cell-wrap" style="color:${cat.color};font-size:13px;font-weight:600">${status}</span></td>
             <td><span class="tsk-badge">${tsk}</span></td>
-            <td>${resp ? `<span class="resp-tag">${respEsc}</span>` : "—"}</td>
+            <td>${resp ? `<span class="resp-tag">${respEsc}</span>` : '—'}</td>
             <td><span class="pill" style="--pc:${cat.color}" title="${prev}">${prev}</span></td>
             <td><span class="pendencia-cell${pendencia ? '' : ' vazio'}">${pendencia || '—'}</span></td>
             <td><span class="obs-cell" title="${obs}">${obs}</span></td>
@@ -1463,18 +1623,18 @@ function renderTabela() {
 document.querySelectorAll('#tabela input, #tabela select').forEach(el =>
     el.addEventListener('input', renderTabela));
 
+// ─── Modal ─────────────────────────────────────────────────────────────────
+
 function abrirModal(idx) {
     editandoIndex = idx;
     const item = dados[idx];
-
-    document.getElementById('modalSiteNome').textContent = item["SITE"]        || "—";
-    document.getElementById('fStatus').value             = item["STATUS"]      || '';
-    document.getElementById('fTsk').value                = item["TSK"]         || '';
-    document.getElementById('fResp').value               = item["RESPONSÁVEL"] || '';
-    document.getElementById('fPrevisao').value           = item["PREVISÃO"]    || '';
-    document.getElementById('fPendencia').value          = item["PENDÊNCIA"]   || '';
-    document.getElementById('fObs').value                = item["OBS"]         || '';
-
+    document.getElementById('modalSiteNome').textContent = item['SITE']        || '—';
+    document.getElementById('fStatus').value             = item['STATUS']      || '';
+    document.getElementById('fTsk').value                = item['TSK']         || '';
+    document.getElementById('fResp').value               = item['RESPONSÁVEL'] || '';
+    document.getElementById('fPrevisao').value           = item['PREVISÃO']    || '';
+    document.getElementById('fPendencia').value          = item['PENDÊNCIA']   || '';
+    document.getElementById('fObs').value                = item['OBS']         || '';
     document.getElementById('modalOverlay').classList.add('open');
     document.getElementById('fStatus').focus();
 }
@@ -1500,31 +1660,24 @@ async function salvar() {
     btnText.textContent   = 'Salvando...';
 
     const item = dados[editandoIndex];
-    item["STATUS"]      = document.getElementById('fStatus').value.trim();
-    item["TSK"]         = document.getElementById('fTsk').value.trim();
-    item["RESPONSÁVEL"] = document.getElementById('fResp').value.trim();
-    item["PREVISÃO"]    = document.getElementById('fPrevisao').value.trim();
-    item["PENDÊNCIA"]   = document.getElementById('fPendencia').value.trim();
-    item["OBS"]         = document.getElementById('fObs').value.trim();
+    item['STATUS']      = document.getElementById('fStatus').value.trim();
+    item['TSK']         = document.getElementById('fTsk').value.trim();
+    item['RESPONSÁVEL'] = document.getElementById('fResp').value.trim();
+    item['PREVISÃO']    = document.getElementById('fPrevisao').value.trim();
+    item['PENDÊNCIA']   = document.getElementById('fPendencia').value.trim();
+    item['OBS']         = document.getElementById('fObs').value.trim();
 
     try {
         const res = await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify({
-                aba:      paginaHoje,
-                rowIndex: editandoIndex + 1,
-                data:     item
-            })
+            body: JSON.stringify({ aba: paginaHoje, rowIndex: editandoIndex + 1, data: item })
         });
-
         const json = await res.json();
         if (json.error) throw new Error(json.error);
-
         fecharModal();
         renderCards();
         renderTabela();
         mostrarToast('✓ Salvo na planilha!', 'ok');
-
     } catch (err) {
         mostrarToast('✗ Erro ao salvar. Tente novamente.', 'err');
         console.error(err);
@@ -1543,7 +1696,8 @@ function mostrarToast(msg, tipo) {
     setTimeout(() => { t.style.display = 'none'; }, 3500);
 }
 
-/* ─── COPIAR LISTA ─── */
+// ─── Copiar lista ───────────────────────────────────────────────────────────
+
 function copiarLista(tipo) {
     const lista  = tipo === 'no' ? listaSemBateria : listaComBateria;
     const btnId  = tipo === 'no' ? 'btnCopyNo' : 'btnCopyYes';
@@ -1551,10 +1705,7 @@ function copiarLista(tipo) {
         ? 'SITES SEM BATERIA (CONSOLIDADO TODOS OS DIAS):'
         : 'SITES COM BATERIA (CONSOLIDADO TODOS OS DIAS):';
 
-    if (!lista.length) {
-        mostrarToast('Nenhum site para copiar.', 'err');
-        return;
-    }
+    if (!lista.length) { mostrarToast('Nenhum site para copiar.', 'err'); return; }
 
     const texto = titulo + '\n' + lista.map(i => i.site).join('\n');
 
@@ -1569,20 +1720,20 @@ function copiarLista(tipo) {
             btn.querySelector('svg').innerHTML = `<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>`;
             btn.lastChild.textContent = ' Copiar';
         }, 2200);
-    }).catch(() => {
-        mostrarToast('✗ Falha ao copiar. Tente manualmente.', 'err');
-    });
+    }).catch(() => mostrarToast('✗ Falha ao copiar. Tente manualmente.', 'err'));
 }
+
+// ─── Gráficos aba Tabela ───────────────────────────────────────────────────
 
 function criarGraficos() {
     const catCounts = {};
     const respMap   = {};
 
     dados.forEach(i => {
-        const c = categorizar(i["PREVISÃO"], i["STATUS"]);
+        const c = categorizar(i['PREVISÃO'], i['STATUS']);
         catCounts[c.key] = catCounts[c.key] || { label: c.label, n: 0, color: c.color };
         catCounts[c.key].n++;
-        const r = i["RESPONSÁVEL"] || "Sem";
+        const r = i['RESPONSÁVEL'] || 'Sem';
         respMap[r] = (respMap[r] || 0) + 1;
     });
 
@@ -1656,27 +1807,20 @@ function criarGraficos() {
     });
 }
 
-/* ─── FASE 1: cards de resumo + listas de copiar ─── */
+// ─── FASE 1: cards de resumo + listas ──────────────────────────────────────
+
 function renderFase1(fonte) {
     let comBateria = [], semBateria = [], indefinido = [];
 
-    const vistosNo  = new Set();
-    const vistosYes = new Set();
-
     fonte.forEach(item => {
         const status = parseBateria(item.bateria);
-        const chave  = item.site.toUpperCase();
-        if (status === true) {
-            if (!vistosYes.has(chave)) { vistosYes.add(chave); comBateria.push(item); }
-        } else if (status === false) {
-            if (!vistosNo.has(chave))  { vistosNo.add(chave);  semBateria.push(item); }
-        } else {
-            indefinido.push(item);
-        }
+        if      (status === true)  comBateria.push(item);
+        else if (status === false) semBateria.push(item);
+        else                       indefinido.push(item);
     });
 
-    listaSemBateria = semBateria;
-    listaComBateria = comBateria;
+    listaSemBateria  = semBateria;
+    listaComBateria  = comBateria;
     semBateriaGlobal = semBateria;
 
     const total  = fonte.length;
@@ -1705,7 +1849,7 @@ function renderFase1(fonte) {
             <div class="bat-card-info">
                 <div class="bat-card-number">${indefinido.length}</div>
                 <div class="bat-card-label">Indefinido</div>
-                <div class="bat-card-pct">${total ? Math.round((indefinido.length/total)*100) : 0}% do total</div>
+                <div class="bat-card-pct">${total ? Math.round((indefinido.length / total) * 100) : 0}% do total</div>
             </div>
         </div>`;
 
@@ -1733,7 +1877,8 @@ function renderFase1(fonte) {
     renderLista('list-yes-bat', comBateria, '#00e5a0');
 }
 
-/* ─── FASE 2: gráficos + tabela ─── */
+// ─── FASE 2: gráficos + tabela ──────────────────────────────────────────────
+
 function renderFase2(fonte) {
     if (batDistChart) { batDistChart.destroy(); batDistChart = null; }
 
@@ -1756,9 +1901,8 @@ function renderFase2(fonte) {
                 legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, boxWidth: 7, font: { size: 10 } } },
                 tooltip: { callbacks: { label: ctx => {
                     const v = ctx.parsed;
-                    const distTotal = listaComBateria.length + listaSemBateria.length;
-                    const pct = distTotal ? Math.round((v / distTotal) * 100) : 0;
-                    return ` ${v} sites (${pct}%)`;
+                    const t = listaComBateria.length + listaSemBateria.length;
+                    return ` ${v} sites (${t ? Math.round((v / t) * 100) : 0}%)`;
                 }}}
             }
         }
@@ -1768,30 +1912,24 @@ function renderFase2(fonte) {
     renderBatTabela(fonte);
 }
 
-/* Tabela de bateria com filtros */
+// ─── Tabela bateria ─────────────────────────────────────────────────────────
+
 function renderBatTabela(fonte) {
     if (!fonte || !fonte.length) return;
-    const tbody   = document.getElementById('batTbody');
+    const tbody = document.getElementById('batTbody');
     if (!tbody) return;
 
-    const busca   = (document.getElementById('batSearch')?.value || '').toLowerCase();
-    const filBat  = document.getElementById('batFiltroBat')?.value || '';
-    const filResp = document.getElementById('batFiltroResp')?.value || '';
-    const ordem   = document.getElementById('batOrdenar')?.value || 'bat_no';
+    const busca   = (document.getElementById('batSearch')?.value   || '').toLowerCase();
+    const filBat  =  document.getElementById('batFiltroBat')?.value || '';
+    const filResp =  document.getElementById('batFiltroResp')?.value || '';
+    const ordem   =  document.getElementById('batOrdenar')?.value   || 'bat_no';
 
-    const vistos = new Set();
-    let lista = [];
-    for (const item of fonte) {
-        const chave = item.site.toUpperCase();
-        if (vistos.has(chave)) continue;
-        vistos.add(chave);
-        lista.push({
-            site:   item.site,
-            resp:   item.resp,
-            dia:    item.dia,
-            status: parseBateria(item.bateria),
-        });
-    }
+    let lista = fonte.map(item => ({
+        site:   item.site,
+        resp:   item.resp,
+        dia:    item.dia,
+        status: parseBateria(item.bateria),
+    }));
 
     lista = lista.filter(i => {
         if (busca && !i.site.toLowerCase().includes(busca)) return false;
@@ -1802,12 +1940,13 @@ function renderBatTabela(fonte) {
     });
 
     lista.sort((a, b) => {
-        if (ordem === 'az')      return a.site.localeCompare(b.site);
-        if (ordem === 'za')      return b.site.localeCompare(a.site);
+        if (ordem === 'az')  return a.site.localeCompare(b.site);
+        if (ordem === 'za')  return b.site.localeCompare(a.site);
         if (ordem === 'bat_yes') {
             const s = i => i.status === true ? 0 : i.status === false ? 1 : 2;
             return s(a) - s(b) || a.site.localeCompare(b.site);
         }
+        // bat_no (padrão)
         const s = i => i.status === false ? 0 : i.status === true ? 1 : 2;
         return s(a) - s(b) || a.site.localeCompare(b.site);
     });
@@ -1819,7 +1958,7 @@ function renderBatTabela(fonte) {
 
     tbody.innerHTML = lista.map(i => {
         let batLabel, batColor;
-        if (i.status === true)       { batLabel = '✅ Sim';        batColor = 'var(--bat-ok)'; }
+        if      (i.status === true)  { batLabel = '✅ Sim';        batColor = 'var(--bat-ok)'; }
         else if (i.status === false) { batLabel = '🪫 Não';        batColor = 'var(--bat-no)'; }
         else                         { batLabel = '❓ Indefinido'; batColor = 'var(--bat-un)'; }
 
@@ -1833,7 +1972,8 @@ function renderBatTabela(fonte) {
     }).join('');
 }
 
-/* Gráfico barras "Sem Bateria por Responsável" */
+// ─── Gráfico barras "Sem Bateria por Responsável" ───────────────────────────
+
 function renderBatRespChart(filtro) {
     const termo = (filtro || '').trim().toLowerCase();
 
@@ -1908,5 +2048,6 @@ function renderBatRespChart(filtro) {
     });
 }
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
