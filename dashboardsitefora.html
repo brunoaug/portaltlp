@@ -10,18 +10,24 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #040617;
-  --surface:  #080c28;
-  --surface2: #0e1238;
-  --surface3: #151c48;
+  /* ── base escura (navy profundo, levemente mais clara) ── */
+  --bg:       #060920;
+  --surface:  #0b1030;
+  --surface2: #111740;
+  --surface3: #1a2356;
+  /* ── versões "acesas" p/ hover (clareiam visivelmente) ── */
+  --surface-h:  #1c2658;
+  --surface2-h: #25316e;
+  --surface3-h: #2f3d82;
   --accent:   #ff6200;
   --accent2:  #ff8f4a;
   --accent3:  #ffb880;
   --text:     #f0f2ff;
-  --muted:    #58638a;
-  --muted2:   #8a94c0;
-  --border:   rgba(255,98,0,0.18);
-  --border2:  rgba(255,255,255,0.07);
+  --muted:    #4b5680;
+  --muted2:   #828dbb;
+  --border:   rgba(255,98,0,0.16);
+  --border2:  rgba(255,255,255,0.055);
+  --hair:     rgba(150,168,255,0.09);
   --bat-ok:   #00ffaa;
   --bat-no:   #ff3358;
   --bat-fat:  #ffd600;
@@ -108,7 +114,7 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
 .g-r1{grid-template-columns:1fr;margin-top:18px}
 .gc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px 18px;transition:box-shadow var(--tr);position:relative;overflow:hidden}
 .gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,98,0,.3),transparent)}
-.gc:hover{box-shadow:0 6px 24px rgba(0,0,0,.28)}
+/* .gc hover removido — fundo estático */
 .gc h3{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:18px;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:8px}
 .gc h3::after{content:'';flex:1;height:1px;background:var(--border2)}
 .gc canvas{max-height:380px}
@@ -283,6 +289,22 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
 .btn-sv:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
 
+/* ═══ CHART LEGEND BUTTONS (clicáveis) ═══ */
+/* Todas as legendas Chart.js usam htmlLegend ou o plugin interno.
+   Tornamos as legendas do canvas mais "botão" via CSS do container do canvas.
+   Para legendas geradas como HTML customizado, usamos a classe .cj-legend */
+.cj-legend{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;margin-bottom:8px}
+.cj-legend-btn{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:7px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all var(--tr);user-select:none;white-space:nowrap}
+.cj-legend-btn:hover{border-color:var(--accent);background:rgba(255,98,0,.1);transform:translateY(-1px);box-shadow:0 2px 8px rgba(255,98,0,.15)}
+.cj-legend-btn.struck{opacity:.4;text-decoration:line-through}
+.cj-legend-btn .cj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px var(--lc)}
+/* Filtro inline para gráficos */
+.chart-filter{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.chart-filter input{flex:1;padding:7px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;outline:none;transition:border-color var(--tr)}
+.chart-filter input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,98,0,.12)}
+.chart-filter input::placeholder{color:var(--muted)}
+.chart-filter-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap}
+
 /* ═══ TOAST ═══ */
 .toast{position:fixed;bottom:28px;right:28px;padding:12px 20px;border-radius:11px;font-size:13px;font-weight:600;font-family:'Outfit',sans-serif;z-index:2000;display:none;animation:slideUp .3s ease;border:1px solid transparent;backdrop-filter:blur(10px)}
 .toast.ok{background:rgba(0,255,170,.12);border-color:#00ffaa;color:#00ffaa}
@@ -307,27 +329,231 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
   th:nth-child(3),td:nth-child(3),th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){display:none}
   h1{font-size:1.1rem}
 }
+
+/* ════════════════════════════════════════════════════════════
+   ▓▓ APRIMORAMENTOS EXECUTIVOS (v2) ▓▓
+   Aparência premium · profundidade · hover só nos gráficos
+   ════════════════════════════════════════════════════════════ */
+
+/* ── HEADER: título alinhado às logos + símbolo de sinergia ── */
+.header-logos{display:flex;align-items:center;gap:11px;flex-shrink:0}
+.logo-tim-img{height:42px;box-shadow:0 4px 14px rgba(0,48,135,.45),inset 0 1px 0 rgba(255,255,255,.12)}
+.logo-tlp-img{height:42px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.logo-sinergia{font-size:1.5rem;font-weight:300;line-height:1;color:var(--accent2);text-shadow:0 0 14px rgba(255,98,0,.55);flex-shrink:0;opacity:.9;transform:translateY(-1px)}
+.header-title{align-items:baseline}
+.header-title .label{text-shadow:0 1px 3px rgba(0,0,0,.5)}
+
+/* ── LABELS sutis e elegantes (profundidade leve, sem "salto") ── */
+.card-label,.m-mini-lbl,.bat-kpi-lbl,.bc-lbl,.stat-lbl{
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+  color:var(--muted2);opacity:.92;font-weight:600;letter-spacing:1.6px;
+}
+.card-number,.m-mini-val,.bat-kpi-val{text-shadow:0 2px 10px color-mix(in srgb,var(--cc,var(--mc,var(--bkc,#ff6200))) 35%,transparent),0 1px 2px rgba(0,0,0,.4)}
+
+/* Cards de métrica/label NÃO "saltam" no hover — apenas brilho sutil de borda */
+.card:hover,.m-mini:hover{transform:none;box-shadow:0 4px 18px rgba(0,0,0,.28),inset 0 0 0 1px color-mix(in srgb,var(--cc,var(--mc,#ff6200)) 22%,transparent)}
+
+/* ── GRÁFICOS com profundidade (sombra + gradiente) ── */
+.gc{
+  background:linear-gradient(160deg,var(--surface) 0%,color-mix(in srgb,var(--surface2) 55%,var(--surface)) 100%);
+  box-shadow:0 10px 32px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.04);
+  transition:box-shadow var(--tr),transform var(--tr),border-color var(--tr);
+}
+/* .gc hover removido — fundo estático */
+/* Zona do gráfico: o "salto" e o realce acontecem dentro do canvas (via Chart.js hover) */
+.chart-zone{border-radius:12px;transition:filter var(--tr)}
+.chart-zone:hover{filter:saturate(1.08)}
+
+/* Títulos de gráfico atrativos e elegantes */
+.gc h3{
+  font-size:11px;letter-spacing:2.4px;color:var(--accent2);
+  text-shadow:0 0 12px rgba(255,98,0,.28);
+  background:linear-gradient(90deg,var(--accent2),var(--accent3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.gc h3::after{background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 30%,transparent),transparent)}
+.gc-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+
+/* ── STRIP DE PESO / AFETAÇÃO (coluna K) ── */
+.peso-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.peso-card{position:relative;overflow:hidden;background:linear-gradient(160deg,var(--surface),var(--surface2));border:1px solid var(--border2);border-radius:var(--rsm);padding:14px 16px;display:flex;flex-direction:column;gap:3px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.peso-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--pcc);box-shadow:2px 0 14px var(--pcc)}
+.peso-card .pv{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:800;color:var(--pcc);line-height:1;text-shadow:0 0 16px color-mix(in srgb,var(--pcc) 40%,transparent)}
+.peso-card .pl{font-size:10px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted2);text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.peso-card .ps{font-size:10px;font-family:'DM Mono',monospace;color:var(--pcc);opacity:.6}
+
+/* ── TOPBAR slim (apenas busca + exportar) ── */
+.bat-topbar--slim{margin-top:4px}
+
+/* ── PILL de afetação / cidade na tabela ── */
+.afet-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:7px;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;border:1px solid var(--ac);color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);white-space:nowrap}
+.cid-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted2)}
+.cid-cad{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:7px;font-size:10px;font-weight:700;font-family:'DM Mono',monospace;border:1px dashed rgba(244,63,94,.5);color:#ff7591;background:rgba(244,63,94,.08);cursor:pointer;transition:all var(--tr)}
+.cid-cad:hover{background:rgba(244,63,94,.18);border-color:#f43f5e;color:#fff}
+
+/* ── BOTÕES novos (scan / add) ── */
+.btn-scan{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.4);border-radius:8px;color:#fbbf24;font-size:11px;font-family:'DM Mono',monospace;font-weight:600;cursor:pointer;transition:all var(--tr);white-space:nowrap}
+.btn-scan:hover{background:rgba(245,158,11,.22);border-color:#f59e0b;box-shadow:0 0 12px rgba(245,158,11,.3);transform:translateY(-1px)}
+.btn-scan--solid{background:linear-gradient(135deg,rgba(245,158,11,.3),rgba(245,158,11,.15))}
+.btn-add{padding:6px 12px;background:rgba(255,98,0,.12);border:1px solid var(--border);border-radius:8px;color:var(--accent2);font-size:12px;font-family:'DM Mono',monospace;font-weight:700;cursor:pointer;transition:all var(--tr);white-space:nowrap;flex-shrink:0}
+.btn-add:hover{background:rgba(255,98,0,.22);border-color:var(--accent)}
+
+/* ── MODAL BATERIA ampliado ── */
+.bat-m--lg{max-width:520px;text-align:left}
+.bat-m--lg .bat-m-site,.bat-m--lg .bat-m-tit{text-align:center}
+.bat-m-flbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent2);letter-spacing:1.8px;text-transform:uppercase;margin:0 0 9px;display:flex;align-items:center;gap:8px}
+.bat-m-col{font-size:9px;color:var(--muted);border:1px solid var(--border2);border-radius:5px;padding:1px 6px;letter-spacing:1px}
+.bat-m--lg .bat-m-opts{grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.bat-m--lg .bop{padding:14px 8px;font-size:11px;gap:6px}
+.bat-m--lg .bop .oi{font-size:1.4rem}
+.bat-m-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.bat-m-grp{display:flex;flex-direction:column;gap:7px}
+.bat-m-sel{padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rsm);color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border-color var(--tr),box-shadow var(--tr);cursor:pointer}
+.bat-m-sel:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,98,0,.14)}
+.bat-m-sel option{background:var(--surface2)}
+.bat-m-foot{display:flex;justify-content:flex-end;gap:10px;align-items:center}
+.bat-m-foot .bat-mc{width:auto;padding:10px 20px}
+
+/* ── DRILL REINCIDENTES (rows editáveis) ── */
+.reinc-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-top:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.reinc-hint{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;flex:1;min-width:160px}
+.reinc-row{display:grid;grid-template-columns:1.2fr 1fr auto auto;gap:8px;align-items:center;padding:9px 20px;border-bottom:1px solid var(--border2)}
+.reinc-row:hover{background:rgba(255,255,255,.03)}
+.reinc-inp{width:100%;padding:7px 9px;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;outline:none;transition:border-color var(--tr)}
+.reinc-inp:focus{border-color:var(--accent)}
+.reinc-inp::placeholder{color:var(--muted)}
+.reinc-dias{font-family:'DM Mono',monospace;font-size:11px;color:#fbbf24;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:4px 8px;white-space:nowrap;text-align:center}
+.reinc-del{background:transparent;border:none;color:var(--muted);cursor:pointer;padding:4px;border-radius:5px;transition:color var(--tr)}
+.reinc-del:hover{color:var(--bat-no)}
+.reinc-head{display:grid;grid-template-columns:1.2fr 1fr auto auto;gap:8px;padding:6px 20px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border2)}
+
+@media(max-width:1100px){.peso-strip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.peso-strip{grid-template-columns:1fr 1fr}.bat-m-row{grid-template-columns:1fr}.reinc-row,.reinc-head{grid-template-columns:1fr 1fr auto}}
+
+/* ════════════════════════════════════════════════════════════════════
+   ▓▓ REFINO TÁTICO (v3) ▓▓
+   Base near-black · hover que CLAREIA · detalhes de centro de comando
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── malha técnica sutil sobre o fundo (HUD grid) ── */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(var(--hair) 1px,transparent 1px),
+    linear-gradient(90deg,var(--hair) 1px,transparent 1px);
+  background-size:48px 48px;
+  -webkit-mask-image:radial-gradient(ellipse 120% 95% at 50% -8%,#000 20%,transparent 86%);
+          mask-image:radial-gradient(ellipse 120% 95% at 50% -8%,#000 20%,transparent 86%);
+  opacity:.7;
+}
+
+/* ── PAINÉIS: cor sólida escura + leve brilho diagonal + sombra/altura ──
+   (a cor sólida é o que anima no hover → clareia suavemente) */
+.card,.m-mini,.gc,.bat-kpi,.bc,.peso-card,.table-wrap,.bat-tw,.bat-topbar,.rb-item,.stat-item{
+  background-color:var(--surface);
+  background-image:linear-gradient(168deg,rgba(255,255,255,.04) 0%,transparent 44%);
+  border-color:var(--border2);
+  box-shadow:0 9px 28px rgba(0,0,0,.46),inset 0 1px 0 rgba(255,255,255,.05);
+  transition:background-color var(--tr),border-color var(--tr),box-shadow var(--tr),transform var(--tr);
+}
+
+/* ── HOVER que CLAREIA (lift sutil + brilho de borda) ── */
+.card:hover,.m-mini:hover,.bc:hover,.peso-card:hover,.stat-item:hover,.rb-item:hover{
+  background-color:var(--surface-h);
+  transform:translateY(-2px);
+  box-shadow:0 16px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.09),
+             0 0 0 1px color-mix(in srgb,var(--cc,var(--mc,var(--bcc,var(--accent)))) 24%,transparent);
+  border-color:color-mix(in srgb,var(--cc,var(--mc,var(--bcc,var(--accent)))) 42%,transparent);
+}
+
+/* ── KPI da Bateria: item clareia individualmente ── */
+.bat-kpi-item{transition:background-color var(--tr)}
+.bat-kpi-item:hover{background-color:color-mix(in srgb,var(--surface-h) 85%,transparent)}
+
+/* ── GRÁFICOS: borda acende + brackets de canto (HUD) ── */
+.gc::after{
+  content:'';position:absolute;inset:9px;border-radius:9px;pointer-events:none;z-index:2;
+  background:
+    linear-gradient(var(--accent2),var(--accent2)) left  top   /14px 1.5px no-repeat,
+    linear-gradient(var(--accent2),var(--accent2)) left  top   /1.5px 14px no-repeat,
+    linear-gradient(var(--accent2),var(--accent2)) right top   /14px 1.5px no-repeat,
+    linear-gradient(var(--accent2),var(--accent2)) right top   /1.5px 14px no-repeat,
+    linear-gradient(var(--accent2),var(--accent2)) left  bottom/14px 1.5px no-repeat,
+    linear-gradient(var(--accent2),var(--accent2)) left  bottom/1.5px 14px no-repeat,
+    linear-gradient(var(--accent2),var(--accent2)) right bottom/14px 1.5px no-repeat,
+    linear-gradient(var(--accent2),var(--accent2)) right bottom/1.5px 14px no-repeat;
+  opacity:.35;
+}
+
+/* status-dot pulsante antes do título dos gráficos */
+.gc h3::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;box-shadow:0 0 8px var(--accent);animation:pulseDot 2.6s ease-in-out infinite}
+@keyframes pulseDot{0%,100%{opacity:.45;box-shadow:0 0 3px var(--accent)}50%{opacity:1;box-shadow:0 0 11px var(--accent)}}
+.gc h3::after{background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 42%,transparent),transparent)}
+
+/* ── CARD KPI: tick de canto que acende no hover ── */
+.card::before{content:'';position:absolute;top:8px;right:8px;width:9px;height:9px;border-top:1.5px solid color-mix(in srgb,var(--cc) 55%,transparent);border-right:1.5px solid color-mix(in srgb,var(--cc) 55%,transparent);border-radius:0 3px 0 0;opacity:.45;transition:opacity var(--tr)}
+.card:hover::before{opacity:1}
+
+/* ── MENU: superfície escura, hover/active clareiam ── */
+.menu{background:var(--surface);border-color:var(--border2);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.menu button:hover{color:var(--text);background:var(--surface2-h)}
+.menu button.active{box-shadow:0 2px 14px rgba(255,98,0,.45),inset 0 1px 0 rgba(255,255,255,.22)}
+
+/* ── TABELAS: cabeçalho profundo, linhas clareiam no hover ── */
+thead tr{background:linear-gradient(180deg,var(--surface3) 0%,var(--surface) 100%)}
+tbody tr{transition:background-color var(--tr)}
+tbody tr:hover,.bat-tw tbody tr:hover{background-color:color-mix(in srgb,var(--surface-h) 80%,transparent)}
+
+/* ── BOTÕES & INPUTS: base escura, hover claro ── */
+.btn-edit,.bat-eb{background:color-mix(in srgb,var(--surface) 80%,#000)}
+.btn-edit:hover,.bat-eb:hover{background:var(--surface2-h)}
+.filtros input,.filtros select,.bat-topbar input,.bat-topbar select,
+.field input,.field textarea,.field select,.drill-s input,.reinc-inp,.bat-m-sel{
+  background-color:color-mix(in srgb,var(--surface) 78%,#000);
+}
+
+/* ── LEGENDAS clicáveis: escuras → clareiam no hover ── */
+.cj-legend-btn{background:color-mix(in srgb,var(--surface) 80%,#000);border-color:var(--border2)}
+.cj-legend-btn:hover{background:var(--surface2-h);border-color:color-mix(in srgb,var(--accent) 55%,transparent);box-shadow:0 2px 10px rgba(255,98,0,.2)}
+
+/* ── DIA-CHIP / RESP-TAG / PILLS: hover clareia ── */
+.dia-chip{transition:background-color var(--tr),border-color var(--tr)}
+.dia-chip:hover{background:rgba(56,189,248,.18)}
+
+/* ── SCROLLBARS refinadas (global) ── */
+*::-webkit-scrollbar{width:9px;height:9px}
+*::-webkit-scrollbar-track{background:var(--bg)}
+*::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--surface3),var(--surface2));border-radius:7px;border:2px solid var(--bg)}
+*::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,var(--surface3-h),var(--surface3))}
+
+/* ── HEADER: linha inferior em gradiente + brilho ── */
+header{border-bottom:1px solid transparent;background-image:linear-gradient(var(--bg),var(--bg)),linear-gradient(90deg,var(--accent),transparent 70%);background-origin:border-box;background-clip:padding-box,border-box}
+
+/* ── MODAIS herdam a base escura (via --surface) e ganham hairline ── */
+.modal,.drill-m,.bat-m{box-shadow:0 32px 90px rgba(0,0,0,.78),inset 0 1px 0 rgba(255,255,255,.06)}
 </style>
 </head>
 <body>
 <div class="container">
 
-<!-- ══ HEADER — tudo em linha única ══ -->
+<!-- ══ HEADER — título alinhado às logos + símbolo de sinergia ══ -->
 <header>
   <div class="header-brand">
+    <div class="header-logos">
+      <div class="logo-tim-img">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/TIM_logo_%282016-present%29.svg/3840px-TIM_logo_%282016-present%29.svg.png" alt="TIM"
+             onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'color:#fff;font-weight:900;font-size:17px\'>TIM</span>'">
+      </div>
+      <span class="logo-sinergia" title="Sinergia TIM × TLP">&times;</span>
+      <div class="logo-tlp-img">
+        <img src="https://media.bebee.com/logos/e1/e151edfd0d00f261402daeaaa41fda39260bf0ad9f1e720b58dfe412771db558.png" alt="TLP"
+             onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'color:#ff8f4a;font-weight:900;font-size:14px\'>TLP</span>'">
+      </div>
+    </div>
+    <div class="logo-div"></div>
     <div class="header-title">
       <span class="label">Dashboard</span>
       <h1>Sala de Crise</h1>
-    </div>
-    <div class="logo-div"></div>
-    <div class="logo-tim-img">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/TIM_logo_%282016-present%29.svg/3840px-TIM_logo_%282016-present%29.svg.png" alt="TIM"
-           onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'color:#fff;font-weight:900;font-size:18px\'>TIM</span>'">
-    </div>
-    <div class="logo-div"></div>
-    <div class="logo-tlp-img">
-      <img src="https://media.bebee.com/logos/e1/e151edfd0d00f261402daeaaa41fda39260bf0ad9f1e720b58dfe412771db558.png" alt="TLP"
-           onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'color:#ff8f4a;font-weight:900;font-size:15px\'>TLP</span>'">
     </div>
   </div>
   <nav class="menu">
@@ -367,7 +593,7 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
 <div id="graficos" class="tab">
   <div class="g-metrics" id="gMetrics"></div>
   <div class="g-grid g-r2">
-    <div class="gc"><h3>Por Categoria</h3><canvas id="grStatus"></canvas></div>
+    <div class="gc"><h3>Por Categoria</h3><div id="catLegend" class="cj-legend" style="justify-content:center"></div><canvas id="grStatus"></canvas></div>
     <div class="gc" style="overflow-y:auto;max-height:500px"><h3>Sites por Responsável</h3><canvas id="grResp"></canvas></div>
   </div>
   <div class="g-grid g-r2" style="margin-top:18px">
@@ -396,20 +622,15 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
       <span style="font-size:10px;margin-left:auto;opacity:.6">última info válida prevalece</span>
     </div>
 
-    <!-- KPI Strip -->
+    <!-- KPI Strip (status bateria) -->
     <div class="bat-kpi" id="bat-cards"></div>
 
-    <!-- Section: Filtros + Exportar -->
-    <div class="bat-sec" style="--bsi-bg:rgba(255,98,0,.1);--bsi-border:rgba(255,98,0,.25)">
-      <div class="bat-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></div>
-      <div class="bat-sec-text"><div class="bat-sec-title">Filtros e Exportação</div></div>
-      <div class="bat-sec-line"></div>
-    </div>
-    <div class="bat-topbar">
-      <input type="text" id="batSearch" placeholder="🔍  Buscar site, responsável...">
-      <select id="batFil"><option value="">Todos os Status</option><option value="NAO">✖ Sem Bateria</option><option value="SIM">● Com Bateria</option><option value="FAT">◆ Em FAT</option><option value="INDEF">? Indefinido</option></select>
-      <select id="batFilR"><option value="">Todos os Responsáveis</option></select>
-      <select id="batOrd"><option value="bat_no">Sem bateria primeiro</option><option value="bat_yes">Com bateria primeiro</option><option value="az">A → Z</option><option value="za">Z → A</option></select>
+    <!-- Strip de classificação por PESO / AFETAÇÃO (coluna K) -->
+    <div class="peso-strip" id="pesoStrip"></div>
+
+    <!-- Filtros + Exportar (sem título — a busca filtra tudo: site, resp, anel, cidade) -->
+    <div class="bat-topbar bat-topbar--slim">
+      <input type="text" id="batSearch" placeholder="🔍  Buscar por site, responsável, anel ou cidade...">
       <button class="btn-xl" onclick="exportarExcel()">
         <svg class="xi" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="2" fill="#217346"/><path d="M14 3v5h5" stroke="#fff" stroke-width="1.2"/><path d="M14 3l5 5" stroke="#fff" stroke-width="1.2"/><text x="3" y="19" font-family="Arial" font-weight="900" font-size="8" fill="#fff">XLS</text></svg>
         Exportar Excel
@@ -419,43 +640,90 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
     <!-- Section: Análise Visual -->
     <div class="bat-sec" style="--bsi-bg:rgba(0,255,170,.08);--bsi-border:rgba(0,255,170,.2)">
       <div class="bat-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bat-ok)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-      <div class="bat-sec-text"><div class="bat-sec-title">Análise Visual</div><div class="bat-sec-sub">Saúde geral · distribuição por responsável</div></div>
+      <div class="bat-sec-text"><div class="bat-sec-title">Análise Visual</div><div class="bat-sec-sub">Distribuição geral · por responsável</div></div>
       <div class="bat-sec-line"></div>
     </div>
 
-    <!-- Gauge + Stacked -->
-    <div class="bg1">
-      <div class="gc" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
-        <h3 style="width:100%">Índice de Saúde</h3>
-        <div class="gauge-wrap" style="width:210px;height:210px">
-          <canvas id="batGauge" width="210" height="210"></canvas>
-          <div class="gauge-lbl">
-            <div class="gpct" id="gaugeVal">—%</div>
-            <div class="glbl">Com Bateria</div>
+    <!-- Distribuição Geral (pizza) + Distribuição por Responsável -->
+    <div class="bg2">
+      <div class="gc" style="display:flex;flex-direction:column">
+        <h3>Distribuição Geral</h3>
+        <div id="batDistLegend" class="cj-legend" style="justify-content:center;margin-bottom:14px"></div>
+        <div class="chart-zone" style="position:relative;display:flex;align-items:center;justify-content:center;flex:1;min-height:210px">
+          <div style="position:relative;width:200px;height:200px">
+            <canvas id="grBatDist"></canvas>
           </div>
         </div>
-        <div class="stat-grid2" style="width:100%" id="gaugeStats"></div>
       </div>
       <div class="gc" style="min-height:300px">
         <h3>Distribuição por Responsável</h3>
-        <div style="position:relative;height:280px">
+        <div id="batRespLegend" class="cj-legend"></div>
+        <div class="chart-zone" style="position:relative;height:280px">
           <canvas id="grBatResp"></canvas>
           <div class="empty" id="batRespEmpty" style="display:none;padding:24px">Nenhum dado.</div>
         </div>
       </div>
     </div>
 
-    <!-- Donut + Barras resp -->
+    <!-- Section: Cidades Ofensoras -->
+    <div class="bat-sec" style="--bsi-bg:rgba(244,63,94,.08);--bsi-border:rgba(244,63,94,.2)">
+      <div class="bat-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div class="bat-sec-text"><div class="bat-sec-title">Cidades Ofensoras</div><div class="bat-sec-sub" id="cidadesSub">Afetação por cidade / bairro (base CIDADESTRJ)</div></div>
+      <div class="bat-sec-line"></div>
+    </div>
+    <div class="bg3">
+      <div class="gc">
+        <h3>Afetação por Cidade / Bairro</h3>
+        <div class="chart-zone" style="position:relative;height:300px">
+          <canvas id="grCidades"></canvas>
+          <div class="empty" id="cidadesEmpty" style="display:none;padding:24px">Sem dados de cidade. Verifique a aba CIDADESTRJ.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sites Reincidentes (abaixo de Afetação por Cidade / Bairro) -->
+    <div class="bg3">
+      <div class="gc">
+        <div class="gc-head">
+          <h3 style="margin-bottom:0">Sites Reincidentes</h3>
+          <button class="btn-scan" onclick="abrirDrillReinc()" title="Ver lista de reincidentes e varrer o dia atual">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Lista · Varrer
+          </button>
+        </div>
+        <div class="chart-filter" style="margin-top:10px">
+          <input type="text" id="reincChartFilter" placeholder="Filtrar sites reincidentes..." oninput="renderReincChart()">
+          <span class="chart-filter-count" id="reincChartCount"></span>
+        </div>
+        <div class="chart-zone" style="position:relative;height:300px">
+          <canvas id="grReinc"></canvas>
+          <div class="empty" id="reincEmpty" style="display:none;padding:24px">Nenhum site reincidente identificado.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Afetação por Peso (Anel) -->
+    <div class="bat-sec" style="--bsi-bg:rgba(255,98,0,.1);--bsi-border:rgba(255,98,0,.25)">
+      <div class="bat-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
+      <div class="bat-sec-text"><div class="bat-sec-title">Afetação por Peso (Anel)</div><div class="bat-sec-sub">AGG · Cabeça de Anel · Anel Acesso · Ponta</div></div>
+      <div class="bat-sec-line"></div>
+    </div>
     <div class="bg2">
       <div class="gc" style="display:flex;flex-direction:column">
-        <h3>Distribuição Geral</h3>
-        <div style="position:relative;display:flex;align-items:center;justify-content:center;flex:1;min-height:220px">
-          <canvas id="grBatDist"></canvas>
+        <h3>Distribuição por Peso</h3>
+        <div id="pesoDistLegend" class="cj-legend" style="justify-content:center;margin-bottom:14px"></div>
+        <div class="chart-zone" style="position:relative;display:flex;align-items:center;justify-content:center;flex:1;min-height:210px">
+          <div style="position:relative;width:200px;height:200px">
+            <canvas id="grPeso"></canvas>
+          </div>
         </div>
       </div>
       <div class="gc">
-        <h3>Situação por Responsável</h3>
-        <div class="rb-list" id="rbList"></div>
+        <h3>Sem Bateria × Peso</h3>
+        <div id="pesoBatLegend" class="cj-legend"></div>
+        <div class="chart-zone" style="position:relative;height:260px">
+          <canvas id="grPesoBat"></canvas>
+        </div>
       </div>
     </div>
 
@@ -465,12 +733,11 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
       <div class="bat-sec-text"><div class="bat-sec-title">Evolução Temporal</div><div class="bat-sec-sub">Tendência diária de cobertura</div></div>
       <div class="bat-sec-line"></div>
     </div>
-
-    <!-- Trend -->
     <div class="bg3">
       <div class="gc">
         <h3>Evolução por Dia</h3>
-        <div style="position:relative;height:230px">
+        <div id="trendLegend" class="cj-legend"></div>
+        <div class="chart-zone" style="position:relative;height:230px">
           <canvas id="grBatTrend"></canvas>
           <div id="trendEmpty" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center">
             <span style="color:var(--muted);font-size:13px">Dados de apenas 1 dia — disponível a partir do 2º dia.</span>
@@ -479,7 +746,7 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
       </div>
     </div>
 
-    <!-- Section: Lista de Sites -->
+    <!-- Section: Lista Geral de Sites -->
     <div class="bat-sec" style="--bsi-bg:rgba(167,139,250,.08);--bsi-border:rgba(167,139,250,.2)">
       <div class="bat-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
       <div class="bat-sec-text"><div class="bat-sec-title">Lista Geral de Sites</div><div class="bat-sec-sub" id="batListCount">—</div></div>
@@ -489,7 +756,7 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
     <!-- Tabela -->
     <div class="bat-tw">
       <table>
-        <thead><tr><th>Site</th><th>Bateria</th><th>Responsável</th><th>Última info</th><th></th></tr></thead>
+        <thead><tr><th>Site</th><th>Bateria</th><th>Responsável</th><th>Afetação</th><th>Cidade / Bairro</th><th>Última info</th><th></th></tr></thead>
         <tbody id="batTbody"></tbody>
       </table>
     </div>
@@ -522,30 +789,55 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
   </div>
 </div>
 
-<!-- ══ MODAL BATERIA ══ -->
+<!-- ══ MODAL BATERIA (status I + responsável F + afetação K) ══ -->
 <div class="bat-mo" id="batMo">
-  <div class="bat-m">
+  <div class="bat-m bat-m--lg">
     <div class="bat-m-site" id="batMSite">SITE</div>
-    <div class="bat-m-tit">Situação da Bateria</div>
+    <div class="bat-m-tit">Editar Bateria do Site</div>
+
+    <div class="bat-m-flbl">Status da Bateria <span class="bat-m-col">coluna I</span></div>
     <div class="bat-m-opts">
-      <button class="bop sim" onclick="selecionarBateria('SIM')">
-        <span class="oi"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00ffaa" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/><rect x="4" y="9" width="12" height="6" rx="1" fill="#00ffaa" opacity="0.3"/></svg></span>
-        Com Bateria
+      <button class="bop sim" id="bopSim" onclick="selBatStatus('SIM')">
+        <span class="oi"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#00ffaa" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/><rect x="4" y="9" width="12" height="6" rx="1" fill="#00ffaa" opacity="0.3"/></svg></span>
+        SIM
       </button>
-      <button class="bop nao" onclick="selecionarBateria('NAO')">
-        <span class="oi"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ff3358" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/><rect x="4" y="9" width="3" height="6" rx="1" fill="#ff3358" opacity="0.3"/></svg></span>
-        Sem Bateria
+      <button class="bop nao" id="bopNao" onclick="selBatStatus('NAO')">
+        <span class="oi"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ff3358" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/><rect x="4" y="9" width="3" height="6" rx="1" fill="#ff3358" opacity="0.3"/></svg></span>
+        NAO
       </button>
-      <button class="bop fat" onclick="selecionarBateria('FAT')">
-        <span class="oi"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ffd600" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="16" r="2" fill="#ffd600" opacity="0.3"/><path d="M12 12v2"/></svg></span>
-        Em Processo de FAT
+      <button class="bop fat" id="bopFat" onclick="selBatStatus('FAT')">
+        <span class="oi"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ffd600" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="16" r="2" fill="#ffd600" opacity="0.3"/><path d="M12 12v2"/></svg></span>
+        EM PROCESSO DE FAT
       </button>
     </div>
-    <button class="bat-mc" onclick="fecharBatMo()">Cancelar</button>
+
+    <div class="bat-m-row">
+      <div class="bat-m-grp">
+        <label class="bat-m-flbl" for="batMResp">Responsável <span class="bat-m-col">coluna F</span></label>
+        <select id="batMResp" class="bat-m-sel"></select>
+      </div>
+      <div class="bat-m-grp">
+        <label class="bat-m-flbl" for="batMAfet">Afetação / Peso <span class="bat-m-col">coluna K</span></label>
+        <select id="batMAfet" class="bat-m-sel">
+          <option value="">— selecionar —</option>
+          <option value="AGG">AGG (Cabeça de Anel)</option>
+          <option value="ANEL ACESSO">ANEL ACESSO (Meio de Anel)</option>
+          <option value="PONTA">PONTA (Baixa Afetação)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="bat-m-foot">
+      <button class="bat-mc" onclick="fecharBatMo()">Cancelar</button>
+      <button class="btn-sv" id="batSvBtn" onclick="salvarBateria()">
+        <span class="spinner" id="batSpin"></span>
+        <span id="batSvTxt">Salvar alterações</span>
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- ══ DRILL ══ -->
+<!-- ══ DRILL GENÉRICO ══ -->
 <div class="drill-ov" id="drillOv">
   <div class="drill-m">
     <div class="drill-h">
@@ -558,22 +850,149 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
   </div>
 </div>
 
+<!-- ══ DRILL REINCIDENTES (editável + varredura) ══ -->
+<div class="drill-ov" id="reincOv">
+  <div class="drill-m" style="max-width:640px">
+    <div class="drill-h">
+      <h3><span class="drill-dot" style="--dc:#f59e0b;background:var(--dc)"></span><span>Sites Reincidentes</span></h3>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn-scan btn-scan--solid" id="btnVarrer" onclick="varrerDiaAtual()" title="Varre a coluna B do dia atual e marca REINCIDENTE na coluna H">
+          <span class="spinner" id="varrerSpin"></span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span id="varrerTxt">Varrer dia atual</span>
+        </button>
+        <button class="btn-cd" onclick="fecharDrillReinc()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+    </div>
+    <div class="drill-s" style="display:flex;gap:8px">
+      <input type="text" id="reincSrch" placeholder="Filtrar reincidentes..." oninput="renderReincList()">
+      <button class="btn-add" onclick="addReincRow()" title="Adicionar reincidente manualmente">+ Add</button>
+    </div>
+    <div class="drill-cnt" id="reincCnt"></div>
+    <div class="drill-l" id="reincList"></div>
+    <div class="reinc-foot">
+      <span class="reinc-hint">Edite as colunas A e B. As alterações são gravadas na aba <b>REINCIDENTES</b>.</span>
+      <button class="btn-sv" id="reincSvBtn" onclick="salvarReincidentes()">
+        <span class="spinner" id="reincSpin"></span>
+        <span id="reincSvTxt">Gravar na aba REINCIDENTES</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL CADASTRO CIDADE (aba CIDADESTRJ) ══ -->
+<div class="modal-ov" id="cidModalOv">
+  <div class="modal" style="max-width:480px">
+    <div class="m-hdr">
+      <div><div class="slbl">Cadastrar em CIDADESTRJ</div><h2 id="cidSiteTit">—</h2></div>
+      <button class="btn-cl" onclick="fecharCidModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="m-fields">
+      <div class="field full"><label>Bairro (coluna A)</label><input type="text" id="cidBairro" placeholder="Ex.: Tijuca"></div>
+      <div class="field"><label>END_ID (coluna B)</label><input type="text" id="cidEndId"></div>
+      <div class="field"><label>Site (coluna C)</label><input type="text" id="cidSite"></div>
+      <div class="field full"><label>Responsável (coluna F)</label><select id="cidResp"></select></div>
+    </div>
+    <div class="m-foot">
+      <button class="btn-ca" onclick="fecharCidModal()">Cancelar</button>
+      <button class="btn-sv" id="cidSvBtn" onclick="salvarCidade()">
+        <span class="spinner" id="cidSpin"></span>
+        <span id="cidSvTxt">Cadastrar</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzzwS6rc88I7_MhxZ0H1srJxvSqCas4BzbKy6_oM4ZuKSc0arTSea3-mYdGiNdbnvpziA/exec';
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycby_tyVUVocJhxyYJwZndBwxiXDdDR3QBfed-pnQSSD_VJu8XRyrkLWM1VIai1AdupO0Jg/exec';
+/* postAS: POST robusto para Apps Script.
+   - Content-Type text/plain evita preflight CORS (requisição "simples", sem OPTIONS)
+   - redirect:'follow' segue o 302 do Apps Script
+   - Detecta respostas HTML de erro (quando o server crasheia) e lança mensagem clara
+   - Fallback no-cors: se o navegador bloquear a leitura (CORS), reenvia em modo
+     no-cors (a gravação ainda ocorre no servidor) e retorna {__opaque:true};
+     quem chama deve então confirmar relendo os dados via GET. */
+async function postAS(payload){
+  try{
+    const res=await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      redirect:'follow',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(payload)
+    });
+    const txt=await res.text();
+    if(txt.trim().startsWith('<')||txt.includes('Exception:')){
+      const m=txt.match(/Exception:\s*([^<]+)/);
+      throw new Error(m?m[1].trim():'O Apps Script retornou erro. Reimplante a nova versão do script.');
+    }
+    try{return JSON.parse(txt);}catch(_){return{};}
+  }catch(err){
+    // CORS/Network: tenta no-cors (resposta opaca, mas a escrita ocorre no servidor)
+    if(/failed to fetch|networkerror|load failed/i.test(err.message||'')){
+      try{
+        await fetch(APPS_SCRIPT_URL,{
+          method:'POST',mode:'no-cors',redirect:'follow',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body:JSON.stringify(payload)
+        });
+        return{__opaque:true};
+      }catch(_){/* cai no throw abaixo */}
+    }
+    throw err;
+  }
+}
 const hoje=new Date();
 const dia=String(hoje.getDate()).padStart(2,'0');
 const mes=String(hoje.getMonth()+1).padStart(2,'0');
 const paginaHoje=`${dia}/${mes}`;
+
+/* ════════════════════════════════════════════════════════════════
+   MAPEAMENTO DE COLUNAS (ajuste aqui se a planilha mudar de cabeçalho)
+   A=SITE · B=END_ID · F=RESPONSÁVEL · G=STATUS · H=REINCIDENTE
+   I=BATERIA · J=BATSITE · K=AFETAÇÃO/PESO
+   Cada campo tem nomes possíveis de cabeçalho + índice posicional (0=A).
+   A busca tenta primeiro pelo nome; se não achar, usa a posição da coluna.
+   ════════════════════════════════════════════════════════════════ */
+const USAR_POSICIONAL=true;
+const COL={
+  site:     {names:['SITE','Site','site','NOME SITE','ESTAÇÃO','ESTACAO'],idx:0},
+  endId:    {names:['END_ID','ENDID','END ID','ENDERECO ID','ENDEREÇO ID','ID END','COD END','ID'],idx:1},
+  resp:     {names:['RESPONSÁVEL','Responsável','RESPONSAVEL','Responsavel','responsável','responsavel'],idx:5},
+  status:   {names:['STATUS','Status','status','SITUAÇÃO','SITUACAO'],idx:6},
+  reincFlag:{names:['REINCIDENTE','Reincidente','REINCIDÊNCIA','REINCIDENCIA'],idx:7},
+  bateria:  {names:['BATERIA','Bateria','bateria'],idx:8},
+  batsite:  {names:['BATSITES','Batsites','batsites','BATSITE','Batsite','batsite','BAT SITE','SITE BAT'],idx:9},
+  afetacao: {names:['AFETAÇÃO','AFETACAO','Afetação','Afetacao','PESO','Peso','ANEL','CLASSIFICAÇÃO','CLASSIFICACAO'],idx:10},
+};
+
+/* Opções de RESPONSÁVEL (rótulo exibido → valor gravado na planilha) */
+const RESP_OPCOES=[
+  {label:'Zona Oeste - Alan',value:'ALAN'},
+  {label:'Zona Sul / Niteroi - Matheus',value:'MATHEUS'},
+  {label:'Zona Norte - Jack',value:'JACKELINE'},
+  {label:'ANG/CBF/NFB/PET/VRD - Jesse',value:'JESSE'},
+  {label:'Baixada - Vinicius',value:'VINICIUS'},
+  {label:'Campos - Merielem',value:'MERIELEM'},
+  {label:'ES - Merielem',value:'MERIELEM'},
+];
+
+/* ─── ESTADO ─── */
 let dados=[],dadosBat=[],dadosPorAba={};
 let chartsCreated=false,batCarregado=false,editIdx=null;
 let listaComBat=[],listaSemBat=[],listaFat=[],listaIndef=[];
-let chBatDist=null,chBatResp=null,chBatGauge=null,chBatTrend=null;
-let drillData=[],batEditSite=null;
+let chBatDist=null,chBatResp=null,chBatTrend=null,chReinc=null,chCidades=null,chPeso=null,chPesoBat=null;
+let drillData=[],batEditSite=null,batEditStatus='';
+/* Reincidentes */
+let rPAGlobal={},abasDadosGlobal=[];
+let reincCalc=[],reincSheet=[],reincRawHeaders=[],reincEdit=[];
+/* Cidades */
+let mapaCidades={},cidRawHeaders=[],cidCount=0,cidEditSite=null;
 
 /* ─── HELPERS ─── */
-const esc=s=>(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"');
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const escJs=s=>String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 function gf(item,...keys){
   if(!item||typeof item!=='object')return undefined;
   for(const k of keys)if(k in item)return item[k];
@@ -581,26 +1000,144 @@ function gf(item,...keys){
   for(const k of keys){const f=ks.find(x=>x.toUpperCase()===k.toUpperCase());if(f!==undefined)return item[f];}
   return undefined;
 }
+/* gv: lê um campo pelo mapeamento COL (nome → posição) */
+function gv(item,key){
+  const cfg=COL[key];if(!cfg||!item||typeof item!=='object')return undefined;
+  const v=gf(item,...cfg.names);
+  if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;
+  if(USAR_POSICIONAL&&cfg.idx!=null){const vals=Object.values(item);if(cfg.idx<vals.length)return vals[cfg.idx];}
+  return v;
+}
+/* setField: grava um campo respeitando o cabeçalho existente, ou cria */
+function setField(item,key,val){
+  const names=COL[key].names;const ks=Object.keys(item);
+  for(const n of names){const f=ks.find(x=>x.toUpperCase().trim()===n.toUpperCase().trim());if(f){item[f]=val;return;}}
+  item[names[0]]=val;
+}
 const norm=s=>s==null?'':String(s).replace(/[\u200B\u200C\u200D\uFEFF\u00A0\u2000-\u200A\u202F\u205F\u3000]/g,' ').replace(/\s+/g,' ').trim();
 const normKey=s=>norm(s).toUpperCase();
+
+/* ── HTML Legend Builder (botões clicáveis que toggle datasets) ──
+   containerId: id do <div class="cj-legend">
+   chart: instância Chart.js
+   items: [{label, color}]   (o índice é o datasetIndex ou data index)
+   mode: 'dataset' (toggle dataset visibility — para bar/line com múltiplos datasets)
+        | 'data'    (toggle data point visibility — para doughnut/pie)  */
+function buildHtmlLegend(containerId, chart, items, mode){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  el.innerHTML=items.map((it,i)=>{
+    const hidden=(mode==='dataset')
+      ? !chart.isDatasetVisible(i)
+      : chart.getDataVisibility?!chart.getDataVisibility(i):false;
+    return `<button class="cj-legend-btn${hidden?' struck':''}" data-i="${i}"><span class="cj-dot" style="--lc:${it.color};background:${it.color}"></span>${esc(it.label.toUpperCase())}</button>`;
+  }).join('');
+  el.querySelectorAll('.cj-legend-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const idx=+btn.dataset.i;
+      if(mode==='dataset'){
+        chart.setDatasetVisibility(idx, !chart.isDatasetVisible(idx));
+      } else {
+        chart.toggleDataVisibility(idx);
+      }
+      chart.update();
+      btn.classList.toggle('struck');
+    });
+  });
+}
+/* siteValido: descarta valores que NÃO são nomes de site reais.
+   Quando o fallback posicional (idx:9) pega dados de uma coluna errada
+   (ex.: "PROVEDOR VTAL", "NORMALIZADO", "WHITE LIST"), evita que esses
+   textos entrem como se fossem sites no consolidado de bateria. */
+function siteValido(v){
+  const s=normKey(v);
+  if(!s)return'';
+  if(s.startsWith('PROVEDOR'))return'';
+  const lixo=['NORMALIZADO','NORMALIZADA','WHITE LIST','WHITELIST','WHITE-LIST',
+    'VTAL','OI','ENEL','LIGHT','EM ANALISE','EM ANÁLISE','SEM ENERGIA','VANDALISMO',
+    'PENDENTE','FALHA','SIM','NÃO','NAO','FAT','OK','POSSUI','SEM','TEM',
+    'SOLICITAR WL','AGUARDANDO','EM ANDAMENTO','REINCIDENTE'];
+  if(lixo.includes(s))return'';
+  return norm(v);
+}
 function getSiteJ(item){
   if(!item||typeof item!=='object')return'';
-  const v=gf(item,'BATSITE','Batsite','batsite');
-  return v!==undefined&&String(v).trim()?String(v).trim():'';
+  const v=gv(item,'batsite');
+  if(v===undefined||v===null)return'';
+  const t=String(v).trim();
+  if(!t)return'';
+  return siteValido(t);
 }
 function d2n(s){if(!s)return 0;const p=s.split('/');if(p.length>=2){const d=parseInt(p[0],10)||0,m=parseInt(p[1],10)||0,a=parseInt(p[2],10)||0;return a*10000+m*100+d;}return 0;}
 const sortAbas=a=>[...a].sort((x,y)=>d2n(x)-d2n(y));
+/* respLimpo: a coluna RESPONSÁVEL às vezes recebe marcadores de status/provedor
+   ("PROVEDOR", "PROVEDOR VTAL", "NORMALIZADO", "WHITE LIST", "VTAL"...) que NÃO são
+   responsáveis reais. Esta função descarta esses valores (retorna ''), evitando que
+   apareçam como categorias nos filtros, tags e gráficos por responsável. */
+function respLimpo(v){
+  const s=normKey(v);
+  if(!s)return'';
+  if(s.startsWith('PROVEDOR'))return'';            // PROVEDOR, PROVEDOR VTAL, PROVEDOR VIVO, etc.
+  const lixo=['NORMALIZADO','NORMALIZADA','WHITE LIST','WHITELIST','WHITE-LIST','VTAL','OI','ENEL','LIGHT','EM ANALISE','EM ANÁLISE','SEM ENERGIA','VANDALISMO','PENDENTE'];
+  if(lixo.includes(s))return'';
+  return norm(v);
+}
 function parseBat(v){
   if(v==null)return null;
   const s=norm(v).toUpperCase();if(!s)return null;
-  if(['FAT','EM FAT','PROCESSO DE FAT'].some(k=>s===k||s.startsWith(k)))return'fat';
+  if(s.includes('FAT'))return'fat';
   if(['SIM','S','YES','1','X','POSSUI','OK','TEM'].some(k=>s.startsWith(k)))return true;
   if(['NÃO','NAO','N','NO','0','SEM'].some(k=>s.startsWith(k)))return false;
   return null;
 }
 const abaTemBat=lista=>Array.isArray(lista)&&lista.length>0&&lista.some(i=>i&&typeof i==='object'&&Object.keys(i).some(k=>k.toUpperCase().trim()==='BATERIA'));
+/* escurece uma cor hex (efeito hover "mesma paleta, mais escura") */
+function darken(hex,f){
+  f=(f==null)?0.28:f;
+  let h=String(hex).replace('#','');
+  if(h.length===3)h=h.split('').map(c=>c+c).join('');
+  if(h.length>6)h=h.slice(0,6);
+  const n=parseInt(h,16);if(isNaN(n))return hex;
+  let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  r=Math.round(r*(1-f));g=Math.round(g*(1-f));b=Math.round(b*(1-f));
+  return'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+/* clareia uma cor hex em direção ao branco (p/ bordas brilhantes no hover) */
+function lighten(hex,f){
+  f=(f==null)?0.35:f;
+  let h=String(hex).replace('#','');
+  if(h.length===3)h=h.split('').map(c=>c+c).join('');
+  if(h.length>6)h=h.slice(0,6);
+  const n=parseInt(h,16);if(isNaN(n))return hex;
+  let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f);
+  return'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+/* Classificação por PESO / AFETAÇÃO (coluna K) */
+function classificarPeso(raw){
+  const s=normKey(raw);
+  if(!s)return{key:'na',label:'Não Classificado',short:'N/C',color:'#4a5280'};
+  if(s.startsWith('AGG'))return{key:'agg',label:'AGG · Cabeça de Anel',short:'AGG',color:'#ff3358'};
+  if(s.includes('ANEL ACESSO')||s.includes('ANELACESSO')||(s.includes('ANEL')&&/\d/.test(s)))return{key:'anel',label:'Anel Acesso · Meio de Anel',short:'ANEL ACESSO',color:'#ffd600'};
+  if(s.includes('PONTA'))return{key:'ponta',label:'Ponta · Baixa Afetação',short:'PONTA',color:'#00ffaa'};
+  return{key:'outro',label:'Outro',short:(raw||'Outro'),color:'#38bdf8'};
+}
+const pesoNorm=k=>['agg','anel','ponta'].includes(k)?k:'na';
+/* popula um <select> com as opções de responsável + valor atual */
+function popularRespSelect(sel,atual){
+  if(!sel)return;
+  let html='<option value="">— selecionar —</option>';
+  RESP_OPCOES.forEach(o=>{html+=`<option value="${esc(o.value)}">${esc(o.label)}</option>`;});
+  sel.innerHTML=html;
+  if(atual){
+    const a=normKey(atual);
+    const opt=[...sel.options].find(o=>normKey(o.value)===a);
+    if(opt){sel.value=opt.value;}
+    else{const o=document.createElement('option');o.value=atual;o.textContent=atual+' (atual)';sel.appendChild(o);sel.value=atual;}
+  }
+}
 
-/* ─── CATS ─── */
+/* ─── CATEGORIAS (aba Tabela) ─── */
 const CATS=[
   {key:'normalizado',label:'Normalizado',color:'#00ffaa',kw:['normalizado','normal']},
   {key:'provedor',label:'Provedor',color:'#38bdf8',kw:['provedor','vtal','ihs','fmo','k2']},
@@ -636,13 +1173,13 @@ function trocarAba(n,btn){
   if(n==='bateria'&&!batCarregado){batCarregado=true;carregarDias();}
 }
 
-/* ─── FILTROS ─── */
+/* ─── FILTROS (Tabela) ─── */
 function preencherFiltros(){
   const rs=new Set(),cs=new Set();
   dados.forEach(i=>{
-    const r=norm(gf(i,'RESPONSÁVEL','Responsável','responsável','RESPONSAVEL','Responsavel','responsavel')||'');
+    const r=respLimpo(gv(i,'resp'));
     if(r)rs.add(r);
-    cs.add(cat(gf(i,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'',gf(i,'STATUS','Status','status')||'').key);
+    cs.add(cat(gf(i,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'',gv(i,'status')||'').key);
   });
   const sR=document.getElementById('filtroResp');
   sR.innerHTML='<option value="">Todos os Responsáveis</option>';
@@ -653,7 +1190,7 @@ function preencherFiltros(){
   if(cs.has('outro'))sC.innerHTML+=`<option value="outro">Outro</option>`;
 }
 
-/* ─── CARDS TABELA ─── */
+/* ─── CARDS (Tabela) ─── */
 function renderCards(){
   const counts={};
   dados.forEach(i=>{const c=cat(i['PREVISÃO'],i['STATUS']);if(!counts[c.key])counts[c.key]={cat:c,n:0};counts[c.key].n++;});
@@ -674,21 +1211,21 @@ function renderTabela(){
   const rf=document.getElementById('filtroResp').value;
   const ord=document.getElementById('ordenar').value;
   let lista=dados.map((item,idx)=>({item,idx})).sort((a,b)=>{
-    const A=(gf(a.item,'SITE','Site','site')||'').toLowerCase();
-    const B=(gf(b.item,'SITE','Site','site')||'').toLowerCase();
+    const A=(gv(a.item,'site')||'').toLowerCase();
+    const B=(gv(b.item,'site')||'').toLowerCase();
     return ord==='az'?A.localeCompare(B):B.localeCompare(A);
   });
   let found=false;
   lista.forEach(({item,idx})=>{
     const vals=Object.values(item).map(v=>String(v||'').toLowerCase()).join(' ');
     if(busca&&!vals.includes(busca))return;
-    const resp=norm(gf(item,'RESPONSÁVEL','Responsável','responsável','RESPONSAVEL','Responsavel','responsavel')||'');
-    const c=cat(gf(item,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'',gf(item,'STATUS','Status','status')||'');
+    const resp=respLimpo(gv(item,'resp'));
+    const c=cat(gf(item,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'',gv(item,'status')||'');
     if(cf&&c.key!==cf)return;
     if(rf&&resp!==rf)return;
     found=true;
-    const site=esc(gf(item,'SITE','Site','site')||'');
-    const status=esc(gf(item,'STATUS','Status','status')||'—');
+    const site=esc(gv(item,'site')||'');
+    const status=esc(gv(item,'status')||'—');
     const tsk=esc(gf(item,'TSK','Tsk','tsk')||'—');
     const prev=esc(gf(item,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'—');
     const obs=esc(gf(item,'OBS','Obs','obs')||'—');
@@ -708,13 +1245,13 @@ function renderTabela(){
 }
 document.querySelectorAll('#tabela input,#tabela select').forEach(el=>el.addEventListener('input',renderTabela));
 
-/* ─── MODAL EDIÇÃO ─── */
+/* ─── MODAL EDIÇÃO (Tabela) ─── */
 function abrirModal(idx){
   editIdx=idx;const item=dados[idx];
-  document.getElementById('mSite').textContent=gf(item,'SITE','Site','site')||'—';
-  document.getElementById('fStatus').value=gf(item,'STATUS','Status','status')||'';
+  document.getElementById('mSite').textContent=gv(item,'site')||'—';
+  document.getElementById('fStatus').value=gv(item,'status')||'';
   document.getElementById('fTsk').value=gf(item,'TSK','Tsk','tsk')||'';
-  document.getElementById('fResp').value=gf(item,'RESPONSÁVEL','Responsável','RESPONSAVEL','Responsavel')||'';
+  document.getElementById('fResp').value=gv(item,'resp')||'';
   document.getElementById('fPrev').value=gf(item,'PREVISÃO','Previsão','PREVISAO','Previsao')||'';
   document.getElementById('fPend').value=gf(item,'PENDÊNCIA','Pendência','PENDENCIA','Pendencia')||'';
   document.getElementById('fObs').value=gf(item,'OBS','Obs','obs')||'';
@@ -734,46 +1271,58 @@ async function salvar(){
   item['PENDÊNCIA']=document.getElementById('fPend').value.trim();
   item['OBS']=document.getElementById('fObs').value.trim();
   try{
-    const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify({aba:paginaHoje,rowIndex:editIdx+1,data:item})});
-    const j=await res.json();if(j.error)throw new Error(j.error);
+    const j=await postAS({aba:paginaHoje,rowIndex:editIdx+1,data:item});
+    if(j.error)throw new Error(j.error);
     fecharModal();renderCards();renderTabela();toast('Salvo na planilha!','ok');
   }catch(e){toast('Erro ao salvar.','err');}
   finally{btn.disabled=false;sp.style.display='none';tx.textContent='Salvar';}
 }
 
-/* ─── MODAL BATERIA ─── */
-function abrirBatMo(site){batEditSite=site;document.getElementById('batMSite').textContent=site;document.querySelectorAll('.bop').forEach(b=>b.classList.remove('sel'));document.getElementById('batMo').classList.add('open');}
-function fecharBatMo(){document.getElementById('batMo').classList.remove('open');batEditSite=null;}
+/* ─── MODAL BATERIA (status I + responsável F + afetação K) ─── */
+function abrirBatMo(site){
+  batEditSite=site;
+  const it=dadosBat.find(i=>normKey(i.site)===normKey(site));
+  document.getElementById('batMSite').textContent=site;
+  batEditStatus=it?it.bateria:'';
+  document.querySelectorAll('#batMo .bop').forEach(b=>b.classList.remove('sel'));
+  if(batEditStatus==='SIM')document.getElementById('bopSim').classList.add('sel');
+  else if(batEditStatus==='NAO')document.getElementById('bopNao').classList.add('sel');
+  else if(batEditStatus==='FAT')document.getElementById('bopFat').classList.add('sel');
+  popularRespSelect(document.getElementById('batMResp'),it?it.resp:'');
+  const pk=it&&it.peso?it.peso.key:'';
+  document.getElementById('batMAfet').value=pk==='agg'?'AGG':pk==='anel'?'ANEL ACESSO':pk==='ponta'?'PONTA':'';
+  document.getElementById('batMo').classList.add('open');
+}
+function selBatStatus(v){
+  batEditStatus=v;
+  document.querySelectorAll('#batMo .bop').forEach(b=>b.classList.remove('sel'));
+  const m={SIM:'bopSim',NAO:'bopNao',FAT:'bopFat'};
+  const el=document.getElementById(m[v]);if(el)el.classList.add('sel');
+}
+function fecharBatMo(){document.getElementById('batMo').classList.remove('open');batEditSite=null;batEditStatus='';}
 document.getElementById('batMo').addEventListener('click',e=>{if(e.target===e.currentTarget)fecharBatMo();});
-async function selecionarBateria(val){
-  document.querySelectorAll('.bop').forEach(b=>b.classList.remove('sel'));
-  const m={SIM:'.bop.sim',NAO:'.bop.nao',FAT:'.bop.fat'};
-  document.querySelector(m[val])?.classList.add('sel');
+async function salvarBateria(){
   const site=batEditSite;if(!site)return;
-  document.querySelectorAll('.bop').forEach(b=>b.disabled=true);
-  const cancelBtn=document.querySelector('.bat-mc');
-  if(cancelBtn)cancelBtn.disabled=true;
-  const titEl=document.querySelector('.bat-m-tit');
-  const titOrig=titEl?.textContent||'Situação da Bateria';
-  if(titEl)titEl.textContent='Salvando na planilha...';
+  const btn=document.getElementById('batSvBtn'),sp=document.getElementById('batSpin'),tx=document.getElementById('batSvTxt');
+  btn.disabled=true;sp.style.display='block';tx.textContent='Salvando...';
   try{
-    const sUp=site.trim().toUpperCase();
-    let fi=-1;
-    for(let i=0;i<dados.length;i++){if(getSiteJ(dados[i]).toUpperCase()===sUp){fi=i;break;}}
-    if(fi===-1)throw new Error(`Site "${site}" não encontrado.`);
-    const vPl=val==='SIM'?'SIM':val==='FAT'?'FAT':'NÃO';
+    const sUp=normKey(site);let fi=-1;
+    for(let i=0;i<dados.length;i++){if(normKey(getSiteJ(dados[i]))===sUp){fi=i;break;}}
+    if(fi===-1)throw new Error(`Site "${site}" não encontrado na aba ${paginaHoje}.`);
     const item=dados[fi];
-    const hb=Object.keys(item).find(k=>k.trim().toUpperCase()==='BATERIA')||'BATERIA';
-    item[hb]=vPl;
-    const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify({aba:paginaHoje,rowIndex:fi+1,data:item})});
-    const j=await res.json();if(j.error)throw new Error(j.error);
-    const ib=dadosBat.find(i=>i.site===site);
-    if(ib){ib.bateria=val;ib.dia=paginaHoje;}
+    const resp=document.getElementById('batMResp').value;
+    const afet=document.getElementById('batMAfet').value;
+    if(batEditStatus){const vPl=batEditStatus==='SIM'?'SIM':batEditStatus==='FAT'?'EM PROCESSO DE FAT':'NÃO';setField(item,'bateria',vPl);}
+    if(resp)setField(item,'resp',resp);
+    setField(item,'afetacao',afet);
+    const j=await postAS({aba:paginaHoje,rowIndex:fi+1,data:item});
+    if(j.error)throw new Error(j.error);
+    const ib=dadosBat.find(i=>normKey(i.site)===sUp);
+    if(ib){if(batEditStatus)ib.bateria=batEditStatus;if(resp)ib.resp=resp;ib.afetacaoRaw=afet;ib.peso=classificarPeso(afet);ib.dia=paginaHoje;}
     fecharBatMo();recalcListas(dadosBat);renderBatCompleto(dadosBat);
-    const lm={SIM:'Com Bateria',NAO:'Sem Bateria',FAT:'Em FAT'};
-    toast(`${site} → ${lm[val]||val} ✓ Salvo!`,'ok');
-  }catch(e){toast(`Erro ao salvar: ${e.message||'Tente novamente.'}`,'err');if(titEl)titEl.textContent=titOrig;}
-  finally{document.querySelectorAll('.bop').forEach(b=>b.disabled=false);if(cancelBtn)cancelBtn.disabled=false;}
+    toast(`${site} atualizado na planilha ✓`,'ok');
+  }catch(e){toast('Erro ao salvar: '+(e.message||'tente novamente.'),'err');}
+  finally{btn.disabled=false;sp.style.display='none';tx.textContent='Salvar alterações';}
 }
 function recalcListas(fonte){
   listaComBat=fonte.filter(i=>i.bateria==='SIM');
@@ -782,13 +1331,13 @@ function recalcListas(fonte){
   listaIndef=fonte.filter(i=>!['SIM','NAO','FAT'].includes(i.bateria));
 }
 
-/* ─── GRÁFICOS TABELA ─── */
+/* ─── GRÁFICOS (Tabela) ─── */
 function criarGraficos(){
   const catC={},respM={},pendM={},tskM={};
   dados.forEach(i=>{
-    const c=cat(gf(i,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'',gf(i,'STATUS','Status','status')||'');
+    const c=cat(gf(i,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'',gv(i,'status')||'');
     catC[c.key]=catC[c.key]||{label:c.label,n:0,color:c.color};catC[c.key].n++;
-    const r=norm(gf(i,'RESPONSÁVEL','Responsável','responsável','RESPONSAVEL','Responsavel','responsavel')||'')||'Sem responsável';
+    const r=respLimpo(gv(i,'resp'))||'Sem responsável';
     respM[r]=(respM[r]||0)+1;
     const pend=norm(gf(i,'PENDÊNCIA','Pendência','pendência','PENDENCIA','Pendencia','pendencia')||'');
     if(pend)pendM[r]=(pendM[r]||0)+1;
@@ -807,35 +1356,31 @@ function criarGraficos(){
     <div class="m-mini" style="--mc:#ff6200"><div class="m-mini-val">${withP}</div><div class="m-mini-lbl">Com Pendência</div><div class="m-mini-sub">${dados.length?Math.round(withP/dados.length*100):0}% do total</div></div>
     <div class="m-mini" style="--mc:#e879f9"><div class="m-mini-val">${withT}</div><div class="m-mini-lbl">Com TSK</div><div class="m-mini-sub">${rCount} responsáveis</div></div>`;
   const gc='rgba(255,255,255,.05)';
-  /* Donut cats */
   const dCtx=document.getElementById('grStatus').getContext('2d');
-  const dCat=new Chart(dCtx,{type:'doughnut',data:{labels:ce.map(c=>c.label),datasets:[{data:ce.map(c=>c.n),backgroundColor:ce.map(c=>c.color),borderWidth:0,hoverOffset:14}]},
-    options:{cutout:'65%',plugins:{legend:{position:'bottom',labels:{padding:12,usePointStyle:true,boxWidth:7,font:{size:10}}},tooltip:{callbacks:{label:ctx=>{const tot=ce.reduce((s,c)=>s+c.n,0);return` ${ctx.parsed} site${ctx.parsed>1?'s':''} (${tot?Math.round(ctx.parsed/tot*100):0}%)`;}}},},
-    onClick(e){const pts=dCat.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const idx=pts[0].index;const cv=ce[idx];const items=dados.filter(i=>cat(gf(i,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'',gf(i,'STATUS','Status','status')||'').key===cv.key);abrirDrill(cv.label,cv.color,items.map(i=>({site:gf(i,'SITE','Site','site')||'—',resp:norm(gf(i,'RESPONSÁVEL','Responsável','responsável','RESPONSAVEL','Responsavel','responsavel')||''),extra:gf(i,'STATUS','Status','status')||''})));}}});
-  /* Bar resp */
+  const dCat=new Chart(dCtx,{type:'doughnut',data:{labels:ce.map(c=>c.label.toUpperCase()),datasets:[{data:ce.map(c=>c.n),backgroundColor:ce.map(c=>darken(c.color,.30)),hoverBackgroundColor:ce.map(c=>c.color),hoverBorderColor:ce.map(c=>lighten(c.color,.4)),hoverBorderWidth:3,borderWidth:0,hoverOffset:16}]},
+    options:{cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const tot=ce.reduce((s,c)=>s+c.n,0);return` ${ctx.parsed} site${ctx.parsed>1?'s':''} (${tot?Math.round(ctx.parsed/tot*100):0}%)`;}}},},
+    onClick(e){const pts=dCat.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const idx=pts[0].index;const cv=ce[idx];const items=dados.filter(i=>cat(gf(i,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'',gv(i,'status')||'').key===cv.key);abrirDrill(cv.label,cv.color,items.map(i=>({site:gv(i,'site')||'—',resp:respLimpo(gv(i,'resp')),extra:gv(i,'status')||''})));}}});
+  buildHtmlLegend('catLegend',dCat,ce.map(c=>({label:c.label,color:c.color})),'data');
   const rL=Object.keys(respM).sort((a,b)=>respM[b]-respM[a]);
   const pal=['#ff6200','#38bdf8','#a78bfa','#00ffaa','#ffd600','#f43f5e','#e879f9','#fb923c','#34d399','#60a5fa'];
   const rCv=document.getElementById('grResp');
   rCv.style.height=(rL.length*46+60)+'px';
-  new Chart(rCv,{type:'bar',data:{labels:rL,datasets:[{label:'Sites',data:rL.map(r=>respM[r]),backgroundColor:rL.map((_,i)=>pal[i%pal.length]+'bb'),borderColor:rL.map((_,i)=>pal[i%pal.length]),borderWidth:1,borderRadius:7,borderSkipped:false,categoryPercentage:.55,barPercentage:.75}]},
+  new Chart(rCv,{type:'bar',data:{labels:rL.map(l=>l.toUpperCase()),datasets:[{label:'SITES',data:rL.map(r=>respM[r]),backgroundColor:rL.map((_,i)=>darken(pal[i%pal.length],.30)),hoverBackgroundColor:rL.map((_,i)=>pal[i%pal.length]),borderColor:rL.map((_,i)=>darken(pal[i%pal.length],.12)),hoverBorderColor:rL.map((_,i)=>lighten(pal[i%pal.length],.4)),hoverBorderWidth:2.5,borderWidth:1,borderRadius:7,borderSkipped:false,categoryPercentage:.55,barPercentage:.75}]},
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.x} site${ctx.parsed.x>1?'s':''}`}}},scales:{x:{grid:{color:gc},ticks:{precision:0},border:{display:false}},y:{grid:{display:false},ticks:{font:{family:"'Outfit',sans-serif",size:12,weight:'600'},color:'#f0f2ff',autoSkip:false,maxRotation:0},border:{display:false}}}}});
-  /* Progress pendências */
   const pL=Object.keys(pendM).sort((a,b)=>pendM[b]-pendM[a]).slice(0,10);
   const maxP=Math.max(...pL.map(r=>pendM[r]),1);
   const pEl=document.getElementById('pendChart');
   pEl.innerHTML=pL.length?pL.map(r=>`<div class="prog-item"><div class="prog-hdr"><span class="prog-name">${esc(r)}</span><span class="prog-val">${pendM[r]} pendência${pendM[r]>1?'s':''}</span></div><div class="prog-bg"><div class="prog-fill" style="--pc:#ff6200;width:${Math.round(pendM[r]/maxP*100)}%"></div></div></div>`).join(''):'<div class="empty" style="padding:18px;font-size:12px">Nenhuma pendência.</div>';
-  /* Progress TSK */
   const tL=Object.keys(tskM).sort((a,b)=>tskM[b]-tskM[a]).slice(0,10);
   const maxT=Math.max(...tL.map(r=>tskM[r]),1);
   const tEl=document.getElementById('tskChart');
   tEl.innerHTML=tL.length?tL.map(r=>`<div class="prog-item"><div class="prog-hdr"><span class="prog-name">${esc(r)}</span><span class="prog-val">${tskM[r]} TSK${tskM[r]>1?'s':''}</span></div><div class="prog-bg"><div class="prog-fill" style="--pc:#e879f9;width:${Math.round(tskM[r]/maxT*100)}%"></div></div></div>`).join(''):'<div class="empty" style="padding:18px;font-size:12px">Nenhum TSK.</div>';
-  /* Bar cats volume */
   const pv=ce.filter(c=>c.n>0);
-  new Chart(document.getElementById('grPrev'),{type:'bar',data:{labels:pv.map(c=>c.label),datasets:[{label:'Sites',data:pv.map(c=>c.n),backgroundColor:pv.map(c=>c.color+'bb'),borderColor:pv.map(c=>c.color),borderWidth:1.5,borderRadius:7,borderSkipped:false}]},
+  new Chart(document.getElementById('grPrev'),{type:'bar',data:{labels:pv.map(c=>c.label.toUpperCase()),datasets:[{label:'SITES',data:pv.map(c=>c.n),backgroundColor:pv.map(c=>darken(c.color,.30)),hoverBackgroundColor:pv.map(c=>c.color),borderColor:pv.map(c=>darken(c.color,.12)),hoverBorderColor:pv.map(c=>lighten(c.color,.4)),hoverBorderWidth:2.5,borderWidth:1.5,borderRadius:7,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{family:"'Outfit',sans-serif",size:11,weight:'600'},color:'#f0f2ff',maxRotation:30},border:{display:false}},y:{grid:{color:gc},ticks:{precision:0},border:{display:false}}}}});
 }
 
-/* ─── DRILL ─── */
+/* ─── DRILL GENÉRICO ─── */
 function abrirDrill(tit,cor,items){drillData=items;document.getElementById('drillTit').textContent=tit;document.getElementById('drillDot').style.cssText=`--dc:${cor};background:${cor}`;document.getElementById('drillSrch').value='';renderDrillL(items);document.getElementById('drillOv').classList.add('open');}
 function fecharDrill(){document.getElementById('drillOv').classList.remove('open');}
 document.getElementById('drillOv').addEventListener('click',e=>{if(e.target===e.currentTarget)fecharDrill();});
@@ -846,6 +1391,270 @@ function renderDrillL(items){
   l.innerHTML=items.length?items.map(i=>`<div class="drill-row"><span class="drill-site">${esc(i.site)}</span><div class="drill-meta">${i.resp?`<span class="drill-resp">${esc(i.resp)}</span>`:''} ${i.extra?`<span class="data-badge">${esc(i.extra)}</span>`:''}</div></div>`).join(''):'<div class="empty">Nenhum resultado.</div>';
 }
 
+/* ════════════════════════════════════════════════════════════════
+   REINCIDENTES
+   Site reincidente = teve STATUS (col G) "NORMALIZADO" em alguma data
+   e reapareceu depois. Chave = END_ID (col B). "dias" = nº de datas
+   em que ficou normalizado. Regra de remoção: se ficou normalizado e
+   não aparece nas 2 datas mais recentes, sai da classificação.
+   ════════════════════════════════════════════════════════════════ */
+function calcularReincidentes(rPA,abasOrd){
+  const total=abasOrd.length;
+  const m={};
+  abasOrd.forEach((aba,idx)=>{
+    const lista=rPA[aba];if(!Array.isArray(lista))return;
+    lista.forEach(item=>{
+      const endId=norm(gv(item,'endId')||'');if(!endId)return;
+      const k=normKey(endId);
+      if(!m[k])m[k]={endId,colJ:'',colA:'',idxs:[],normDatas:[],normIdxs:[]};
+      const e=m[k];
+      e.idxs.push(idx);
+      /* Site do reincidente vem da coluna J (BATSITE); col A (SITE) é fallback */
+      const siteJ=norm(getSiteJ(item)||'');if(siteJ)e.colJ=siteJ;
+      const siteA=norm(gv(item,'site')||'');if(siteA)e.colA=siteA;
+      if(normKey(gv(item,'status')||'').includes('NORMALIZ')){if(!e.normDatas.includes(aba))e.normDatas.push(aba);e.normIdxs.push(idx);}
+    });
+  });
+  const out=[];
+  Object.values(m).forEach(e=>{
+    if(!e.normIdxs.length)return;
+    const primNorm=Math.min(...e.normIdxs);
+    const maxIdx=Math.max(...e.idxs);
+    if(maxIdx<=primNorm)return;
+    if(total>=3&&maxIdx<=total-3)return;
+    /* prioriza coluna J (BATSITE); se vazia, usa coluna A (SITE) */
+    out.push({colA:e.colJ||e.colA,endId:e.endId,dias:e.normDatas.length,datas:e.normDatas.slice(),ultimaData:abasOrd[maxIdx]});
+  });
+  return out.sort((a,b)=>b.dias-a.dias);
+}
+async function lerAbaReincidentes(){
+  try{
+    const d=await fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent('REINCIDENTES')}`).then(r=>r.json()).catch(()=>null);
+    if(Array.isArray(d)&&d.length){
+      reincRawHeaders=Object.keys(d[0]||{});
+      return d.map(row=>{const v=Object.values(row);return{colA:norm(v[0]||''),endId:norm(v[1]||''),dias:parseInt(v[2],10)||0,ultimaData:norm(v[3]||''),datas:String(v[4]||'').split(',').map(s=>s.trim()).filter(Boolean)};}).filter(r=>r.colA||r.endId);
+    }
+  }catch(e){console.warn('REINCIDENTES indisponível',e);}
+  reincRawHeaders=[];
+  return[];
+}
+function montarReincEdit(){
+  const map={};
+  (reincCalc||[]).forEach(c=>{const k=normKey(c.endId||c.colA);if(!k)return;map[k]={colA:c.colA||'',endId:c.endId||'',dias:c.dias||0,datas:c.datas||[],ultimaData:c.ultimaData||'',auto:true,naPlanilha:false};});
+  (reincSheet||[]).forEach(s=>{const k=normKey(s.endId||s.colA);if(!k)return;if(map[k]){if(s.colA)map[k].colA=s.colA;if(s.endId)map[k].endId=s.endId;map[k].naPlanilha=true;}else{map[k]={colA:s.colA||'',endId:s.endId||'',dias:s.dias||0,datas:s.datas||[],ultimaData:s.ultimaData||'',auto:false,naPlanilha:true};}});
+  reincEdit=Object.values(map).sort((a,b)=>(b.dias||0)-(a.dias||0));
+}
+function abrirDrillReinc(){document.getElementById('reincSrch').value='';renderReincList();document.getElementById('reincOv').classList.add('open');}
+function fecharDrillReinc(){coletarReincInputs();document.getElementById('reincOv').classList.remove('open');renderReincChart();}
+document.getElementById('reincOv').addEventListener('click',e=>{if(e.target===e.currentTarget)fecharDrillReinc();});
+function renderReincList(){
+  const b=(document.getElementById('reincSrch').value||'').toLowerCase();
+  const cont=document.getElementById('reincList'),cnt=document.getElementById('reincCnt');
+  const vis=reincEdit.map((r,idx)=>({r,idx})).filter(({r})=>!b||`${r.colA} ${r.endId}`.toLowerCase().includes(b));
+  cnt.textContent=`${reincEdit.length} reincidente${reincEdit.length!==1?'s':''}`;
+  const head=`<div class="reinc-head"><span>Site (col J · BATSITE)</span><span>END_ID (col B)</span><span>Dias</span><span></span></div>`;
+  cont.innerHTML=head+(vis.length?vis.map(({r,idx})=>`<div class="reinc-row">
+    <input class="reinc-inp" data-i="${idx}" data-f="colA" value="${esc(r.colA||'')}" placeholder="Site (BATSITE)">
+    <input class="reinc-inp" data-i="${idx}" data-f="endId" value="${esc(r.endId||'')}" placeholder="END_ID">
+    <span class="reinc-dias" title="${esc((r.datas||[]).join(', '))}">${r.dias||0} d</span>
+    <button class="reinc-del" onclick="delReincRow(${idx})" title="Remover"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m2 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg></button>
+  </div>`).join(''):'<div class="empty" style="padding:20px">Nenhum reincidente.</div>');
+  cont.querySelectorAll('.reinc-inp').forEach(el=>el.addEventListener('input',()=>{const i=+el.dataset.i,f=el.dataset.f;if(reincEdit[i])reincEdit[i][f]=el.value;}));
+}
+function coletarReincInputs(){document.querySelectorAll('#reincList .reinc-inp').forEach(el=>{const i=+el.dataset.i,f=el.dataset.f;if(reincEdit[i])reincEdit[i][f]=el.value;});}
+function addReincRow(){coletarReincInputs();reincEdit.unshift({colA:'',endId:'',dias:0,datas:[],auto:false,naPlanilha:false});renderReincList();}
+function delReincRow(i){coletarReincInputs();reincEdit.splice(i,1);renderReincList();}
+async function salvarReincidentes(){
+  coletarReincInputs();
+  const btn=document.getElementById('reincSvBtn'),sp=document.getElementById('reincSpin'),tx=document.getElementById('reincSvTxt');
+  btn.disabled=true;sp.style.display='block';tx.textContent='Gravando...';
+  try{
+    /* Envia TODOS os reincidentes em UMA única chamada (lote).
+       O Apps Script limpa a aba REINCIDENTES e regrava tudo de uma vez. */
+    const rows=reincEdit
+      .filter(r=>(r.endId&&r.endId.trim())||(r.colA&&r.colA.trim()))
+      .map(r=>({site:r.colA||'',endId:r.endId||'',dias:r.dias||0,ultimaData:r.ultimaData||'',datas:r.datas||[]}));
+    if(!rows.length){toast('Nenhum reincidente para gravar.','err');return;}
+    const j=await postAS({action:'salvarReincidentes',rows});
+    if(j.error)throw new Error(j.error);
+    /* Confirma relendo a aba pela API (GET sempre funciona) */
+    let confirmados=(typeof j.gravados==='number')?j.gravados:rows.length;
+    try{const lido=await lerAbaReincidentes();if(Array.isArray(lido))confirmados=lido.length;}catch(_){}
+    reincSheet=rows.map(r=>({colA:r.site,endId:r.endId,dias:r.dias,datas:r.datas,ultimaData:r.ultimaData}));
+    renderReincChart();
+    toast(`${confirmados} reincidente(s) gravado(s) na aba REINCIDENTES ✓`,'ok');
+  }catch(e){
+    const msg=(e.message||'');
+    const dica=/failed to fetch|networkerror|load failed/i.test(msg)
+      ? ' — O Apps Script publicado ainda está com a versão antiga. Reimplante (Implantar ▸ Gerenciar implantações ▸ Nova versão).'
+      : ' — Verifique a planilha/implantação do Apps Script.';
+    toast('Erro ao gravar: '+msg+dica,'err');
+  }
+  finally{btn.disabled=false;sp.style.display='none';tx.textContent='Gravar na aba REINCIDENTES';}
+}
+/* Varredura: lê END_ID (col B) do dia atual; se reincidente, grava "REINCIDENTE" na col H */
+async function varrerDiaAtual(){
+  const btn=document.getElementById('btnVarrer'),sp=document.getElementById('varrerSpin'),tx=document.getElementById('varrerTxt');
+  if(!dados||!dados.length){toast('Aba de hoje sem dados para varrer.','err');return;}
+  const setIds=new Set();
+  (reincEdit||[]).forEach(r=>{if(r.endId)setIds.add(normKey(r.endId));});
+  if(!setIds.size){toast('Nenhum reincidente na lista. Calcule/edite primeiro.','err');return;}
+  btn.disabled=true;sp.style.display='block';tx.textContent='Varrendo...';
+  try{
+    let marc=0;
+    for(let i=0;i<dados.length;i++){
+      const endId=normKey(gv(dados[i],'endId')||'');
+      if(endId&&setIds.has(endId)){
+        setField(dados[i],'reincFlag','REINCIDENTE');
+        const j=await postAS({aba:paginaHoje,rowIndex:i+1,data:dados[i]});
+        if(!j.error)marc++;
+      }
+    }
+    toast(`Varredura concluída: ${marc} site(s) marcado(s) como REINCIDENTE (coluna H) ✓`,'ok');
+  }catch(e){toast('Erro na varredura: '+(e.message||''),'err');}
+  finally{btn.disabled=false;sp.style.display='none';tx.textContent='Varrer dia atual';}
+}
+function renderReincChart(){
+  if(chReinc){chReinc.destroy();chReinc=null;}
+  const cv=document.getElementById('grReinc'),em=document.getElementById('reincEmpty');
+  const filtro=(document.getElementById('reincChartFilter')?.value||'').toLowerCase();
+  const allData=(reincEdit||[]).filter(r=>r.dias>0).sort((a,b)=>b.dias-a.dias);
+  const data=allData.filter(r=>{
+    if(!filtro)return true;
+    return (r.colA||'').toLowerCase().includes(filtro)||(r.endId||'').toLowerCase().includes(filtro);
+  }).slice(0,15);
+  const cntEl=document.getElementById('reincChartCount');
+  if(cntEl)cntEl.textContent=filtro?`${data.length} de ${allData.length}`:`${allData.length} site(s)`;
+  if(!data.length){if(cv)cv.style.display='none';if(em)em.style.display='block';return;}
+  if(cv)cv.style.display='block';if(em)em.style.display='none';
+  const labels=data.map(r=>(r.colA||r.endId||'—').toUpperCase());
+  const vals=data.map(r=>r.dias);
+  const base='#f59e0b';
+  chReinc=new Chart(cv,{type:'bar',data:{labels,datasets:[{label:'DIAS NORMALIZADO',data:vals,backgroundColor:darken(base,.30),hoverBackgroundColor:base,borderColor:darken(base,.12),hoverBorderColor:lighten(base,.4),hoverBorderWidth:2.5,borderWidth:1,borderRadius:6,borderSkipped:false}]},
+   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.x} dia(s) normalizado`}}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{precision:0},border:{display:false}},y:{grid:{display:false},ticks:{font:{family:"'Outfit',sans-serif",size:11,weight:'600'},color:'#f0f2ff',autoSkip:false},border:{display:false}}},
+   onClick(){abrirDrillReinc();}}});
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CIDADES OFENSORAS (base CIDADESTRJ)
+   Para cada site de bateria: pega o valor da col J (BATSITE) e procura
+   na col C (SITE) da CIDADESTRJ. Se achar → col A (bairro/cidade);
+   senão → "CADASTRAR".  CIDADESTRJ: A=BAIRRO B=END_ID C=SITE F=RESP.
+   ════════════════════════════════════════════════════════════════ */
+async function carregarCidades(){
+  mapaCidades={};cidRawHeaders=[];cidCount=0;
+  try{
+    const d=await fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent('CIDADESTRJ')}`).then(r=>r.json()).catch(()=>null);
+    if(Array.isArray(d)&&d.length){
+      cidRawHeaders=Object.keys(d[0]||{});
+      cidCount=d.length;
+      d.forEach(row=>{
+        const v=Object.values(row);
+        const bairro=norm(gf(row,'BAIRRO','Bairro','CIDADE','Cidade')||v[0]||'');
+        const endId=norm(gf(row,'END_ID','ENDID','END ID')||v[1]||'');
+        const site=norm(gf(row,'SITE','Site','site')||v[2]||'');
+        const resp=norm(gf(row,'RESPONSÁVEL','RESPONSAVEL','Responsável')||v[5]||'');
+        if(site)mapaCidades[normKey(site)]={bairro,endId,resp,site};
+      });
+    }
+  }catch(e){console.warn('CIDADESTRJ indisponível',e);}
+  dadosBat.forEach(i=>{const hit=mapaCidades[normKey(i.site)];i.cidade=hit?hit.bairro:'';i.cidadeCadastrada=!!hit;});
+}
+function abrirCidModal(site,endId){
+  cidEditSite=site;
+  document.getElementById('cidSiteTit').textContent=site||'—';
+  document.getElementById('cidBairro').value='';
+  document.getElementById('cidEndId').value=endId||'';
+  document.getElementById('cidSite').value=site||'';
+  popularRespSelect(document.getElementById('cidResp'),'');
+  document.getElementById('cidModalOv').classList.add('open');
+}
+function fecharCidModal(){document.getElementById('cidModalOv').classList.remove('open');cidEditSite=null;}
+document.getElementById('cidModalOv').addEventListener('click',e=>{if(e.target===e.currentTarget)fecharCidModal();});
+function buildCidadeData(bairro,endId,site,resp){
+  const heads=(cidRawHeaders&&cidRawHeaders.length>=6)?cidRawHeaders.slice():['BAIRRO','END_ID','SITE','COL_D','COL_E','RESPONSÁVEL'];
+  const vals={0:bairro,1:endId,2:site,5:resp};
+  const o={};heads.forEach((h,i)=>{o[h]=(vals[i]!==undefined)?vals[i]:'';});
+  return o;
+}
+async function salvarCidade(){
+  const btn=document.getElementById('cidSvBtn'),sp=document.getElementById('cidSpin'),tx=document.getElementById('cidSvTxt');
+  const bairro=document.getElementById('cidBairro').value.trim();
+  const endId=document.getElementById('cidEndId').value.trim();
+  const site=document.getElementById('cidSite').value.trim();
+  const resp=document.getElementById('cidResp').value;
+  if(!bairro||!site){toast('Preencha bairro e site.','err');return;}
+  btn.disabled=true;sp.style.display='block';tx.textContent='Cadastrando...';
+  try{
+    const data=buildCidadeData(bairro,endId,site,resp);
+    const j=await postAS({aba:'CIDADESTRJ',rowIndex:cidCount+1,data});
+    if(j.error)throw new Error(j.error);
+    cidCount++;
+    mapaCidades[normKey(site)]={bairro,endId,resp,site};
+    dadosBat.forEach(i=>{if(normKey(i.site)===normKey(site)){i.cidade=bairro;i.cidadeCadastrada=true;}});
+    fecharCidModal();renderBatCompleto(dadosBat);
+    toast(`Cidade cadastrada: ${bairro} ✓`,'ok');
+  }catch(e){toast('Erro ao cadastrar: '+(e.message||''),'err');}
+  finally{btn.disabled=false;sp.style.display='none';tx.textContent='Cadastrar';}
+}
+function renderCidadesChart(fonte){
+  if(chCidades){chCidades.destroy();chCidades=null;}
+  const cv=document.getElementById('grCidades'),em=document.getElementById('cidadesEmpty');
+  const m={};let cad=0;
+  fonte.forEach(i=>{if(i.bateria!=='NAO')return;if(i.cidadeCadastrada&&i.cidade)m[i.cidade]=(m[i.cidade]||0)+1;else cad++;});
+  let labels=Object.keys(m).sort((a,b)=>m[b]-m[a]).slice(0,14);
+  let vals=labels.map(l=>m[l]);
+  if(cad>0){labels=labels.concat(['CADASTRAR']);vals=vals.concat([cad]);}
+  const sub=document.getElementById('cidadesSub');
+  if(sub)sub.textContent=`${Object.keys(m).length} cidade(s) com sites sem bateria · ${cad} site(s) a cadastrar`;
+  if(!labels.length){if(cv)cv.style.display='none';if(em)em.style.display='block';return;}
+  if(cv)cv.style.display='block';if(em)em.style.display='none';
+  const base='#f43f5e';
+  const bg=labels.map(l=>darken(l==='CADASTRAR'?'#64748b':base,.30));
+  const hbg=labels.map(l=>l==='CADASTRAR'?'#64748b':base);
+  const bc=labels.map(l=>darken(l==='CADASTRAR'?'#64748b':base,.12));
+  const hbc=labels.map(l=>lighten(l==='CADASTRAR'?'#64748b':base,.4));
+  chCidades=new Chart(cv,{type:'bar',data:{labels:labels.map(l=>l.toUpperCase()),datasets:[{label:'SITES SEM BATERIA',data:vals,backgroundColor:bg,hoverBackgroundColor:hbg,borderColor:bc,hoverBorderColor:hbc,hoverBorderWidth:2.5,borderWidth:1,borderRadius:6,borderSkipped:false,categoryPercentage:.65,barPercentage:.55,maxBarThickness:46}]},
+   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y} site(s) sem bateria`}}},scales:{x:{grid:{display:false},ticks:{font:{family:"'Outfit',sans-serif",size:10,weight:'600'},color:'#f0f2ff',maxRotation:40,minRotation:0},border:{display:false}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{precision:0},border:{display:false}}},
+   onClick(e){const pts=chCidades.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const lbl=labels[pts[0].index];let items;if(lbl==='CADASTRAR')items=fonte.filter(i=>i.bateria==='NAO'&&!(i.cidadeCadastrada&&i.cidade));else items=fonte.filter(i=>i.bateria==='NAO'&&i.cidade===lbl);abrirDrill('Cidade: '+lbl,base,items.map(i=>({site:i.site,resp:i.resp,extra:i.cidade||'CADASTRAR'})));}}});
+}
+
+/* ════════════════════════════════════════════════════════════════
+   AFETAÇÃO POR PESO (col K)
+   ════════════════════════════════════════════════════════════════ */
+function renderPeso(fonte){
+  if(chPeso){chPeso.destroy();chPeso=null;}
+  if(chPesoBat){chPesoBat.destroy();chPesoBat=null;}
+  const defs=[
+    {k:'agg',label:'AGG · Cabeça de Anel',color:'#ff3358',desc:'maior afetação'},
+    {k:'anel',label:'Anel Acesso · Meio',color:'#ffd600',desc:'afetação média'},
+    {k:'ponta',label:'Ponta',color:'#00ffaa',desc:'baixa afetação'},
+    {k:'na',label:'Não Classificado',color:'#4a5280',desc:'sem coluna K'},
+  ];
+  const cnt={},sem={};
+  fonte.forEach(i=>{const k=pesoNorm(i.peso?i.peso.key:'na');cnt[k]=(cnt[k]||0)+1;if(i.bateria==='NAO')sem[k]=(sem[k]||0)+1;});
+  const strip=document.getElementById('pesoStrip');
+  if(strip)strip.innerHTML=defs.map(d=>`<div class="peso-card" style="--pcc:${d.color}"><div class="pv">${cnt[d.k]||0}</div><div class="pl">${d.label}</div><div class="ps">${sem[d.k]||0} sem bateria · ${d.desc}</div></div>`).join('');
+  /* Gráficos excluem "Não Classificado" (k='na') das métricas */
+  const chDefs=defs.filter(d=>d.k!=='na');
+  const pieVals=chDefs.map(d=>cnt[d.k]||0);
+  const cvP=document.getElementById('grPeso');
+  if(cvP){
+    chPeso=new Chart(cvP,{type:'doughnut',data:{labels:chDefs.map(d=>d.label.toUpperCase()),datasets:[{data:pieVals,backgroundColor:chDefs.map(d=>darken(d.color,.30)),hoverBackgroundColor:chDefs.map(d=>d.color),hoverBorderColor:chDefs.map(d=>lighten(d.color,.4)),hoverBorderWidth:3,borderWidth:0,hoverOffset:14}]},
+     options:{cutout:'62%',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const t=pieVals.reduce((s,v)=>s+v,0);return` ${ctx.parsed} site(s) (${t?Math.round(ctx.parsed/t*100):0}%)`;}}}},
+     onClick(e){const pts=chPeso.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const d=chDefs[pts[0].index];const items=fonte.filter(i=>pesoNorm(i.peso?i.peso.key:'na')===d.k);abrirDrill('Peso: '+d.label,d.color,items.map(i=>({site:i.site,resp:i.resp,extra:i.afetacaoRaw||'—'})));}}});
+    buildHtmlLegend('pesoDistLegend',chPeso,chDefs.map(d=>({label:d.label,color:d.color})),'data');
+  }
+  const cvB=document.getElementById('grPesoBat');
+  if(cvB){
+    const semData=chDefs.map(d=>sem[d.k]||0);
+    chPesoBat=new Chart(cvB,{type:'bar',data:{labels:chDefs.map(d=>d.label.toUpperCase()),datasets:[{label:'SEM BATERIA',data:semData,backgroundColor:chDefs.map(d=>darken(d.color,.30)),hoverBackgroundColor:chDefs.map(d=>d.color),borderColor:chDefs.map(d=>darken(d.color,.12)),hoverBorderColor:chDefs.map(d=>lighten(d.color,.4)),hoverBorderWidth:2.5,borderWidth:1,borderRadius:6,borderSkipped:false}]},
+     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y} site(s) sem bateria`}}},scales:{x:{grid:{display:false},ticks:{font:{family:"'Outfit',sans-serif",size:10,weight:'600'},color:'#f0f2ff',maxRotation:20},border:{display:false}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{precision:0},border:{display:false}}},
+     onClick(e){const pts=chPesoBat.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const d=chDefs[pts[0].index];const items=fonte.filter(i=>i.bateria==='NAO'&&pesoNorm(i.peso?i.peso.key:'na')===d.k);abrirDrill('Sem Bateria — '+d.label,d.color,items.map(i=>({site:i.site,resp:i.resp,extra:i.afetacaoRaw||'—'})));}}});
+    buildHtmlLegend('pesoBatLegend',chPesoBat,chDefs.map(d=>({label:d.label,color:d.color})),'data');
+  }
+}
+
 /* ─── CARREGAR DIAS BATERIA ─── */
 function gerarPeriodo(){const res=[];const h=new Date();const ini=new Date(h.getFullYear(),4,20);const cur=new Date(ini);while(cur<=h){const d=String(cur.getDate()).padStart(2,'0');const m=String(cur.getMonth()+1).padStart(2,'0');res.push(`${d}/${m}`);cur.setDate(cur.getDate()+1);}return res;}
 async function carregarDias(){
@@ -854,59 +1663,64 @@ async function carregarDias(){
     sub.textContent='Gerando intervalo (20/05 → hoje)...';
     const periodo=gerarPeriodo();
     const dHoje=await fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(paginaHoje)}`).then(r=>r.json()).catch(()=>null);
+    if(Array.isArray(dHoje)&&dHoje.length&&(!dados||!dados.length))dados=dHoje;
     let abas=sortAbas(Array.from(new Set([...periodo,paginaHoje])));
     sub.textContent=`Carregando ${abas.length} dias...`;
     const fPA={};
     for(const a of abas)fPA[a]=a===paginaHoje&&dHoje!==null?Promise.resolve(dHoje):fetch(`${APPS_SCRIPT_URL}?aba=${encodeURIComponent(a)}`).then(r=>r.json()).catch(()=>null);
     let done=0;const tot=abas.length;const rPA={};
     await Promise.all(abas.map(a=>fPA[a].then(d=>{done++;sub.textContent=`${done} / ${tot} dias carregados`;if(Array.isArray(d)&&d.length>0)rPA[a]=d;})));
-    const aBC=abas.filter(a=>rPA[a]&&abaTemBat(rPA[a]));
+    rPAGlobal=rPA;
+    const abasComDados=sortAbas(Object.keys(rPA));
+    abasDadosGlobal=abasComDados;
+    const aBC=abasComDados.filter(a=>abaTemBat(rPA[a]));
     if(!aBC.length){ls.innerHTML=`<div style="font-size:2rem">⚡</div><div class="load-msg">Coluna BATERIA não encontrada</div><div class="load-sub">Nenhuma aba possui a coluna BATERIA.</div>`;return;}
+    /* tendência diária */
     dadosPorAba={};
-    for(const a of aBC){const lista=rPA[a];if(!lista)continue;dadosPorAba[a]={sim:0,nao:0,fat:0};for(const item of lista){const bR=gf(item,'BATERIA','Bateria','bateria')||'';const s=parseBat(bR);if(s===true)dadosPorAba[a].sim++;else if(s===false)dadosPorAba[a].nao++;else if(s==='fat')dadosPorAba[a].fat++;}}
+    for(const a of aBC){const lista=rPA[a];if(!lista)continue;dadosPorAba[a]={sim:0,nao:0,fat:0};for(const item of lista){const s=parseBat(gv(item,'bateria')||'');if(s===true)dadosPorAba[a].sim++;else if(s===false)dadosPorAba[a].nao++;else if(s==='fat')dadosPorAba[a].fat++;}}
+    /* consolidação por site (col J / BATSITE) — última info válida prevalece */
     const mapa={};
-    for(const a of aBC){const lista=rPA[a];if(!lista)continue;for(const item of lista){const sRaw=getSiteJ(item)||'';const site=norm(sRaw);if(!site)continue;const chave=normKey(site);const resp=norm(gf(item,'RESPONSÁVEL','Responsável','responsável','RESPONSAVEL','Responsavel','responsavel')||'');const batRaw=gf(item,'BATERIA','Bateria','bateria')||'';const sA=parseBat(batRaw);if(!mapa[chave]){mapa[chave]={site,resp,bV:sA!==null?sA:null,uD:sA!==null?a:null,dia:a};}else{const e=mapa[chave];if(resp)e.resp=resp;e.dia=a;if(sA!==null){e.bV=sA;e.uD=a;}}}}
-    dadosBat=Object.values(mapa).map(it=>({site:it.site,resp:it.resp,dia:it.uD||it.dia,bateria:it.bV===true?'SIM':it.bV===false?'NAO':it.bV==='fat'?'FAT':''}));
+    for(const a of aBC){const lista=rPA[a];if(!lista)continue;for(const item of lista){
+      const sRaw=getSiteJ(item)||'';const site=norm(sRaw);if(!site)continue;const chave=normKey(site);
+      const resp=respLimpo(gv(item,'resp'));
+      const batRaw=gv(item,'bateria')||'';const sA=parseBat(batRaw);
+      const endId=norm(gv(item,'endId')||'');
+      const afet=norm(gv(item,'afetacao')||'');
+      if(!mapa[chave]){mapa[chave]={site,resp,bV:sA!==null?sA:null,uD:sA!==null?a:null,dia:a,endId,afet};}
+      else{const e=mapa[chave];if(resp)e.resp=resp;e.dia=a;if(endId)e.endId=endId;if(afet)e.afet=afet;if(sA!==null){e.bV=sA;e.uD=a;}}
+    }}
+    dadosBat=Object.values(mapa).map(it=>({site:it.site,resp:it.resp,dia:it.uD||it.dia,bateria:it.bV===true?'SIM':it.bV===false?'NAO':it.bV==='fat'?'FAT':'',endId:it.endId||'',afetacaoRaw:it.afet||'',peso:classificarPeso(it.afet||''),cidade:'',cidadeCadastrada:false}));
     recalcListas(dadosBat);
+    sub.textContent='Carregando CIDADESTRJ...';
+    await carregarCidades();
+    sub.textContent='Calculando reincidentes...';
+    reincCalc=calcularReincidentes(rPA,abasComDados);
+    reincSheet=await lerAbaReincidentes();
+    montarReincEdit();
     ls.style.display='none';document.getElementById('batBody').style.display='block';
     document.getElementById('batDias').innerHTML=aBC.map(a=>`<span class="dia-chip${a===paginaHoje?' hoje':''}">${a}</span>`).join('');
-    const rs=new Set(dadosBat.map(i=>i.resp).filter(Boolean));
-    const sR=document.getElementById('batFilR');
-    sR.innerHTML='<option value="">Todos os Responsáveis</option>';
-    [...rs].sort().forEach(r=>sR.innerHTML+=`<option value="${esc(r)}">${esc(r)}</option>`);
     renderBatCompleto(dadosBat);
-    ['batSearch','batFil','batFilR','batOrd'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',()=>renderBatCompleto(dadosBat));});
+    const bs=document.getElementById('batSearch');if(bs)bs.addEventListener('input',()=>renderBatCompleto(dadosBat));
   }catch(e){console.error(e);ls.innerHTML=`<div>⚠️</div><div class="load-msg">Erro ao processar dados</div><div class="load-sub">${esc(String(e.message||e))}</div>`;}
 }
 
 /* ─── RENDER BATERIA COMPLETO ─── */
 function renderBatCompleto(fonte){
   const busca=(document.getElementById('batSearch')?.value||'').toLowerCase();
-  const fb=document.getElementById('batFil')?.value||'';
-  const fr=document.getElementById('batFilR')?.value||'';
-  const ord=document.getElementById('batOrd')?.value||'bat_no';
   let fil=fonte.filter(i=>{
-    if(fr&&i.resp!==fr)return false;
-    if(fb==='SIM'&&i.bateria!=='SIM')return false;
-    if(fb==='NAO'&&i.bateria!=='NAO')return false;
-    if(fb==='FAT'&&i.bateria!=='FAT')return false;
-    if(fb==='INDEF'&&['SIM','NAO','FAT'].includes(i.bateria))return false;
-    if(busca&&!`${i.site} ${i.resp} ${i.bateria} ${i.dia}`.toLowerCase().includes(busca))return false;
+    if(busca){
+      const hay=`${i.site} ${i.resp} ${i.bateria} ${i.dia} ${i.afetacaoRaw} ${i.peso?i.peso.short:''} ${i.cidade} ${i.endId}`.toLowerCase();
+      if(!hay.includes(busca))return false;
+    }
     return true;
   });
-  fil.sort((a,b)=>{
-    if(ord==='az')return a.site.localeCompare(b.site);
-    if(ord==='za')return b.site.localeCompare(a.site);
-    if(ord==='bat_yes'){const s=x=>x.bateria==='SIM'?0:x.bateria==='NAO'?1:x.bateria==='FAT'?2:3;return s(a)-s(b)||a.site.localeCompare(b.site);}
-    const s=x=>x.bateria==='NAO'?0:x.bateria==='FAT'?1:x.bateria==='SIM'?2:3;
-    return s(a)-s(b)||a.site.localeCompare(b.site);
-  });
+  fil.sort((a,b)=>{const s=x=>x.bateria==='NAO'?0:x.bateria==='FAT'?1:x.bateria==='SIM'?2:3;return s(a)-s(b)||a.site.localeCompare(b.site);});
   recalcListas(fonte);renderBatCards(fonte);renderBatGraficos(fil,fonte);renderBatTabela(fil);
 }
 
 /* ─── CARDS BATERIA (KPI strip) ─── */
 function renderBatCards(f){
-  const tot=f.length,com=f.filter(i=>i.bateria==='SIM').length,sem=f.filter(i=>i.bateria==='NAO').length,fat=f.filter(i=>i.bateria==='FAT').length,ind=tot-com-sem-fat;
+  const tot=f.length,com=f.filter(i=>i.bateria==='SIM').length,sem=f.filter(i=>i.bateria==='NAO').length,fat=f.filter(i=>i.bateria==='FAT').length;
   const p=v=>tot?Math.round(v/tot*100):0;
   document.getElementById('bat-cards').innerHTML=`
     <div class="bat-kpi-item" style="--bkc:#ff6200">
@@ -937,80 +1751,79 @@ function renderBatCards(f){
 
 /* ─── GRÁFICOS BATERIA ─── */
 function renderBatGraficos(fil,fonteT){
-  [chBatDist,chBatResp,chBatGauge,chBatTrend].forEach(c=>{if(c)c.destroy();});
-  chBatDist=chBatResp=chBatGauge=chBatTrend=null;
+  [chBatDist,chBatResp,chBatTrend].forEach(c=>{if(c)c.destroy();});
+  chBatDist=chBatResp=chBatTrend=null;
   const com=fil.filter(i=>i.bateria==='SIM').length,sem=fil.filter(i=>i.bateria==='NAO').length,fat=fil.filter(i=>i.bateria==='FAT').length;
-  /* Gauge */
-  const gc=document.getElementById('batGauge')?.getContext('2d');
-  if(gc){
-    const sp=fonteT.length?Math.round(fonteT.filter(i=>i.bateria==='SIM').length/fonteT.length*100):0;
-    const gColor=sp>=70?'#00ffaa':sp>=40?'#ffd600':'#ff3358';
-    document.getElementById('gaugeVal').textContent=sp+'%';
-    document.getElementById('gaugeVal').style.color=gColor;
-    chBatGauge=new Chart(gc,{type:'doughnut',data:{datasets:[{data:[sp,100-sp],backgroundColor:[gColor+'cc','rgba(255,255,255,.04)'],borderWidth:0,hoverOffset:0}]},
-      options:{cutout:'78%',circumference:270,rotation:-135,responsive:false,plugins:{legend:{display:false},tooltip:{enabled:false}},events:[]}});
-    const semT=fonteT.filter(i=>i.bateria==='NAO').length,fatT=fonteT.filter(i=>i.bateria==='FAT').length;
-    document.getElementById('gaugeStats').innerHTML=`
-      <div class="stat-item" style="--sc:#ff3358"><div class="stat-val">${semT}</div><div class="stat-lbl">Sem Bateria</div></div>
-      <div class="stat-item" style="--sc:#ffd600"><div class="stat-val">${fatT}</div><div class="stat-lbl">Em FAT</div></div>`;
+  /* Donut Distribuição Geral */
+  const dCtx=document.getElementById('grBatDist')?.getContext('2d');
+  if(dCtx){
+    const distLbls=['COM BATERIA','SEM BATERIA','EM FAT'],distCl=['#00ffaa','#ff3358','#ffd600'],distKeys=['SIM','NAO','FAT'];
+    chBatDist=new Chart(dCtx,{type:'doughnut',data:{labels:distLbls,datasets:[{data:[com,sem,fat],backgroundColor:distCl.map(c=>darken(c,.30)),hoverBackgroundColor:distCl.map(c=>c),hoverBorderColor:distCl.map(c=>lighten(c,.4)),hoverBorderWidth:3,borderWidth:0,hoverOffset:14}]},
+      options:{cutout:'66%',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const t=com+sem+fat;return` ${ctx.parsed} sites (${t?Math.round(ctx.parsed/t*100):0}%)`;}}},},
+      onClick(e){const pts=chBatDist.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const idx=pts[0].index;const items=fil.filter(i=>i.bateria===distKeys[idx]);abrirDrill(distLbls[idx],distCl[idx],items.map(i=>({site:i.site,resp:i.resp,extra:i.dia})));}}});
+    buildHtmlLegend('batDistLegend',chBatDist,distLbls.map((l,i)=>({label:l,color:distCl[i]})),'data');
   }
-  /* Stacked resp */
+  /* Stacked por responsável */
   const rA={};
   fil.forEach(i=>{const r=i.resp||'Sem responsável';if(!rA[r])rA[r]={com:0,sem:0,fat:0,ind:0};if(i.bateria==='SIM')rA[r].com++;else if(i.bateria==='NAO')rA[r].sem++;else if(i.bateria==='FAT')rA[r].fat++;else rA[r].ind++;});
   const rL=Object.keys(rA).sort((a,b)=>{const tB=rA[b].com+rA[b].sem+rA[b].fat+rA[b].ind,tA=rA[a].com+rA[a].sem+rA[a].fat+rA[a].ind;return tB-tA;});
   const bCv=document.getElementById('grBatResp'),bEm=document.getElementById('batRespEmpty');
-  if(!rL.length){bCv.style.display='none';bEm.style.display='block';}
+  if(!rL.length){if(bCv)bCv.style.display='none';if(bEm)bEm.style.display='block';}
   else{
-    bCv.style.display='block';bEm.style.display='none';
-    chBatResp=new Chart(bCv,{type:'bar',data:{labels:rL,datasets:[
-      {label:'Sem Bateria',data:rL.map(r=>rA[r].sem),backgroundColor:'#ff335899',borderColor:'#ff3358',borderWidth:1,borderRadius:5,borderSkipped:false,categoryPercentage:.6,barPercentage:.8},
-      {label:'Em FAT',data:rL.map(r=>rA[r].fat),backgroundColor:'#ffd60099',borderColor:'#ffd600',borderWidth:1,borderRadius:5,borderSkipped:false,categoryPercentage:.6,barPercentage:.8},
-      {label:'Com Bateria',data:rL.map(r=>rA[r].com),backgroundColor:'#00ffaa99',borderColor:'#00ffaa',borderWidth:1,borderRadius:5,borderSkipped:false,categoryPercentage:.6,barPercentage:.8},
-    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',align:'end',labels:{padding:14,usePointStyle:true,boxWidth:8,font:{size:11}}},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y} site${ctx.parsed.y>1?'s':''} — ${ctx.dataset.label}`}}},
+    if(bCv)bCv.style.display='block';if(bEm)bEm.style.display='none';
+    const respDs=[
+      {label:'SEM BATERIA',data:rL.map(r=>rA[r].sem),backgroundColor:darken('#ff3358',.30),hoverBackgroundColor:'#ff3358',borderColor:darken('#ff3358',.12),hoverBorderColor:lighten('#ff3358',.4),hoverBorderWidth:2.5,borderWidth:1,borderRadius:5,borderSkipped:false,categoryPercentage:.6,barPercentage:.8},
+      {label:'EM FAT',data:rL.map(r=>rA[r].fat),backgroundColor:darken('#ffd600',.30),hoverBackgroundColor:'#ffd600',borderColor:darken('#ffd600',.12),hoverBorderColor:lighten('#ffd600',.4),hoverBorderWidth:2.5,borderWidth:1,borderRadius:5,borderSkipped:false,categoryPercentage:.6,barPercentage:.8},
+      {label:'COM BATERIA',data:rL.map(r=>rA[r].com),backgroundColor:darken('#00ffaa',.30),hoverBackgroundColor:'#00ffaa',borderColor:darken('#00ffaa',.12),hoverBorderColor:lighten('#00ffaa',.4),hoverBorderWidth:2.5,borderWidth:1,borderRadius:5,borderSkipped:false,categoryPercentage:.6,barPercentage:.8},
+    ];
+    const respDm=[{f:'NAO',l:'SEM BATERIA',c:'#ff3358'},{f:'FAT',l:'EM FAT',c:'#ffd600'},{f:'SIM',l:'COM BATERIA',c:'#00ffaa'}];
+    chBatResp=new Chart(bCv,{type:'bar',data:{labels:rL,datasets:respDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y} site${ctx.parsed.y>1?'s':''} — ${ctx.dataset.label}`}}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:"'Outfit',sans-serif",size:11,weight:'600'},color:'#f0f2ff',autoSkip:false,maxRotation:35,minRotation:0},border:{display:false}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{precision:0,stepSize:1},border:{display:false}}},
-    onClick(e){const pts=chBatResp.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const dsI=pts[0].datasetIndex,idx=pts[0].index,r=rL[idx];const dm=[{f:'NAO',l:'Sem Bateria',c:'#ff3358'},{f:'FAT',l:'Em FAT',c:'#ffd600'},{f:'SIM',l:'Com Bateria',c:'#00ffaa'}];const ds=dm[dsI]||dm[0];const items=fil.filter(i=>(i.resp||'Sem responsável')===r&&i.bateria===ds.f);abrirDrill(`${r} — ${ds.l}`,ds.c,items.map(i=>({site:i.site,resp:i.resp,extra:i.dia})));}}});
+    onClick(e){const pts=chBatResp.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const dsI=pts[0].datasetIndex,idx=pts[0].index,r=rL[idx];const ds=respDm[dsI]||respDm[0];const items=fil.filter(i=>(i.resp||'Sem responsável')===r&&i.bateria===ds.f);abrirDrill(`${r} — ${ds.l}`,ds.c,items.map(i=>({site:i.site,resp:i.resp,extra:i.dia})));}}});
+    buildHtmlLegend('batRespLegend',chBatResp,respDm.map(d=>({label:d.l,color:d.c})),'dataset');
   }
-  /* Donut */
-  const dCtx=document.getElementById('grBatDist')?.getContext('2d');
-  if(dCtx){
-    chBatDist=new Chart(dCtx,{type:'doughnut',data:{labels:['Com Bateria','Sem Bateria','Em FAT'],datasets:[{data:[com,sem,fat],backgroundColor:['#00ffaacc','#ff3358cc','#ffd600cc'],borderWidth:0,hoverOffset:12}]},
-      options:{cutout:'68%',responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{padding:12,usePointStyle:true,boxWidth:7,font:{size:10}}},tooltip:{callbacks:{label:ctx=>{const t=com+sem+fat;return` ${ctx.parsed} sites (${t?Math.round(ctx.parsed/t*100):0}%)`;}}},},
-      onClick(e){const pts=chBatDist.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const idx=pts[0].index;const lb=['SIM','NAO','FAT'],cl=['#00ffaa','#ff3358','#ffd600'],nm=['Com Bateria','Sem Bateria','Em FAT'];const items=fil.filter(i=>i.bateria===lb[idx]);abrirDrill(nm[idx],cl[idx],items.map(i=>({site:i.site,resp:i.resp,extra:i.dia})));}}});
-  }
-  /* Barras resp */
-  const rbEl=document.getElementById('rbList');
-  if(rbEl){
-    rbEl.innerHTML=rL.length?rL.map(r=>{const d=rA[r];const tot=d.com+d.sem+d.fat+d.ind;const sP=tot?Math.round(d.sem/tot*100):0,fP=tot?Math.round(d.fat/tot*100):0,cP=tot?Math.round(d.com/tot*100):0,iP=Math.max(0,100-sP-fP-cP);
-      return`<div class="rb-item"><div class="rb-hdr"><span class="rb-name">${esc(r)}</span><span class="rb-tot">${tot} · <span style="color:#ff3358">${d.sem}✗</span> <span style="color:#00ffaa">${d.com}✓</span></span></div><div class="rb-track"><div class="rb-seg rb-sem" style="width:${sP}%"></div><div class="rb-seg rb-fat" style="width:${fP}%"></div><div class="rb-seg rb-sim" style="width:${cP}%"></div><div class="rb-seg rb-ind" style="width:${iP}%"></div></div></div>`;}).join(''):'<div class="empty" style="padding:20px">Nenhum dado.</div>';
-  }
-  /* Trend */
+  /* Reincidentes · Cidades · Peso */
+  renderReincChart();
+  renderCidadesChart(fil);
+  renderPeso(fil);
+  /* Tendência */
   const aDs=Object.keys(dadosPorAba).sort((a,b)=>d2n(a)-d2n(b));
   const tCv=document.getElementById('grBatTrend'),tEm=document.getElementById('trendEmpty');
   if(aDs.length<2){if(tCv)tCv.style.display='none';if(tEm){tEm.style.display='flex';tEm.style.alignItems='center';tEm.style.justifyContent='center';}}
   else{
     if(tCv)tCv.style.display='block';if(tEm)tEm.style.display='none';
+        const trendDm=[{l:'SEM BATERIA',batVal:false,c:'#ff3358'},{l:'EM FAT',batVal:'fat',c:'#ffd600'},{l:'COM BATERIA',batVal:true,c:'#00ffaa'}];
     chBatTrend=new Chart(tCv,{type:'line',data:{labels:aDs,datasets:[
-      {label:'Sem Bateria',data:aDs.map(a=>dadosPorAba[a].nao),borderColor:'#ff3358',backgroundColor:'rgba(255,51,88,.12)',fill:true,tension:.4,pointBackgroundColor:'#ff3358',pointRadius:5,pointHoverRadius:7},
-      {label:'Em FAT',data:aDs.map(a=>dadosPorAba[a].fat),borderColor:'#ffd600',backgroundColor:'rgba(255,214,0,.08)',fill:true,tension:.4,pointBackgroundColor:'#ffd600',pointRadius:4,pointHoverRadius:7},
-      {label:'Com Bateria',data:aDs.map(a=>dadosPorAba[a].sim),borderColor:'#00ffaa',backgroundColor:'rgba(0,255,170,.08)',fill:true,tension:.4,pointBackgroundColor:'#00ffaa',pointRadius:4,pointHoverRadius:7},
+      {label:'SEM BATERIA',data:aDs.map(a=>dadosPorAba[a].nao),borderColor:darken('#ff3358',.22),backgroundColor:'rgba(255,51,88,.06)',fill:true,tension:.4,pointBackgroundColor:darken('#ff3358',.22),pointRadius:5,pointHoverRadius:9,pointHoverBackgroundColor:'#ff3358',pointHoverBorderColor:lighten('#ff3358',.45),pointHoverBorderWidth:3,hoverBorderColor:lighten('#ff3358',.4),hoverBorderWidth:3},
+      {label:'EM FAT',data:aDs.map(a=>dadosPorAba[a].fat),borderColor:darken('#ffd600',.22),backgroundColor:'rgba(255,214,0,.04)',fill:true,tension:.4,pointBackgroundColor:darken('#ffd600',.22),pointRadius:4,pointHoverRadius:9,pointHoverBackgroundColor:'#ffd600',pointHoverBorderColor:lighten('#ffd600',.45),pointHoverBorderWidth:3,hoverBorderColor:lighten('#ffd600',.4),hoverBorderWidth:3},
+      {label:'COM BATERIA',data:aDs.map(a=>dadosPorAba[a].sim),borderColor:darken('#00ffaa',.22),backgroundColor:'rgba(0,255,170,.04)',fill:true,tension:.4,pointBackgroundColor:darken('#00ffaa',.22),pointRadius:4,pointHoverRadius:9,pointHoverBackgroundColor:'#00ffaa',pointHoverBorderColor:lighten('#00ffaa',.45),pointHoverBorderWidth:3,hoverBorderColor:lighten('#00ffaa',.4),hoverBorderWidth:3},
     ]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
-    plugins:{legend:{display:true,position:'top',align:'end',labels:{padding:14,usePointStyle:true,boxWidth:8,font:{size:11}}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y} sites`}}},
-    scales:{x:{grid:{display:false},ticks:{font:{family:"'DM Mono',monospace",size:10},color:'#8a94c0',maxRotation:35,minRotation:0},border:{display:false}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{precision:0},border:{display:false}}}}});
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y} sites`}}},
+    scales:{x:{grid:{display:false},ticks:{font:{family:"'DM Mono',monospace",size:10},color:'#8a94c0',maxRotation:35,minRotation:0},border:{display:false}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{precision:0},border:{display:false}}},
+    onClick(e){const pts=chBatTrend.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const dsI=pts[0].datasetIndex,idx=pts[0].index;const dia=aDs[idx];const dm=trendDm[dsI]||trendDm[0];const abaDados=rPAGlobal[dia]||[];const items=abaDados.filter(r=>{const b=parseBat(norm(gv(r,'bateria')||''));return b===dm.batVal;}).map(r=>({site:siteValido(gv(r,'batsite'))||gv(r,'site')||'—',resp:respLimpo(gv(r,'resp')),extra:dia}));abrirDrill(`${dm.l} — ${dia}`,dm.c,items);}}});
+    buildHtmlLegend('trendLegend',chBatTrend,trendDm.map(d=>({label:d.l,color:d.c})),'dataset');
   }
 }
 
 /* ─── TABELA BATERIA ─── */
 function renderBatTabela(fil){
   const tb=document.getElementById('batTbody');if(!tb)return;
-  tb.innerHTML=fil.length?fil.map(i=>{let lb,cl;
+  const lc=document.getElementById('batListCount');if(lc)lc.textContent=`${fil.length} site(s)`;
+  tb.innerHTML=fil.length?fil.map(i=>{
+    let lb,cl;
     if(i.bateria==='SIM'){lb='✓ Com Bateria';cl='#00ffaa';}
     else if(i.bateria==='NAO'){lb='✗ Sem Bateria';cl='#ff3358';}
     else if(i.bateria==='FAT'){lb='◆ Em FAT';cl='#ffd600';}
     else{lb='? Indefinido';cl='#4a5280';}
-    return`<tr><td><span class="site-name">${esc(i.site)}</span></td><td><span style="color:${cl};font-family:'DM Mono',monospace;font-size:12px;font-weight:700">${lb}</span></td><td>${i.resp?`<span class="resp-tag">${esc(i.resp)}</span>`:'—'}</td><td><span class="data-badge${i.dia===paginaHoje?' hoje':''}">${esc(i.dia||'—')}</span></td><td><button class="bat-eb" onclick="abrirBatMo('${esc(i.site).replace(/'/g,"\\'")}')" ><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar</button></td></tr>`;}).join(''):`<tr><td colspan="5" class="empty">Nenhum resultado.</td></tr>`;
+    const pz=i.peso||classificarPeso('');
+    const afet=`<span class="afet-pill" style="--apc:${pz.color}">${esc(pz.short)}</span>`;
+    const cid=(i.cidadeCadastrada&&i.cidade)?`<span class="cid-pill">${esc(i.cidade)}</span>`:`<button class="cid-cad" onclick="abrirCidModal('${escJs(i.site)}','${escJs(i.endId||'')}')">+ Cadastrar</button>`;
+    const eb=`<button class="bat-eb" onclick="abrirBatMo('${escJs(i.site)}')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar</button>`;
+    return`<tr><td><span class="site-name">${esc(i.site)}</span></td><td><span style="color:${cl};font-family:'DM Mono',monospace;font-size:12px;font-weight:700">${lb}</span></td><td>${i.resp?`<span class="resp-tag">${esc(i.resp)}</span>`:'—'}</td><td>${afet}</td><td>${cid}</td><td><span class="data-badge${i.dia===paginaHoje?' hoje':''}">${esc(i.dia||'—')}</span></td><td>${eb}</td></tr>`;
+  }).join(''):`<tr><td colspan="7" class="empty">Nenhum resultado.</td></tr>`;
 }
 
-/* ─── EXPORTAR EXCEL (3 abas) ─── */
+/* ─── EXPORTAR EXCEL ─── */
 function exportarExcel(){
   if(!dadosBat.length){toast('Sem dados para exportar.','err');return;}
   try{
@@ -1021,6 +1834,8 @@ function exportarExcel(){
     const p=v=>tot?Math.round(v/tot*100):0;
     const bThin=(rgb)=>({top:{style:'thin',color:{rgb}},bottom:{style:'thin',color:{rgb}},left:{style:'thin',color:{rgb}},right:{style:'thin',color:{rgb}}});
     const bL=bThin('CCCCCC'),bD=bThin('111111');
+    const pesoCnt={agg:0,anel:0,ponta:0,na:0};
+    dadosBat.forEach(i=>{pesoCnt[pesoNorm(i.peso?i.peso.key:'na')]++;});
     /* ── Aba 1: Resumo ── */
     const wsR=XLSX.utils.aoa_to_sheet([
       ['DASHBOARD TIM — SALA DE CRISE','','',''],['Relatório de Bateria — Consolidado','','',''],
@@ -1030,8 +1845,11 @@ function exportarExcel(){
       ['Total de Sites',tot,'100%',''],['Com Bateria',com,p(com)+'%',''],
       ['Sem Bateria',sem,p(sem)+'%',''],['Em FAT',fat,p(fat)+'%',''],['Indefinido',ind,p(ind)+'%',''],
       ['','','',''],
-      ['ÍNDICE DE SAÚDE','','',''],
-      ['Taxa de Cobertura',p(com)+'%',p(com)>=70?'ÓTIMO':p(com)>=40?'REGULAR':'CRÍTICO',''],
+      ['AFETAÇÃO POR PESO (col K)','','',''],
+      ['AGG — Cabeça de Anel',pesoCnt.agg,p(pesoCnt.agg)+'%',''],
+      ['Anel Acesso — Meio',pesoCnt.anel,p(pesoCnt.anel)+'%',''],
+      ['Ponta — Baixa afetação',pesoCnt.ponta,p(pesoCnt.ponta)+'%',''],
+      ['Não Classificado',pesoCnt.na,p(pesoCnt.na)+'%',''],
     ]);
     wsR['!merges']=[{s:{r:0,c:0},e:{r:0,c:3}},{s:{r:1,c:0},e:{r:1,c:3}},{s:{r:2,c:0},e:{r:2,c:3}},{s:{r:4,c:0},e:{r:4,c:3}},{s:{r:12,c:0},e:{r:12,c:3}}];
     wsR['!cols']=[{wch:28},{wch:16},{wch:16},{wch:12}];wsR['!rows']=[{hpt:28},{hpt:20},{hpt:14}];
@@ -1042,26 +1860,31 @@ function exportarExcel(){
     for(let c=0;c<3;c++){const a=XLSX.utils.encode_cell({r:5,c});if(!wsR[a])wsR[a]={v:'',t:'s'};wsR[a].s={font:{name:'Calibri',sz:11,bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'333366'}},alignment:{horizontal:'center'},border:bL};}
     const mR=[{r:6,fill:'FFFFFF',col:'333333'},{r:7,fill:'E8F5E9',col:'1B5E20',bold:true},{r:8,fill:'FFEBEE',col:'C62828',bold:true},{r:9,fill:'FFF8E1',col:'E65100',bold:true},{r:10,fill:'F5F5F5',col:'555555'}];
     mR.forEach(({r,fill,col,bold})=>{for(let c=0;c<3;c++){const a=XLSX.utils.encode_cell({r,c});if(!wsR[a])wsR[a]={v:'',t:'s'};wsR[a].s={font:{name:'Calibri',sz:11,bold:!!bold,color:{rgb:col}},fill:{fgColor:{rgb:fill}},alignment:{horizontal:c>0?'center':'left',vertical:'center'},border:bL};}});
-    XLSX.utils.book_append_sheet(wb,wsR,'📊 Resumo KPIs');
-    /* ── Aba 2: Dados ── */
-    const rows=dadosBat.map(i=>[i.resp||'',i.site||'',i.bateria==='SIM'?'COM BATERIA':i.bateria==='NAO'?'SEM BATERIA':i.bateria==='FAT'?'EM FAT':'INDEFINIDO',i.dia||'',i.dia===paginaHoje?'SIM':'NÃO']);
+    for(let c=0;c<4;c++){const a=XLSX.utils.encode_cell({r:12,c});if(!wsR[a])wsR[a]={v:'',t:'s'};wsR[a].s={font:{name:'Calibri',sz:11,bold:true,color:{rgb:'FF6200'}},fill:{fgColor:{rgb:'0E1238'}},border:bL};}
+    const pR=[{r:13,fill:'FFEBEE',col:'B71C1C'},{r:14,fill:'FFF8E1',col:'E65100'},{r:15,fill:'E8F5E9',col:'1B5E20'},{r:16,fill:'F5F5F5',col:'555555'}];
+    pR.forEach(({r,fill,col})=>{for(let c=0;c<3;c++){const a=XLSX.utils.encode_cell({r,c});if(!wsR[a])wsR[a]={v:'',t:'s'};wsR[a].s={font:{name:'Calibri',sz:11,bold:c>0,color:{rgb:col}},fill:{fgColor:{rgb:fill}},alignment:{horizontal:c>0?'center':'left',vertical:'center'},border:bL};}});
+    XLSX.utils.book_append_sheet(wb,wsR,'Resumo KPIs');
+    /* ── Aba 2: Dados (com Afetação + Cidade) ── */
+    const rows=dadosBat.map(i=>[i.resp||'',i.site||'',i.bateria==='SIM'?'COM BATERIA':i.bateria==='NAO'?'SEM BATERIA':i.bateria==='FAT'?'EM FAT':'INDEFINIDO',(i.peso?i.peso.short:'N/C'),(i.cidadeCadastrada&&i.cidade)?i.cidade:'CADASTRAR',i.dia||'',i.dia===paginaHoje?'SIM':'NÃO']);
     rows.sort((a,b)=>{const o={'SEM BATERIA':0,'EM FAT':1,'COM BATERIA':2,'INDEFINIDO':3};return(o[a[2]]??99)-(o[b[2]]??99)||a[1].localeCompare(b[1]);});
-    const ws=XLSX.utils.aoa_to_sheet([[`Sala de Crise TIM — Dados de Bateria — ${dS}`],[],['RESPONSÁVEL','SITE','STATUS BATERIA','ÚLTIMA ATUALIZAÇÃO','DIA ATUAL'],...rows]);
-    ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:4}}];
-    for(let c=0;c<5;c++){const a=XLSX.utils.encode_cell({r:0,c});if(!ws[a])ws[a]={v:'',t:'s'};ws[a].s={font:{name:'Calibri',sz:14,bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'FF6200'}},alignment:{horizontal:'center',vertical:'center'},border:bD};}
+    const ws=XLSX.utils.aoa_to_sheet([[`Sala de Crise TIM — Dados de Bateria — ${dS}`],[],['RESPONSÁVEL','SITE','STATUS BATERIA','AFETAÇÃO','CIDADE / BAIRRO','ÚLTIMA ATUALIZAÇÃO','DIA ATUAL'],...rows]);
+    ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:6}}];
+    for(let c=0;c<7;c++){const a=XLSX.utils.encode_cell({r:0,c});if(!ws[a])ws[a]={v:'',t:'s'};ws[a].s={font:{name:'Calibri',sz:14,bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'FF6200'}},alignment:{horizontal:'center',vertical:'center'},border:bD};}
     const hS={font:{name:'Calibri',sz:11,bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'0E1238'}},alignment:{horizontal:'center',vertical:'center'},border:bL};
-    for(let c=0;c<5;c++){const a=XLSX.utils.encode_cell({r:2,c});if(!ws[a])ws[a]={v:'',t:'s'};ws[a].s=hS;}
-    for(let r=0;r<rows.length;r++){const sr=r+3,ev=r%2===0;for(let c=0;c<5;c++){const a=XLSX.utils.encode_cell({r:sr,c});if(!ws[a])ws[a]={v:'',t:'s'};const val=String(ws[a].v||'');let s;
+    for(let c=0;c<7;c++){const a=XLSX.utils.encode_cell({r:2,c});if(!ws[a])ws[a]={v:'',t:'s'};ws[a].s=hS;}
+    for(let r=0;r<rows.length;r++){const sr=r+3,ev=r%2===0;for(let c=0;c<7;c++){const a=XLSX.utils.encode_cell({r:sr,c});if(!ws[a])ws[a]={v:'',t:'s'};const val=String(ws[a].v||'');let s;
       if(c===2){if(val==='COM BATERIA')s={font:{name:'Calibri',sz:11,bold:true,color:{rgb:'1B5E20'}},fill:{fgColor:{rgb:'E8F5E9'}},alignment:{horizontal:'center',vertical:'center'},border:bL};
         else if(val==='SEM BATERIA')s={font:{name:'Calibri',sz:11,bold:true,color:{rgb:'B71C1C'}},fill:{fgColor:{rgb:'FFEBEE'}},alignment:{horizontal:'center',vertical:'center'},border:bL};
         else if(val==='EM FAT')s={font:{name:'Calibri',sz:11,bold:true,color:{rgb:'E65100'}},fill:{fgColor:{rgb:'FFF8E1'}},alignment:{horizontal:'center',vertical:'center'},border:bL};
         else s={font:{name:'Calibri',sz:11,color:{rgb:'666666'}},fill:{fgColor:{rgb:'F5F5F5'}},alignment:{horizontal:'center',vertical:'center'},border:bL};}
-      else if(c===4)s={font:{name:'Calibri',sz:10,bold:val==='SIM',color:{rgb:val==='SIM'?'2E7D32':'888888'}},fill:{fgColor:{rgb:val==='SIM'?'E8F5E9':ev?'FAFAFA':'F3F3F3'}},alignment:{horizontal:'center'},border:bL};
+      else if(c===3)s={font:{name:'Calibri',sz:10,bold:true,color:{rgb:'333366'}},fill:{fgColor:{rgb:ev?'FFFFFF':'F7F7F7'}},alignment:{horizontal:'center'},border:bL};
+      else if(c===4)s={font:{name:'Calibri',sz:10,bold:val==='CADASTRAR',color:{rgb:val==='CADASTRAR'?'C62828':'222222'}},fill:{fgColor:{rgb:val==='CADASTRAR'?'FFF3F3':(ev?'FFFFFF':'F7F7F7')}},alignment:{horizontal:'center'},border:bL};
+      else if(c===6)s={font:{name:'Calibri',sz:10,bold:val==='SIM',color:{rgb:val==='SIM'?'2E7D32':'888888'}},fill:{fgColor:{rgb:val==='SIM'?'E8F5E9':ev?'FAFAFA':'F3F3F3'}},alignment:{horizontal:'center'},border:bL};
       else s={font:{name:'Calibri',sz:11,color:{rgb:'222222'}},fill:{fgColor:{rgb:ev?'FFFFFF':'F7F7F7'}},alignment:{vertical:'center',wrapText:true},border:bL};
       ws[a].s=s;}}
-    ws['!cols']=[{wch:22},{wch:22},{wch:18},{wch:16},{wch:12}];ws['!rows']=[{hpt:26},{hpt:6},{hpt:20}];
-    ws['!autofilter']={ref:`A3:E${rows.length+3}`};
-    XLSX.utils.book_append_sheet(wb,ws,'📋 Dados Detalhados');
+    ws['!cols']=[{wch:22},{wch:22},{wch:16},{wch:14},{wch:20},{wch:16},{wch:10}];ws['!rows']=[{hpt:26},{hpt:6},{hpt:20}];
+    ws['!autofilter']={ref:`A3:G${rows.length+3}`};
+    XLSX.utils.book_append_sheet(wb,ws,'Dados Detalhados');
     /* ── Aba 3: Por Responsável ── */
     const byR={};
     dadosBat.forEach(i=>{const r=i.resp||'Sem responsável';if(!byR[r])byR[r]={t:0,c:0,s:0,f:0,i:0};byR[r].t++;if(i.bateria==='SIM')byR[r].c++;else if(i.bateria==='NAO')byR[r].s++;else if(i.bateria==='FAT')byR[r].f++;else byR[r].i++;});
@@ -1074,14 +1897,37 @@ function exportarExcel(){
     for(let c=0;c<6;c++){const a=XLSX.utils.encode_cell({r:3,c});if(!wsRp[a])wsRp[a]={v:'',t:'s'};wsRp[a].s={font:{name:'Calibri',sz:11,bold:true,color:{rgb:hCl[c]}},fill:{fgColor:{rgb:'0E1238'}},alignment:{horizontal:'center'},border:bL};}
     for(let r=0;r<rRows.length;r++){const sr=r+4,ev=r%2===0;const cCl=['222222','333333','B71C1C','1B5E20','E65100','666666'];for(let c=0;c<6;c++){const a=XLSX.utils.encode_cell({r:sr,c});if(!wsRp[a])wsRp[a]={v:'',t:'s'};wsRp[a].s={font:{name:'Calibri',sz:11,bold:c>0,color:{rgb:cCl[c]}},fill:{fgColor:{rgb:ev?'FFFFFF':'F7F7F7'}},alignment:{horizontal:c>0?'center':'left',vertical:'center'},border:bL};}}
     wsRp['!cols']=[{wch:24},{wch:10},{wch:14},{wch:14},{wch:12},{wch:12}];
-    XLSX.utils.book_append_sheet(wb,wsRp,'👥 Por Responsável');
+    XLSX.utils.book_append_sheet(wb,wsRp,'Por Responsável');
+    /* ── Aba 4: Reincidentes ── */
+    const reincRows=(reincEdit||[]).filter(r=>(r.endId&&r.endId.trim())||(r.colA&&r.colA.trim())).map(r=>[r.colA||'',r.endId||'',r.dias||0,r.ultimaData||'',(r.datas||[]).join(', ')]);
+    const wsRe=XLSX.utils.aoa_to_sheet([[`SITES REINCIDENTES — ${dS}`,'','','',''],[],['SITE','END_ID','DIAS NORMALIZADO','ÚLTIMA DATA','DATAS NORMALIZADO'],...reincRows]);
+    wsRe['!merges']=[{s:{r:0,c:0},e:{r:0,c:4}}];
+    for(let c=0;c<5;c++){const a=XLSX.utils.encode_cell({r:0,c});if(!wsRe[a])wsRe[a]={v:'',t:'s'};wsRe[a].s={font:{name:'Calibri',sz:14,bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'F59E0B'}},alignment:{horizontal:'center'},border:bD};}
+    for(let c=0;c<5;c++){const a=XLSX.utils.encode_cell({r:2,c});if(!wsRe[a])wsRe[a]={v:'',t:'s'};wsRe[a].s={font:{name:'Calibri',sz:11,bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'0E1238'}},alignment:{horizontal:'center'},border:bL};}
+    for(let r=0;r<reincRows.length;r++){const sr=r+3,ev=r%2===0;for(let c=0;c<5;c++){const a=XLSX.utils.encode_cell({r:sr,c});if(!wsRe[a])wsRe[a]={v:'',t:'s'};wsRe[a].s={font:{name:'Calibri',sz:11,bold:c===2,color:{rgb:c===2?'B45309':'222222'}},fill:{fgColor:{rgb:c===2?'FEF3C7':(ev?'FFFFFF':'F7F7F7')}},alignment:{horizontal:c===0?'left':'center',vertical:'center'},border:bL};}}
+    wsRe['!cols']=[{wch:26},{wch:18},{wch:18},{wch:14},{wch:36}];
+    if(reincRows.length)wsRe['!autofilter']={ref:`A3:E${reincRows.length+3}`};
+    XLSX.utils.book_append_sheet(wb,wsRe,'Reincidentes');
+    /* ── Aba 5: Cidades Ofensoras ── */
+    const cidMap={};let cidCad=0;
+    dadosBat.forEach(i=>{if(i.bateria!=='NAO')return;if(i.cidadeCadastrada&&i.cidade)cidMap[i.cidade]=(cidMap[i.cidade]||0)+1;else cidCad++;});
+    const cidRowsX=Object.entries(cidMap).sort((a,b)=>b[1]-a[1]).map(([c,n])=>[c,n]);
+    if(cidCad>0)cidRowsX.push(['(A CADASTRAR)',cidCad]);
+    const wsCi=XLSX.utils.aoa_to_sheet([[`CIDADES OFENSORAS — Sites sem bateria — ${dS}`,''],[],['CIDADE / BAIRRO','SITES SEM BATERIA'],...cidRowsX]);
+    wsCi['!merges']=[{s:{r:0,c:0},e:{r:0,c:1}}];
+    for(let c=0;c<2;c++){const a=XLSX.utils.encode_cell({r:0,c});if(!wsCi[a])wsCi[a]={v:'',t:'s'};wsCi[a].s={font:{name:'Calibri',sz:14,bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'F43F5E'}},alignment:{horizontal:'center'},border:bD};}
+    for(let c=0;c<2;c++){const a=XLSX.utils.encode_cell({r:2,c});if(!wsCi[a])wsCi[a]={v:'',t:'s'};wsCi[a].s={font:{name:'Calibri',sz:11,bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'0E1238'}},alignment:{horizontal:'center'},border:bL};}
+    for(let r=0;r<cidRowsX.length;r++){const sr=r+3,ev=r%2===0;const cad=String(wsCi[XLSX.utils.encode_cell({r:sr,c:0})].v||'').includes('CADASTRAR');for(let c=0;c<2;c++){const a=XLSX.utils.encode_cell({r:sr,c});if(!wsCi[a])wsCi[a]={v:'',t:'s'};wsCi[a].s={font:{name:'Calibri',sz:11,bold:cad,color:{rgb:cad?'C62828':'222222'}},fill:{fgColor:{rgb:cad?'FFF3F3':(ev?'FFFFFF':'F7F7F7')}},alignment:{horizontal:c>0?'center':'left',vertical:'center'},border:bL};}}
+    wsCi['!cols']=[{wch:30},{wch:20}];
+    XLSX.utils.book_append_sheet(wb,wsCi,'Cidades Ofensoras');
     XLSX.writeFile(wb,`Bateria_TIM_${paginaHoje.replace('/','_')}.xlsx`);
-    toast('Excel exportado! 3 abas geradas ✓','ok');
+    toast('Excel exportado! 5 abas geradas ✓','ok');
   }catch(e){console.error(e);toast('Erro ao gerar Excel.','err');}
 }
 
 /* ─── TOAST ─── */
 function toast(msg,tipo){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${tipo}`;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.display='none';},3800);}
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
-</html>
