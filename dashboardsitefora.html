@@ -115,7 +115,7 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
 .gc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px 18px;transition:box-shadow var(--tr);position:relative;overflow:hidden}
 .gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,98,0,.3),transparent)}
 /* .gc hover removido — fundo estático */
-.gc h3{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:18px;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:8px}
+.gc h3{font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:18px;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:8px}
 .gc h3::after{content:'';flex:1;height:1px;background:var(--border2)}
 .gc canvas{max-height:380px}
 .prog-list{display:flex;flex-direction:column;gap:10px}
@@ -366,7 +366,7 @@ tbody tr:hover .resp-tag{background:rgba(255,98,0,.22)}
 
 /* Títulos de gráfico atrativos e elegantes */
 .gc h3{
-  font-size:11px;letter-spacing:2.4px;color:var(--accent2);
+  font-size:13px;letter-spacing:2.4px;color:var(--accent2);
   text-shadow:0 0 12px rgba(255,98,0,.28);
   background:linear-gradient(90deg,var(--accent2),var(--accent3));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
@@ -645,12 +645,12 @@ header{border-bottom:1px solid transparent;background-image:linear-gradient(var(
     </div>
 
     <!-- Distribuição Geral (pizza) + Distribuição por Responsável -->
-    <div class="bg2">
-      <div class="gc" style="display:flex;flex-direction:column">
+    <div class="bg2" style="grid-template-columns:minmax(auto,320px) 1fr">
+      <div class="gc" style="display:flex;flex-direction:column;overflow:visible">
         <h3>Distribuição Geral</h3>
-        <div id="batDistLegend" class="cj-legend" style="justify-content:center;margin-bottom:14px"></div>
-        <div class="chart-zone" style="position:relative;display:flex;align-items:center;justify-content:center;flex:1;min-height:210px">
-          <div style="position:relative;width:200px;height:200px">
+        <div id="batDistLegend" class="cj-legend" style="justify-content:center;margin-bottom:10px"></div>
+        <div class="chart-zone" style="position:relative;display:flex;align-items:center;justify-content:center;flex:1;overflow:visible">
+          <div style="position:relative;width:240px;height:240px">
             <canvas id="grBatDist"></canvas>
           </div>
         </div>
@@ -709,11 +709,11 @@ header{border-bottom:1px solid transparent;background-image:linear-gradient(var(
       <div class="bat-sec-line"></div>
     </div>
     <div class="bg2">
-      <div class="gc" style="display:flex;flex-direction:column">
+      <div class="gc" style="display:flex;flex-direction:column;overflow:visible">
         <h3>Distribuição por Peso</h3>
-        <div id="pesoDistLegend" class="cj-legend" style="justify-content:center;margin-bottom:14px"></div>
-        <div class="chart-zone" style="position:relative;display:flex;align-items:center;justify-content:center;flex:1;min-height:210px">
-          <div style="position:relative;width:200px;height:200px">
+        <div id="pesoDistLegend" class="cj-legend" style="justify-content:center;margin-bottom:10px"></div>
+        <div class="chart-zone" style="position:relative;display:flex;align-items:center;justify-content:center;flex:1;overflow:visible">
+          <div style="position:relative;width:240px;height:240px">
             <canvas id="grPeso"></canvas>
           </div>
         </div>
@@ -1640,8 +1640,8 @@ function renderPeso(fonte){
   const pieVals=chDefs.map(d=>cnt[d.k]||0);
   const cvP=document.getElementById('grPeso');
   if(cvP){
-    chPeso=new Chart(cvP,{type:'doughnut',data:{labels:chDefs.map(d=>d.label.toUpperCase()),datasets:[{data:pieVals,backgroundColor:chDefs.map(d=>darken(d.color,.30)),hoverBackgroundColor:chDefs.map(d=>d.color),hoverBorderColor:chDefs.map(d=>lighten(d.color,.4)),hoverBorderWidth:3,borderWidth:0,hoverOffset:14}]},
-     options:{cutout:'62%',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const t=pieVals.reduce((s,v)=>s+v,0);return` ${ctx.parsed} site(s) (${t?Math.round(ctx.parsed/t*100):0}%)`;}}}},
+    chPeso=new Chart(cvP,{type:'doughnut',data:{labels:chDefs.map(d=>d.label.toUpperCase()),datasets:[{data:pieVals,backgroundColor:chDefs.map(d=>darken(d.color,.30)),hoverBackgroundColor:chDefs.map(d=>d.color),hoverBorderColor:chDefs.map(d=>lighten(d.color,.4)),hoverBorderWidth:3,borderWidth:0,hoverOffset:8}]},
+     options:{cutout:'62%',responsive:true,maintainAspectRatio:false,layout:{padding:20},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const t=pieVals.reduce((s,v)=>s+v,0);return` ${ctx.parsed} site(s) (${t?Math.round(ctx.parsed/t*100):0}%)`;}}}},
      onClick(e){const pts=chPeso.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const d=chDefs[pts[0].index];const items=fonte.filter(i=>pesoNorm(i.peso?i.peso.key:'na')===d.k);abrirDrill('Peso: '+d.label,d.color,items.map(i=>({site:i.site,resp:i.resp,extra:i.afetacaoRaw||'—'})));}}});
     buildHtmlLegend('pesoDistLegend',chPeso,chDefs.map(d=>({label:d.label,color:d.color})),'data');
   }
@@ -1758,8 +1758,8 @@ function renderBatGraficos(fil,fonteT){
   const dCtx=document.getElementById('grBatDist')?.getContext('2d');
   if(dCtx){
     const distLbls=['COM BATERIA','SEM BATERIA','EM FAT'],distCl=['#00ffaa','#ff3358','#ffd600'],distKeys=['SIM','NAO','FAT'];
-    chBatDist=new Chart(dCtx,{type:'doughnut',data:{labels:distLbls,datasets:[{data:[com,sem,fat],backgroundColor:distCl.map(c=>darken(c,.30)),hoverBackgroundColor:distCl.map(c=>c),hoverBorderColor:distCl.map(c=>lighten(c,.4)),hoverBorderWidth:3,borderWidth:0,hoverOffset:14}]},
-      options:{cutout:'66%',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const t=com+sem+fat;return` ${ctx.parsed} sites (${t?Math.round(ctx.parsed/t*100):0}%)`;}}},},
+    chBatDist=new Chart(dCtx,{type:'doughnut',data:{labels:distLbls,datasets:[{data:[com,sem,fat],backgroundColor:distCl.map(c=>darken(c,.30)),hoverBackgroundColor:distCl.map(c=>c),hoverBorderColor:distCl.map(c=>lighten(c,.4)),hoverBorderWidth:3,borderWidth:0,hoverOffset:8}]},
+      options:{cutout:'66%',responsive:true,maintainAspectRatio:false,layout:{padding:20},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const t=com+sem+fat;return` ${ctx.parsed} sites (${t?Math.round(ctx.parsed/t*100):0}%)`;}}},},
       onClick(e){const pts=chBatDist.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const idx=pts[0].index;const items=fil.filter(i=>i.bateria===distKeys[idx]);abrirDrill(distLbls[idx],distCl[idx],items.map(i=>({site:i.site,resp:i.resp,extra:i.dia})));}}});
     buildHtmlLegend('batDistLegend',chBatDist,distLbls.map((l,i)=>({label:l,color:distCl[i]})),'data');
   }
