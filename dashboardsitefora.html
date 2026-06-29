@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -593,15 +592,15 @@ header{border-bottom:1px solid transparent;background-image:linear-gradient(var(
 <div id="graficos" class="tab">
   <div class="g-metrics" id="gMetrics"></div>
   <div class="g-grid g-r2">
-    <div class="gc"><h3>Por Categoria</h3><div id="catLegend" class="cj-legend" style="justify-content:center"></div><canvas id="grStatus"></canvas></div>
-    <div class="gc" style="overflow-y:auto;max-height:500px"><h3>Sites por Responsável</h3><canvas id="grResp"></canvas></div>
+    <div class="gc"><div class="gc-head"><h3>Por Categoria</h3><span class="drill-badge">↗ clique no gráfico</span></div><div id="catLegend" class="cj-legend" style="justify-content:center"></div><canvas id="grStatus"></canvas></div>
+    <div class="gc" style="overflow-y:auto;max-height:500px"><div class="gc-head"><h3>Sites por Responsável</h3><span class="drill-badge">↗ clique na barra</span></div><canvas id="grResp"></canvas></div>
   </div>
   <div class="g-grid g-r2" style="margin-top:18px">
-    <div class="gc"><h3>Pendências por Responsável</h3><div class="prog-list" id="pendChart"></div></div>
-    <div class="gc"><h3>TSK por Responsável</h3><div class="prog-list" id="tskChart"></div></div>
+    <div class="gc"><div class="gc-head"><h3>Pendências por Responsável</h3><span class="drill-badge">↗ clique no item</span></div><div class="prog-list" id="pendChart"></div></div>
+    <div class="gc"><div class="gc-head"><h3>TSK por Responsável</h3><span class="drill-badge">↗ clique no item</span></div><div class="prog-list" id="tskChart"></div></div>
   </div>
   <div class="g-grid g-r1">
-    <div class="gc"><h3>Volumes por Categoria</h3><canvas id="grPrev" style="max-height:200px"></canvas></div>
+    <div class="gc"><div class="gc-head"><h3>Volumes por Categoria</h3><span class="drill-badge">↗ clique na barra</span></div><canvas id="grPrev" style="max-height:200px"></canvas></div>
   </div>
 </div>
 
@@ -1365,19 +1364,21 @@ function criarGraficos(){
   const pal=['#ff6200','#38bdf8','#a78bfa','#00ffaa','#ffd600','#f43f5e','#e879f9','#fb923c','#34d399','#60a5fa'];
   const rCv=document.getElementById('grResp');
   rCv.style.height=(rL.length*46+60)+'px';
-  new Chart(rCv,{type:'bar',data:{labels:rL.map(l=>l.toUpperCase()),datasets:[{label:'SITES',data:rL.map(r=>respM[r]),backgroundColor:rL.map((_,i)=>darken(pal[i%pal.length],.30)),hoverBackgroundColor:rL.map((_,i)=>pal[i%pal.length]),borderColor:rL.map((_,i)=>darken(pal[i%pal.length],.12)),hoverBorderColor:rL.map((_,i)=>lighten(pal[i%pal.length],.4)),hoverBorderWidth:2.5,borderWidth:1,borderRadius:7,borderSkipped:false,categoryPercentage:.55,barPercentage:.75}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.x} site${ctx.parsed.x>1?'s':''}`}}},scales:{x:{grid:{color:gc},ticks:{precision:0},border:{display:false}},y:{grid:{display:false},ticks:{font:{family:"'Outfit',sans-serif",size:12,weight:'600'},color:'#f0f2ff',autoSkip:false,maxRotation:0},border:{display:false}}}}});
+  const chResp=new Chart(rCv,{type:'bar',data:{labels:rL.map(l=>l.toUpperCase()),datasets:[{label:'SITES',data:rL.map(r=>respM[r]),backgroundColor:rL.map((_,i)=>darken(pal[i%pal.length],.30)),hoverBackgroundColor:rL.map((_,i)=>pal[i%pal.length]),borderColor:rL.map((_,i)=>darken(pal[i%pal.length],.12)),hoverBorderColor:rL.map((_,i)=>lighten(pal[i%pal.length],.4)),hoverBorderWidth:2.5,borderWidth:1,borderRadius:7,borderSkipped:false,categoryPercentage:.55,barPercentage:.75}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.x} site${ctx.parsed.x>1?'s':''}  ↗ clique para detalhar`}}},scales:{x:{grid:{color:gc},ticks:{precision:0},border:{display:false}},y:{grid:{display:false},ticks:{font:{family:"'Outfit',sans-serif",size:12,weight:'600'},color:'#f0f2ff',autoSkip:false,maxRotation:0},border:{display:false}}},
+    onClick(e){const pts=chResp.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const idx=pts[0].index;const resp=rL[idx];const items=dados.filter(i=>(respLimpo(gv(i,'resp'))||'Sem responsável')===resp);abrirDrill('Responsável: '+resp,pal[idx%pal.length],items.map(i=>({site:gv(i,'site')||'—',resp:respLimpo(gv(i,'resp')),extra:cat(gf(i,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'',gv(i,'status')||'').label})));}}});
   const pL=Object.keys(pendM).sort((a,b)=>pendM[b]-pendM[a]).slice(0,10);
   const maxP=Math.max(...pL.map(r=>pendM[r]),1);
   const pEl=document.getElementById('pendChart');
-  pEl.innerHTML=pL.length?pL.map(r=>`<div class="prog-item"><div class="prog-hdr"><span class="prog-name">${esc(r)}</span><span class="prog-val">${pendM[r]} pendência${pendM[r]>1?'s':''}</span></div><div class="prog-bg"><div class="prog-fill" style="--pc:#ff6200;width:${Math.round(pendM[r]/maxP*100)}%"></div></div></div>`).join(''):'<div class="empty" style="padding:18px;font-size:12px">Nenhuma pendência.</div>';
+  pEl.innerHTML=pL.length?pL.map(r=>`<div class="prog-item prog-drillable" onclick="(function(){const items=dados.filter(i=>(respLimpo(gv(i,'resp'))||'Sem responsável')==='${escJs(r)}'&&norm(gf(i,'PENDÊNCIA','Pendência','pendência','PENDENCIA','Pendencia','pendencia')||''));abrirDrill('Pendências: ${escJs(r)}','#ff6200',items.map(i=>({site:gv(i,'site')||'—',resp:respLimpo(gv(i,'resp')),extra:norm(gf(i,'PENDÊNCIA','Pendência','pendência','PENDENCIA','Pendencia','pendencia')||'')})));})()"><div class="prog-hdr"><span class="prog-name">${esc(r)}</span><span class="prog-val">${pendM[r]} pendência${pendM[r]>1?'s':''} <span class="prog-drill-hint">↗</span></span></div><div class="prog-bg"><div class="prog-fill" style="--pc:#ff6200;width:${Math.round(pendM[r]/maxP*100)}%"></div></div></div>`).join(''):'<div class="empty" style="padding:18px;font-size:12px">Nenhuma pendência.</div>';
   const tL=Object.keys(tskM).sort((a,b)=>tskM[b]-tskM[a]).slice(0,10);
   const maxT=Math.max(...tL.map(r=>tskM[r]),1);
   const tEl=document.getElementById('tskChart');
-  tEl.innerHTML=tL.length?tL.map(r=>`<div class="prog-item"><div class="prog-hdr"><span class="prog-name">${esc(r)}</span><span class="prog-val">${tskM[r]} TSK${tskM[r]>1?'s':''}</span></div><div class="prog-bg"><div class="prog-fill" style="--pc:#e879f9;width:${Math.round(tskM[r]/maxT*100)}%"></div></div></div>`).join(''):'<div class="empty" style="padding:18px;font-size:12px">Nenhum TSK.</div>';
+  tEl.innerHTML=tL.length?tL.map(r=>`<div class="prog-item prog-drillable" onclick="(function(){const items=dados.filter(i=>{const t=norm(gf(i,'TSK','Tsk','tsk')||'');return t&&t!=='—'&&(respLimpo(gv(i,'resp'))||'Sem responsável')==='${escJs(r)}'});abrirDrill('TSK: ${escJs(r)}','#e879f9',items.map(i=>({site:gv(i,'site')||'—',resp:respLimpo(gv(i,'resp')),extra:norm(gf(i,'TSK','Tsk','tsk')||'')})));})()"><div class="prog-hdr"><span class="prog-name">${esc(r)}</span><span class="prog-val">${tskM[r]} TSK${tskM[r]>1?'s':''} <span class="prog-drill-hint">↗</span></span></div><div class="prog-bg"><div class="prog-fill" style="--pc:#e879f9;width:${Math.round(tskM[r]/maxT*100)}%"></div></div></div>`).join(''):'<div class="empty" style="padding:18px;font-size:12px">Nenhum TSK.</div>';
   const pv=ce.filter(c=>c.n>0);
-  new Chart(document.getElementById('grPrev'),{type:'bar',data:{labels:pv.map(c=>c.label.toUpperCase()),datasets:[{label:'SITES',data:pv.map(c=>c.n),backgroundColor:pv.map(c=>darken(c.color,.30)),hoverBackgroundColor:pv.map(c=>c.color),borderColor:pv.map(c=>darken(c.color,.12)),hoverBorderColor:pv.map(c=>lighten(c.color,.4)),hoverBorderWidth:2.5,borderWidth:1.5,borderRadius:7,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{family:"'Outfit',sans-serif",size:11,weight:'600'},color:'#f0f2ff',maxRotation:30},border:{display:false}},y:{grid:{color:gc},ticks:{precision:0},border:{display:false}}}}});
+  const chPrev=new Chart(document.getElementById('grPrev'),{type:'bar',data:{labels:pv.map(c=>c.label.toUpperCase()),datasets:[{label:'SITES',data:pv.map(c=>c.n),backgroundColor:pv.map(c=>darken(c.color,.30)),hoverBackgroundColor:pv.map(c=>c.color),borderColor:pv.map(c=>darken(c.color,.12)),hoverBorderColor:pv.map(c=>lighten(c.color,.4)),hoverBorderWidth:2.5,borderWidth:1.5,borderRadius:7,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y} site${ctx.parsed.y>1?'s':''} ↗ clique para detalhar`}}},scales:{x:{grid:{display:false},ticks:{font:{family:"'Outfit',sans-serif",size:11,weight:'600'},color:'#f0f2ff',maxRotation:30},border:{display:false}},y:{grid:{color:gc},ticks:{precision:0},border:{display:false}}},
+    onClick(e){const pts=chPrev.getElementsAtEventForMode(e,'nearest',{intersect:true},false);if(!pts.length)return;const cv=pv[pts[0].index];const items=dados.filter(i=>cat(gf(i,'PREVISÃO','Previsão','previsão','PREVISAO','Previsao','previsao')||'',gv(i,'status')||'').label===cv.label);abrirDrill('Volume: '+cv.label,cv.color,items.map(i=>({site:gv(i,'site')||'—',resp:respLimpo(gv(i,'resp')),extra:gv(i,'status')||''})));}}});
 }
 
 /* ─── DRILL GENÉRICO ─── */
@@ -1925,9 +1926,183 @@ function exportarExcel(){
   }catch(e){console.error(e);toast('Erro ao gerar Excel.','err');}
 }
 
-/* ─── TOAST ─── */
 function toast(msg,tipo){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${tipo}`;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.display='none';},3800);}
 </script>
+
+<style>
+/* ── DRILL hint nos gráficos clicáveis ── */
+canvas[id="grResp"],canvas[id="grPrev"]{cursor:pointer}
+.prog-drillable{cursor:pointer;border-radius:8px;padding:6px 8px;margin:0 -8px;transition:background var(--tr)}
+.prog-drillable:hover{background:rgba(255,255,255,.04)}
+.prog-drill-hint{font-size:9px;opacity:.45;font-family:'DM Mono',monospace;letter-spacing:0;font-weight:500}
+.prog-drillable:hover .prog-drill-hint{opacity:1;color:var(--accent2)}
+.drill-badge{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1px;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:5px;padding:2px 7px;white-space:nowrap;opacity:.7;transition:opacity var(--tr)}
+.gc:hover .drill-badge{opacity:1;color:var(--accent2);border-color:rgba(255,98,0,.3)}
+</style>
+
+<style>
+/* ═══ FOOTER ═══ */
+.site-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 48px;
+  border-top: 1px solid rgba(255,98,0,0.18);
+  background: linear-gradient(180deg, transparent 0%, rgba(6,9,32,0.85) 30%, #060920 100%);
+  padding: 36px 36px 24px;
+  overflow: hidden;
+}
+.site-footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,98,0,0.55), transparent);
+}
+.site-footer::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; top: 0;
+  background: radial-gradient(ellipse 50% 80% at 50% 110%, rgba(255,98,0,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.footer-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+.footer-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.footer-label::before,
+.footer-label::after {
+  content: '';
+  display: block;
+  width: 32px; height: 1px;
+  background: var(--muted);
+  opacity: 0.4;
+}
+.footer-cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.footer-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px 22px;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  min-width: 260px;
+}
+.footer-card:hover {
+  border-color: rgba(255,98,0,0.35);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,98,0,0.1);
+  transform: translateY(-2px);
+}
+.footer-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
+}
+.footer-avatar.dev {
+  background: linear-gradient(135deg, var(--accent), #c44000);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(255,98,0,0.35);
+}
+.footer-avatar.idea {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(56,189,248,0.3);
+}
+.footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.footer-role {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.footer-role.dev  { color: var(--accent2); }
+.footer-role.idea { color: #38bdf8; }
+.footer-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1;
+}
+.footer-email {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted2);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-email:hover { color: var(--accent2); }
+.footer-copy {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  opacity: 0.6;
+}
+@media (max-width: 600px) {
+  .site-footer { padding: 28px 18px 20px; }
+  .footer-card { min-width: 100%; }
+}
+</style>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span class="footer-label">Equipe de Desenvolvimento</span>
+    <div class="footer-cards">
+      <div class="footer-card">
+        <div class="footer-avatar dev">BA</div>
+        <div class="footer-info">
+          <span class="footer-role dev">Desenvolvedor</span>
+          <span class="footer-name">Bruno Augusto</span>
+          <a class="footer-email" href="mailto:bruno.augusto.bafs@gmail.com">bruno.augusto.bafs@gmail.com</a>
+        </div>
+      </div>
+      <div class="footer-card">
+        <div class="footer-avatar idea">LI</div>
+        <div class="footer-info">
+          <span class="footer-role idea">Idealizador</span>
+          <span class="footer-name">Lucas Infante</span>
+          <a class="footer-email" href="mailto:lucas.esao7751@gmail.com">lucas.esao7751@gmail.com</a>
+        </div>
+      </div>
+    </div>
+    <span class="footer-copy">Dashboard TIM — Sala de Crise &nbsp;·&nbsp; Todos os direitos reservados</span>
+  </div>
+</footer>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
