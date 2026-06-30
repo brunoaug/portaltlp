@@ -522,6 +522,69 @@
     body { flex-direction: column; }
     #sidebar { width: 100%; min-width: unset; max-height: 50vh; }
   }
+
+  /* ── SIDEBAR FOOTER ── */
+  #sidebar-footer {
+    flex-shrink: 0;
+    padding: 14px 18px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .sf-line {
+    display: none;
+  }
+  .sf-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #FBBF24;
+    margin-bottom: 10px;
+  }
+  .sf-card {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 10px 14px;
+  }
+  .sf-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: rgba(240,192,64,.12);
+    border: 1px solid rgba(240,192,64,.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 12px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .sf-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .sf-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .sf-email {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color .18s;
+  }
+  .sf-email:hover { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -531,7 +594,7 @@
   <div id="sidebar-header">
     <div class="label">Zona Oeste · RJ</div>
     <h1>Mapa de Atendimento</h1>
-    <p>8 técnicos de campo</p>
+    <p>9 técnicos de campo</p>
   </div>
 
   <!-- TABS -->
@@ -578,6 +641,19 @@
     </div>
     <div id="status-list"></div>
   </div>
+
+  <!-- FOOTER -->
+  <div id="sidebar-footer">
+    <div class="sf-line"></div>
+    <div class="sf-label">Desenvolvedor</div>
+    <div class="sf-card">
+      <div class="sf-avatar">BA</div>
+      <div class="sf-info">
+        <span class="sf-name">Bruno Augusto</span>
+        <a class="sf-email" href="mailto:bruno.augusto.bafs@gmail.com">bruno.augusto.bafs@gmail.com</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="map-wrap">
@@ -595,7 +671,7 @@
 /* ══════════════════════════════════════
    DATA
 ══════════════════════════════════════ */
-const COLORS = ['#FF6B6B','#4DD9AC','#F97316','#A78BFA','#38BDF8','#FB7185','#34D399','#FBBF24'];
+const COLORS = ['#FF6B6B','#4DD9AC','#F97316','#A78BFA','#38BDF8','#FB7185','#34D399','#FBBF24','#E879F9'];
 
 const NBHDS = {
   'Jacarepaguá':     [-22.930, -43.380],
@@ -612,25 +688,28 @@ const NBHDS = {
   'Realengo':        [-22.874, -43.435],
   'Guaratiba':       [-23.020, -43.610],
   'Sepetiba':        [-22.977, -43.697],
+  'Rocinha':         [-22.988, -43.248],
 };
 
 const TECHNICIANS = [
-  { name:'Cristiano Amorim', nbhds:['Jacarepaguá','Barra da Tijuca','Recreio','Vargem Grande'],
-    note:'Jacarepaguá · Barra da Tijuca e adjacências' },
-  { name:'Henry', nbhds:['Bangu','Campo Grande','Santa Cruz','Pavuna','Seropédica','Itaguaí'],
+  { name:'Cristiano Amorim', nbhds:['Jacarepaguá','Barra da Tijuca','Recreio','Vargem Grande','Rocinha'],
+    note:'Jacarepaguá · Barra da Tijuca e adjacências · Rocinha' },
+  { name:'Henry', nbhds:['Bangu','Campo Grande','Santa Cruz','Pavuna','Seropédica','Itaguaí','Guaratiba'],
     note:'Toda a extensão oeste' },
   { name:'Cristiano Coutinho', nbhds:['Santa Cruz','Bangu','Campo Grande','Seropédica','Itaguaí','Guaratiba','Sepetiba','Realengo'],
     note:'Toda a ZOE · foco em área com gerador' },
-  { name:'Genival', nbhds:['Jacarepaguá','Barra da Tijuca','Recreio'],
-    note:'Jacarepaguá · Barra da Tijuca e adjacências' },
-  { name:'Ricardo Mulque', nbhds:['Bangu','Campo Grande','Seropédica','Itaguaí','Santa Cruz'],
+  { name:'Genival', nbhds:['Jacarepaguá','Barra da Tijuca','Recreio','Rocinha'],
+    note:'Jacarepaguá · Barra da Tijuca e adjacências · Rocinha' },
+  { name:'Ricardo Mulque', nbhds:['Bangu','Campo Grande','Seropédica','Itaguaí','Santa Cruz','Guaratiba'],
     note:'Eixo central da Zona Oeste' },
   { name:'Marcello Alves', nbhds:['Jacarepaguá','Barra da Tijuca','Recreio','Vargem Grande','Sulacap','Realengo','Bangu'],
     note:'Área acima de Genival + toda cobertura dele' },
   { name:'Fabricio França', nbhds:['Bangu','Campo Grande','Pavuna','Santa Cruz','Seropédica','Itaguaí'],
     note:'Bangu · C.Grande · Pavuna · Santa Cruz (+ Seropédica/Itaguaí se necessário)' },
-  { name:'Leandro Viana', nbhds:['Jacarepaguá','Barra da Tijuca'],
-    note:'Jacarepaguá · Barra da Tijuca' },
+  { name:'Leandro Viana', nbhds:['Jacarepaguá','Barra da Tijuca','Rocinha'],
+    note:'Jacarepaguá · Barra da Tijuca · Rocinha' },
+  { name:'Ednaldo', nbhds:['Guaratiba','Sepetiba','Santa Cruz','Bangu','Campo Grande','Realengo','Pavuna'],
+    note:'Guaratiba · Sepetiba · Santa Cruz · Bangu · Campo Grande · Realengo · Pavuna' },
 ];
 
 /* index: bairro → técnicos */
@@ -666,7 +745,7 @@ TECHNICIANS.forEach((t, i) => {
       `<span class="pop-badge" style="border-color:${tt.color};color:${tt.color};background:color-mix(in srgb,${tt.color} 12%,transparent)">${tt.name}</span>`
     ).join('');
     return L.circle(c, {
-      radius: RADIUS,
+      radius: nb === 'Rocinha' ? 2000 : RADIUS,
       color: t.color, weight: 1.5,
       fillColor: t.color, fillOpacity: 0.18, opacity: 0.8,
     }).bindPopup(`
