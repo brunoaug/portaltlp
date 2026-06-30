@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -722,6 +721,89 @@ body.compact-mode .tech-name{font-size:.82rem;}
     min-width: 0;
   }
 }
+
+/* ══ FOOTER CRÉDITOS ══ */
+#dev-footer {
+  position: relative;
+  z-index: 10;
+  background: var(--surface);
+  border-top: 1px solid var(--border2);
+  padding: 18px 24px 16px;
+}
+.dev-footer-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.dev-footer-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.dev-footer-cards {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dev-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 14px;
+  transition: border-color .2s;
+}
+.dev-card:hover { border-color: var(--border2); }
+.dev-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--glow);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 11px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.dev-avatar-2 { color: var(--accent2); }
+.dev-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.dev-role {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  font-weight: 500;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.dev-name {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 12.5px;
+  color: var(--text);
+  line-height: 1;
+}
+.dev-email {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .18s;
+}
+.dev-email:hover { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -1712,6 +1794,30 @@ document.getElementById("mapModal").addEventListener("click", (e) => {
 <div class="kbd-hint" id="kbdHint">
   <kbd>/</kbd> buscar &nbsp; <kbd>Esc</kbd> limpar &nbsp; <kbd>E</kbd> expandir &nbsp; <kbd>C</kbd> compacto &nbsp; <kbd>M</kbd> mapa &nbsp; <kbd>?</kbd> ocultar
 </div>
+
+<footer id="dev-footer">
+  <div class="dev-footer-inner">
+    <span class="dev-footer-label">Desenvolvido por</span>
+    <div class="dev-footer-cards">
+      <div class="dev-card">
+        <div class="dev-avatar">BA</div>
+        <div class="dev-info">
+          <span class="dev-role">Desenvolvedor</span>
+          <span class="dev-name">Bruno Augusto</span>
+          <a class="dev-email" href="mailto:bruno.augusto.bafs@gmail.com">bruno.augusto.bafs@gmail.com</a>
+        </div>
+      </div>
+      <div class="dev-card">
+        <div class="dev-avatar dev-avatar-2">FA</div>
+        <div class="dev-info">
+          <span class="dev-role">Desenvolvedor</span>
+          <span class="dev-name">Fábio Augusto</span>
+          <a class="dev-email" href="mailto:fabioagds1@gmail.com">fabioagds1@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>
