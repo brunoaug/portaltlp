@@ -51,10 +51,6 @@ Os carimbos pré-cadastrados estão nos arrays `stampsCSC` e `stampsPadrao`, den
 }
 ```
 
-## 🎨 Identidade visual
-
-Todos os módulos seguem (ou devem seguir) a mesma linguagem visual do `index.html`: fundo navy escuro, cartões com brilho (glow) e linha de destaque na base, tipografia **Outfit** (títulos), **DM Sans** (textos) e **DM Mono** (dados/campos), com cores de categoria (laranja, azul, verde, roxo, vermelho, âmbar) indicando o tipo de conteúdo.
-
 ## 👤 Créditos
 
 Desenvolvido por **Bruno Augusto**
