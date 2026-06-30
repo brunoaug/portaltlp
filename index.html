@@ -526,14 +526,40 @@
 
   </div>
 
-  <footer>
+  <footer style="margin-top:2.25rem;display:flex;flex-direction:column;align-items:center;gap:2rem;position:relative;border-top:1px solid #0f2035;padding-top:2rem;">
+
+  <!-- linha laranja centralizada no topo -->
+  <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:40%;height:1px;background:linear-gradient(90deg,transparent,rgba(232,99,10,.33),transparent)"></div>
+
+  <!-- label da seção -->
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:28px;height:1px;background:#0f2035"></div>
+    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#e8630a;font-weight:600">Desenvolvido por</span>
+    <div style="width:28px;height:1px;background:#0f2035"></div>
+  </div>
+
+  <!-- cards de crédito -->
+  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+
+    <div style="display:flex;align-items:center;gap:13px;background:#0b1a2c;border:1px solid #0f2035;border-radius:16px;padding:13px 18px;min-width:240px">
+      <div style="width:38px;height:38px;border-radius:50%;background:#1a1200;border:1px solid rgba(232,99,10,.2);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;color:#e8630a;flex-shrink:0">BA</div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <span style="font-family:'Outfit',sans-serif;font-weight:600;font-size:13.5px;color:#f0ede8;line-height:1">Bruno Augusto</span>
+        <a href="mailto:bruno.augusto.bafs@gmail.com" style="font-size:11px;color:#3d6080;text-decoration:none">bruno.augusto.bafs@gmail.com</a>
+      </div>
+    </div>
+
+  <!-- rodapé inferior (mantém o original) -->
+  <div style="width:100%;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #0f2035;padding-top:1.25rem;flex-wrap:wrap;gap:12px">
     <span class="foot-txt">Plataforma TLP TRJ · 2026</span>
     <div class="foot-dots">
       <div class="foot-dot on"></div>
       <div class="foot-dot"></div>
       <div class="foot-dot"></div>
     </div>
-  </footer>
+  </div>
+
+</footer>
 
 </div>
 </body>
