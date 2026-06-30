@@ -1,41 +1,43 @@
-# Carimbos · Plataforma TLP TRJ
+# Plataforma TLP TRJ
 
-Aplicação web single-file (HTML + CSS + JS puro, sem dependências de build) para consulta, preenchimento e cópia rápida de carimbos operacionais usados no dia a dia do TLP TRJ.
+Painel central de ferramentas usadas no dia a dia operacional do TLP TRJ. A entrada do sistema é o `index.html`, que reúne os módulos abaixo em um único hub, com identidade visual em tema escuro (navy + laranja).
 
-## ✨ O que o sistema faz
+## 📁 Estrutura do projeto
 
-- Organiza os carimbos em dois módulos: **CSC / CCI** e **Padrão**.
-- Cada carimbo é um cartão com campos editáveis (técnico, ticket, observação, etc.).
-- Botão **Copiar** gera o texto final do carimbo (título + campos preenchidos) e copia para a área de transferência com um efeito visual de confirmação.
-- Botão **Copiar todos** copia todos os carimbos visíveis (respeitando filtro de busca/categoria) de uma vez, separados por `---`.
-- Botão **Limpar** apaga apenas o que foi digitado pelo usuário, preservando textos padrão pré-definidos (ex: textos de abono de SLA, observações fixas).
-- Botão **Novo** abre um modal para criar carimbos personalizados (título, categoria, cor e campos livres).
-- Busca e filtro por categoria em cada módulo.
-- Os dados digitados ficam salvos automaticamente no `localStorage` do navegador (não há backend/servidor).
+| Arquivo                  | Módulo                          | Descrição |
+|---------------------------|----------------------------------|-----------|
+| `index.html`              | **Painel principal**            | Tela inicial com o acesso a todos os módulos da plataforma. |
+| `carimbos.html`           | **Carimbos**                    | Consulta, preenchimento e cópia rápida dos carimbos operacionais (CSC/CCI e Padrão). |
+| `dashboardsitefora.html`  | **Dashboard Site Fora**         | Monitoramento em tempo real dos sites fora. |
+| `extratorbruno.html`      | **Extrator Bruno**              | Planilha/ferramenta de extração de dados desenvolvida pelo Bruno. |
+| `extratorfabio.html`      | **Extrator Fabio**              | Extração e processamento de planilhas desenvolvidas pelo Fabio. |
+| `puxar_dados.exe`         | **Extrator (executável)**       | Executável para extração automática de dados, disponibilizado para download a partir do painel principal. |
+| `tecnicosfixa.html`       | **Técnicos Fixa**                | Área de atuação dos técnicos da rede fixa. |
+| `zoe.html`                | **Técnicos Móvel — Zona Oeste** | Visualização dos técnicos da rede móvel atuando na Zona Oeste. |
 
-## 📁 Estrutura do arquivo
-
-Tudo está em um único arquivo HTML (`aa.html`), dividido em três blocos:
-
-- `<style>` — visual da aplicação (tema escuro navy/laranja, inspirado na identidade da Plataforma TLP TRJ).
-- corpo HTML — header, página inicial (home), página CSC/CCI, página Padrão, modal de criação e toast de notificação.
-- `<script>` — dados dos carimbos (`stampsCSC` e `stampsPadrao`), renderização dos cartões, busca/filtro, cópia para a área de transferência, criação/edição/exclusão e persistência em `localStorage`.
+Cada módulo é um arquivo HTML independente (sem build, sem dependências de servidor), acessado a partir dos cartões do `index.html`.
 
 ## ▶️ Como usar
 
-1. Baixe o arquivo `aa.html`.
-2. Abra-o em qualquer navegador moderno (Chrome, Edge, Firefox) — não precisa de instalação, servidor ou internet (exceto para carregar as fontes do Google Fonts).
-3. Escolha o módulo desejado na tela inicial.
-4. Preencha os campos do carimbo necessário e clique em **Copiar**.
-5. Cole o texto copiado diretamente no chamado/ticket.
+1. Mantenha todos os arquivos na mesma pasta (os links entre as páginas são relativos).
+2. Abra o `index.html` em um navegador moderno (Chrome, Edge, Firefox).
+3. Escolha o módulo desejado a partir dos cartões da tela inicial.
+4. A internet é usada apenas para carregar as fontes do Google Fonts; o restante funciona localmente.
 
-## ➕ Adicionando ou editando carimbos
+## 🧩 Módulo de Carimbos (`carimbos.html`)
 
-### Pela interface
-Use o botão **＋ Novo** dentro de cada módulo para criar um carimbo customizado (título, categoria, cor e campos).
+É o módulo com mais lógica própria, por isso vale um detalhamento:
 
-### Direto no código
-Os carimbos pré-cadastrados estão nos arrays `stampsCSC` e `stampsPadrao`, dentro da tag `<script>`. Cada item segue o formato:
+- Organiza os carimbos em dois grupos: **CSC / CCI** e **Padrão**.
+- Cada carimbo é um cartão com campos editáveis (técnico, ticket, observação, etc.).
+- **Copiar**: gera o texto final do carimbo (título + campos preenchidos) e copia para a área de transferência.
+- **Copiar todos**: copia todos os carimbos visíveis (respeitando busca/filtro) de uma vez, separados por `---`.
+- **Limpar**: apaga apenas o que foi digitado pelo usuário, preservando textos padrão pré-definidos.
+- **＋ Novo**: abre um modal para criar carimbos personalizados (título, categoria, cor e campos livres).
+- Busca e filtro por categoria.
+- O conteúdo digitado é salvo automaticamente no `localStorage` do navegador (não há backend).
+
+Os carimbos pré-cadastrados estão nos arrays `stampsCSC` e `stampsPadrao`, dentro da `<script>` do arquivo. Para adicionar um novo carimbo fixo, basta incluir um objeto no formato:
 
 ```js
 {
@@ -49,11 +51,9 @@ Os carimbos pré-cadastrados estão nos arrays `stampsCSC` e `stampsPadrao`, den
 }
 ```
 
-Para adicionar um novo carimbo fixo, basta incluir um novo objeto na lista correspondente.
-
 ## 🎨 Identidade visual
 
-O layout segue a mesma linguagem visual da página principal da Plataforma TLP TRJ: fundo navy escuro, cartões com brilho (glow) e linha de destaque na base, tipografia **Outfit** (títulos), **DM Sans** (textos) e **DM Mono** (campos/dados), com cores de categoria (laranja, azul, verde, roxo, vermelho, âmbar) indicando o tipo de carimbo.
+Todos os módulos seguem (ou devem seguir) a mesma linguagem visual do `index.html`: fundo navy escuro, cartões com brilho (glow) e linha de destaque na base, tipografia **Outfit** (títulos), **DM Sans** (textos) e **DM Mono** (dados/campos), com cores de categoria (laranja, azul, verde, roxo, vermelho, âmbar) indicando o tipo de conteúdo.
 
 ## 👤 Créditos
 
