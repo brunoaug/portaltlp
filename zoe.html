@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Técnicos – Zona Oeste RJ</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<style>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Técnicos – Zona Oeste RJ</title><link rel="preconnect" href="https://fonts.googleapis.com"/><link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script><style>
   :root {
     --bg:      #0d0f14;
     --surface: #161920;
@@ -19,7 +9,6 @@
     --accent:  #f0c040;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     font-family: 'Syne', sans-serif;
     background: var(--bg);
@@ -333,6 +322,12 @@
 
   /* leaflet overrides */
   .leaflet-container { background: #0d1117; }
+  
+  /* TRUQUE: Inverte as cores do Google Maps para que ele fique em Dark Mode Perfeito! */
+  .leaflet-tile-pane {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+  }
+  
   .leaflet-popup-content-wrapper {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -585,9 +580,7 @@
     transition: color .18s;
   }
   .sf-email:hover { color: var(--accent); }
-</style>
-</head>
-<body>
+</style></head><body>
 
 <div id="sidebar">
   <div id="resize-handle" title="Arraste para redimensionar"></div>
@@ -722,12 +715,20 @@ TECHNICIANS.forEach((t, i) => {
 });
 
 /* ══════════════════════════════════════
-   MAP
+   MAP - USANDO GOOGLE MAPS (100% LIVRE DE CHAVES)
 ══════════════════════════════════════ */
 const map = L.map('map', { zoomControl: false }).setView([-22.9, -43.52], 11);
 L.control.zoom({ position: 'topleft' }).addTo(map);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-  { attribution:'© OpenStreetMap © CARTO', maxZoom:19 }).addTo(map);
+
+// Remove a flag de atribuição padrão para ficar mais limpo
+map.attributionControl.setPrefix(false);
+
+// Endereço público do Google Maps, extremamente rápido e livre de barreiras CORS ou API Keys
+L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { 
+  maxZoom: 19,
+  attribution: '' 
+}).addTo(map);
+
 
 /* ══════════════════════════════════════
    LAYERS  (radius 6 km)
